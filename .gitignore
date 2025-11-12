@@ -1,0 +1,49 @@
+# Python
+_pycache_/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+static/
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+*.env
+.env
+
+# IDE settings
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# PyCharm
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Migrations (optional if auto-generated)
+*/migrations/_pycache_/
+/migrations/.pyc
+
+# Byte-compiled
+*.pyo
+*.pyd
+*.pyc
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Backup / temporary files
+*.bak
+*.swp
+*.tmp
