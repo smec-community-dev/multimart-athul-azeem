@@ -4,5 +4,6 @@ from seller import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("view/",views.view_product)
+    path("sellerdashboard/",views.view_product),
+    path("login/",views.login_seller)
 ]
