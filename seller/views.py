@@ -52,7 +52,7 @@ def seller_registration(request):
         )
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('/login')
+        return redirect('seller/login')
 
 
 
