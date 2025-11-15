@@ -25,9 +25,11 @@ def login_seller(request):
 
             is_seller=SellerDetails.objects.filter(user=user).exists()
             if is_seller:
+                print(".............")
                 return redirect('seller_dashboard')
+
             else:
-                return redirect('user/user_dashboard')
+                return redirect('/home')
         return render(request,"seller/login.html",{"error":"invalid username or password"})
     return render(request,"seller/login.html")
 
