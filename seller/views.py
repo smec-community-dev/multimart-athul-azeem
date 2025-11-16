@@ -1,5 +1,7 @@
 from django.contrib.auth import authenticate
 from django.core.checks import messages
+from django.db.models.fields import return_None
+from django.template.context_processors import request
 from django.utils.text import slugify
 from django.shortcuts import render, redirect
 
@@ -72,6 +74,49 @@ def add_product(request):
     products = Product.objects.all()
     subcategories = SubCategory.objects.all()
     return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
+
+def update_product(request,id):
+    product = Product.objects.get(id=id)
+
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+
+        # Prevent duplicate name (ignore self)
+        if Product.objects.exclude(id=id).filter(name=name).exists():
+            messages.error(request, "Product name already exists.")
+            return redirect(request.META.get("HTTP_REFERER"))
+
+        product.name = name
+        product.description = request.POST.get("description")
+        product.price = request.POST.get("price")
+        product.stock = request.POST.get("stock")
+        product.color = request.POST.get("color")
+        product.size = request.POST.get("size")
+        product.subcategory_id = request.POST.get("subcategory")
+
+        # Handle images
+        if 'main_image' in request.FILES:
+            product.main_image = request.FILES['main_image']
+
+        if 'gallery_images' in request.FILES:
+            for img in request.FILES.getlist('gallery_images'):
+                ProductImage.objects.create(product=product, image=img)
+
+        product.save()
+        messages.success(request, "Product updated successfully!")
+        return redirect('add')
+
+
+
+    return render(request,"feature.html",{"products":product})
+
+def delete_product(request,id):
+
+        product=Product.objects.get(id=id)
+        product.delete()
+        return redirect("add")
+
 
 
 def seller_registration(request):
