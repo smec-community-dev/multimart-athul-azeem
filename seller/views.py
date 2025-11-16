@@ -1,14 +1,55 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Product, User, SellerDetails
+from django.contrib.auth import authenticate
+from django.core.checks import messages
+from django.utils.text import slugify
 from django.shortcuts import render, redirect
-from .models import Product, SellerDetails
+
+from core.models import User
+from .models import Product, SellerDetails, ProductImage
 from django.contrib.auth import authenticate, login
+from core.models import SubCategory
+from .models import Product, SellerDetails
+
 
 def view_product(request):
     products=Product.objects.all()
     return render(request,"seller/sellerdashboard.html",{"product":products})
 
+from django.shortcuts import render, redirect
+from django.utils.text import slugify
+from .models import Product, SellerDetails, SubCategory, ProductImage
+
+def add_product(request):
+    if request.method == "POST":
+
+        seller = SellerDetails.objects.get(user=request.user)
+
+        name = request.POST.get('name')
+        subcat_id = request.POST.get('subcategory')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        stock = request.POST.get('stock')
+        color = request.POST.get('color')
+        size = request.POST.get('size')
+
+        main_image = request.FILES.get('main_image')
+        gallery_images = request.FILES.getlist('gallery_images')
+
+        subcategory = SubCategory.objects.get(id=subcat_id)
+
+
+        product = Product.objects.create(
+            seller=seller,
+            subcategory=subcategory,
+            name=name,
+            description=description,
+            price=price,
+            stock=stock,
+            color=color,
+            size=size
+        )
 
 def update_product(request):
     products = Product.objects.all()
@@ -84,5 +125,8 @@ def login_seller(request):
                 return redirect('/home')
         return render(request,"seller/login.html",{"error":"invalid username or password"})
     return render(request,"seller/login.html")
+
+
+
 
 
