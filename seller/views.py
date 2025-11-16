@@ -111,6 +111,13 @@ def update_product(request,id):
 
     return render(request,"feature.html",{"products":product})
 
+def delete_product(request,id):
+
+        product=Product.objects.get(id=id)
+        product.delete()
+        return redirect("add")
+
+
 
 def seller_registration(request):
     if request.method=="POST":
