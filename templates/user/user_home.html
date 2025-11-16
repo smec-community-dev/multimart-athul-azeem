@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="ShopHub - Your ultimate e-commerce destination for electronics, fashion, and more">
+    <title>ShopHub - Your Shopping Destination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .slider {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .slide-in {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .arrow:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .arrow-left {
+            left: 25px;
+        }
+
+        .arrow-right {
+            right: 25px;
+        }
+
+        /* Animation for elements on scroll */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animation for category icons */
+        .category-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .category-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation for product cards */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Animation for buttons */
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 32px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-left: 60px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 280px;
+            margin-right: 30px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 12px;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff8c00;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .auth-buttons button {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+    </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <nav class="nav-center">
+                <a href="#home">Home</a>
+                <a href="productdetail.html">Products</a>
+                <a href="aboutus.html">About</a>
+                <a href="dealsandoffers.html">Deals & offers</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products...">
+            </div>
+
+            <div class="header-right">
+               <div class="header-right">
+                <button class="icon-btn">
+                  <a href="wishlist.html">  <i class="fas fa-heart"></i></a>
+                    <span class="badge">2</span>
+                </button>
+                <button class="icon-btn">
+                  <a href="cart.html">  <i class="fas fa-shopping-cart"></i></a>
+                    <span class="badge">3</span>
+                </button>
+                <div class="auth-buttons">
+                   <a href="login.html"> <button class="login-btn">Login</button></a>
+               <a href="registeration.html">     <button class="register-btn">Register</button></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- Hero Section with Slider -->
+    <section id="home" class="bg-white py-8 lg:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="slider rounded-2xl overflow-hidden h-80 lg:h-96 relative">
+                <!-- Slide 1 -->
+                <div class="slide active w-full h-full">
+                    <div
+                        class="w-full h-full flex items-center justify-between px-6 lg:px-16 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+                        <div class="flex-1 fade-in">
+                            <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">Summer Mega Sale
+                            </h1>
+                            <p class="text-lg lg:text-2xl text-orange-100 mb-8">Up to 70% OFF on Electronics</p>
+                           <a href="shop.html"> <button
+                                class="px-8 py-3 bg-white text-orange-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate">
+                                Shop Now
+                            </button></a>
+                        </div>
+                        <div class="flex-1 text-center hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop"
+                                alt="Headphones" class="w-64 h-64 object-cover rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="slide w-full h-full">
+                    <div
+                        class="w-full h-full flex items-center justify-between px-6 lg:px-16 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600">
+                        <div class="flex-1 fade-in">
+                            <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">Latest Laptops</h1>
+                            <p class="text-lg lg:text-2xl text-blue-100 mb-8">Premium devices at great prices</p>
+                            <button
+                                class="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate">
+                                <a href="shop.html">Explore Now</a>
+                            </button>
+                        </div>
+                        <div class="flex-1 text-center hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop"
+                                alt="Laptop" class="w-64 h-64 object-cover rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="slide w-full h-full">
+                    <div
+                        class="w-full h-full flex items-center justify-between px-6 lg:px-16 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
+                        <div class="flex-1 fade-in">
+                            <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">New Collection</h1>
+                            <p class="text-lg lg:text-2xl text-purple-100 mb-8">Fashion & Lifestyle Products</p>
+                            <button
+                                class="px-8 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate">
+                                <a href="shop.html">Discover</a>
+                            </button>
+                        </div>
+                        <div class="flex-1 text-center hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop"
+                                alt="Fashion" class="w-64 h-64 object-cover rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="arrow arrow-left" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="arrow arrow-right" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+
+                <div class="slider-nav">
+                    <span class="dot active" onclick="currentSlide(0)"></span>
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Highlights Section -->
+    <section class="bg-gray-50 py-16 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 text-gray-900 animate-on-scroll">Why Choose
+                ShopHub?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                    <div class="text-5xl mb-4 text-orange-500">🚚</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Free Shipping</h3>
+                    <p class="text-gray-600">On all orders over ₹500. Fast and reliable delivery</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                    <div class="text-5xl mb-4 text-orange-500">💳</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Secure Payment</h3>
+                    <p class="text-gray-600">Multiple payment methods with 100% security</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                    <div class="text-5xl mb-4 text-orange-500">🔄</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">Easy Returns</h3>
+                    <p class="text-gray-600">30-day hassle-free return policy guaranteed</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                    <div class="text-5xl mb-4 text-orange-500">💬</div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-900">24/7 Support</h3>
+                    <p class="text-gray-600">Dedicated team ready to help anytime</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Strip -->
+    <section class="bg-white border-b border-gray-200 py-12 lg:py-16">
+        <a href="electronics.html">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl lg:text-3xl font-bold text-center mb-12 text-gray-900 animate-on-scroll">Shop by
+                    Category</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+                    <div
+                        class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                        <div
+                            class="w-20 h-20 lg:w-24 lg:h-24 bg-purple-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                            📱</div>
+                        <p class="font-semibold text-sm lg:text-base">Electronics</p>
+                    </div>
+        </a>
+        <a href="fashion.html">
+            <div
+                class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                <div
+                    class="w-20 h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                    👗</div>
+                <p class="font-semibold text-sm lg:text-base">Fashion</p>
+            </div>
+        </a>
+      <a href="cosmetic.html">
+          <div
+            class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+            <div
+                class="w-20 h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                 <img
+      src="https://cdn-icons-png.flaticon.com/512/3050/3050159.png" alt="Cosmetic"
+                    class="w-12 h-12 lg:w-16 lg:h-16 object-contain" />
+            </div>
+            <p class="font-semibold text-sm lg:text-base">Cosmetics</p>
+        </div>
+      </a>
+        <a href="game.html">
+            <div
+                class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                <div
+                    class="w-20 h-20 lg:w-24 lg:h-24 bg-green-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                    🎮</div>
+                <p class="font-semibold text-sm lg:text-base">Gaming</p>
+            </div>
+        </a>
+        <a href="book.html">
+            <div
+                class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                <div
+                    class="w-20 h-20 lg:w-24 lg:h-24 bg-yellow-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                    📚</div>
+                <p class="font-semibold text-sm lg:text-base">Books</p>
+            </div>
+        </a>
+       <a href="wearables.html">
+         <div
+            class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+            <div
+                class="w-20 h-20 lg:w-24 lg:h-24 bg-red-50 rounded-full flex items-center justify-center text-4xl mb-4 group-hover:shadow-lg transition category-icon">
+                ⌚</div>
+            <p class="font-semibold text-sm lg:text-base">Wearables</p>
+        </div>
+       </a>
+        </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-16 lg:py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-12">
+                <div class="animate-on-scroll">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Best Sellers</h2>
+                    <p class="text-gray-600">Popular items customers love</p>
+                </div>
+                <a href="#"
+                    class="text-orange-500 font-bold hover:text-orange-600 hidden md:block animate-on-scroll">View All
+                    <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div
+                    class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card animate-on-scroll">
+                    <div class="relative h-64 bg-gray-200 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1592286927505-ed303e3d0eef?w=400&h=400&fit=crop"
+                            alt="iPhone 15"
+                            class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        <div
+                            class="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            New</div>
+                    </div>
+                    <a href="single.html">
+                     <a href="single.html">
+                             <div class="p-6">
+                        <span
+                            class="inline-block px-3 py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-3">Electronics</span>
+                        <p class="text-sm text-gray-600 mb-2">Mobile Hub</p>
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 truncate">iPhone 15 Pro Max</h3>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400 text-sm">★★★★★</span>
+                            <span class="text-gray-600 text-xs ml-2">(245)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-gray-900">₹79,999</span>
+                            <button
+                                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold text-sm cart-btn btn-animate">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                     </a>
+                    </a>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card animate-on-scroll">
+                    <div class="relative h-64 bg-gray-200 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop"
+                            alt="Speaker"
+                            class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                    </div>
+               <a href="single.html">
+                     <div class="p-6">
+                        <span
+                            class="inline-block px-3 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded-full mb-3">Audio</span>
+                        <p class="text-sm text-gray-600 mb-2">Audio Gear</p>
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 truncate">Bluetooth Speaker</h3>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400 text-sm">★★★★☆</span>
+                            <span class="text-gray-600 text-xs ml-2">(150)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-gray-900">₹1,999</span>
+                            <button
+                                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold text-sm cart-btn btn-animate">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+               </a>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card animate-on-scroll">
+                    <div class="relative h-64 bg-gray-200 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400&h=400&fit=crop"
+                            alt="Samsung"
+                            class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                    </div>
+               <a href="single.html">
+
+                     <div class="p-6">
+                        <span
+                            class="inline-block px-3 py-1 bg-purple-100 text-purple-600 text-xs font-bold rounded-full mb-3">Mobile</span>
+                        <p class="text-sm text-gray-600 mb-2">Tech Store</p>
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 truncate">Samsung Galaxy S24</h3>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400 text-sm">★★★★★</span>
+                            <span class="text-gray-600 text-xs ml-2">(190)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-gray-900">₹89,999</span>
+                            <button
+                                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold text-sm cart-btn btn-animate">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+               </a>
+                </div>
+
+                <div
+                    class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card animate-on-scroll">
+                    <div class="relative h-64 bg-gray-200 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop"
+                            alt="T-Shirt"
+                            class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        <div
+                            class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            -40%</div>
+                    </div>
+                 <a href="single.html">
+
+                       <div class="p-6">
+                        <span
+                            class="inline-block px-3 py-1 bg-pink-100 text-pink-600 text-xs font-bold rounded-full mb-3">Fashion</span>
+                        <p class="text-sm text-gray-600 mb-2">Fashion World</p>
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 truncate">Cotton T-Shirt</h3>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400 text-sm">★★★★☆</span>
+                            <span class="text-gray-600 text-xs ml-2">(310)</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-gray-900">₹499</span>
+                            <button
+                                class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold text-sm cart-btn btn-animate">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                 </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 lg:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-on-scroll">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                        alt="About ShopHub" class="rounded-xl shadow-lg">
+                </div>
+                <div class="animate-on-scroll">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">About ShopHub</h2>
+                    <p class="text-gray-600 text-lg mb-4">ShopHub is your ultimate e-commerce destination, bringing
+                        together the best products from trusted brands and sellers worldwide.</p>
+                    <p class="text-gray-600 text-lg mb-6">We believe in providing exceptional shopping experiences with
+                        quality products, competitive prices, and outstanding customer service.</p>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="bg-orange-50 p-6 rounded-lg">
+                            <h3 class="text-3xl font-bold text-orange-500 mb-2">10M+</h3>
+                            <p class="text-gray-600">Happy Customers</p>
+                        </div>
+                        <div class="bg-orange-50 p-6 rounded-lg">
+                            <h3 class="text-3xl font-bold text-orange-500 mb-2">50K+</h3>
+                            <p class="text-gray-600">Products Available</p>
+                        </div>
+                    </div>
+                    <button
+                        class="px-8 py-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition btn-animate">Learn
+                        More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-16 lg:py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl lg:text-4xl font-bold text-center mb-12 text-gray-900 animate-on-scroll">What Our
+                Customers Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            AR</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Arjun Reddy</h3>
+                            <p class="text-sm text-gray-600">Verified Buyer</p>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
+                    <p class="text-gray-600">"Great products and fast shipping! The customer service is amazing and
+                        resolved my issue within minutes."</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            PS</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Priya Singh</h3>
+                            <p class="text-sm text-gray-600">Verified Buyer</p>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
+                    <p class="text-gray-600">"Best prices I've found online. The return process is so simple and
+                        hassle-free. Highly recommend!"</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                    <div class="flex items-center mb-4">
+                        <div
+                            class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            RK</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Rajesh Kumar</h3>
+                            <p class="text-sm text-gray-600">Verified Buyer</p>
+                        </div>
+                    </div>
+                    <div class="text-yellow-400 text-sm mb-4">★★★★☆</div>
+                    <p class="text-gray-600">"Wide variety of products at reasonable prices. Delivery was on time and
+                        packaging was excellent."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner Section -->
+    <section class="py-16 lg:py-20 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl lg:text-4xl font-bold mb-4 animate-on-scroll">Ready to Start Shopping?</h2>
+            <p class="text-xl mb-8 text-orange-100 animate-on-scroll">Join millions of happy customers and discover
+                amazing deals today!</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                    class="px-8 py-3 bg-white text-orange-600 font-bold rounded-lg hover:bg-gray-100 transition btn-animate">
+                    <a href="shop.html">Start Shopping Now</a>
+                </button>
+                <button
+                    class="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate">
+                    View All Deals
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-12 lg:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-2xl"></i>
+                        <span class="text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and
+                        more.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-white transition">Products</a></li>
+                        <li><a href="aboutus.html" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="FAQs.html" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Customer Service</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+                        <li><a href="returnsandrefunds.html" class="text-gray-400 hover:text-white transition">Returns</a></li>
+                        <li><a href="shippinginfo.html" class="text-gray-400 hover:text-white transition">Shipping Info</a></li>
+                        <li><a href="ordertracking.html" class="text-gray-400 hover:text-white transition">Track Order</a></li>
+                        <li><a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Contact Info</h3>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-orange-500"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-orange-500"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-orange-500"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Slider functionality
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const slideCount = slides.length;
+
+        // Initialize slider
+        showSlide(currentSlideIndex);
+
+        // Function to change slide
+        function changeSlide(n) {
+            showSlide(currentSlideIndex + n);
+        }
+
+        // Function to show a specific slide
+        function currentSlide(n) {
+            showSlide(n);
+        }
+
+        // Main function to display slides
+        function showSlide(n) {
+            // Update current slide index
+            currentSlideIndex = (n + slideCount) % slideCount;
+
+            // Hide all slides and remove active class from dots
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // Show current slide and activate corresponding dot
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+        }
+
+        // Auto slide change every 5 seconds
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+
+            // Function to handle scroll event
+            function handleScroll() {
+                animatedElements.forEach(element => {
+                    if (isInViewport(element)) {
+                        element.classList.add('animated');
+                    }
+                });
+            }
+
+            // Initial check on page load
+            handleScroll();
+
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+    </script>
+</body>
+
+</html>
