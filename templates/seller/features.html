@@ -1270,7 +1270,9 @@
 
                             <div class="product-actions">
                                 <button class="edit-btn" onclick="openEditModal({{ product.id }})">✏️ Edit</button>
-                                <button class="delete-btn" onclick="openDeleteModal({{ product.id }})">🗑️ Delete</button>
+                                <a href="{% url 'delete' product.id %}">
+    <button class="delete-btn">🗑️ Delete</button>
+</a>
                             </div>
                         </div>
                     </div>

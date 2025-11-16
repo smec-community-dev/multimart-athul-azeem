@@ -73,6 +73,13 @@ def add_product(request):
     subcategories = SubCategory.objects.all()
     return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
 
+def delete_product(request,id):
+
+        product=Product.objects.get(id=id)
+        product.delete()
+        return redirect("add")
+
+
 
 def seller_registration(request):
     if request.method=="POST":
