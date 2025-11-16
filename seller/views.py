@@ -1,6 +1,3 @@
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Product, User, SellerDetails
 from django.contrib.auth import authenticate
 from django.core.checks import messages
 from django.utils.text import slugify
@@ -51,9 +48,31 @@ def add_product(request):
             size=size
         )
 
-def update_product(request):
+        if main_image:
+            ProductImage.objects.create(
+                product=product,
+                image=main_image,
+                image_type="Main"
+            )
+
+
+        for img in gallery_images:
+            ProductImage.objects.create(
+                product=product,
+                image=img,
+                image_type="Gallery"
+            )
+
+        return redirect("seller_dashboard")
+
+
+
+
+
     products = Product.objects.all()
-    return  render(request,"seller/features.html")
+    subcategories = SubCategory.objects.all()
+    return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
+
 
 def seller_registration(request):
     if request.method=="POST":
@@ -104,6 +123,9 @@ def seller_registration(request):
 
 
     return render(request,"seller/seller_registration.html")
+
+
+
 def login_seller(request):
     if request.method =="POST":
         username=request.POST.get("username")
