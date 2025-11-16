@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.shortcuts import render, redirect
 
 from core.models import User
-from .models import Product, SellerDetails
+from .models import Product, SellerDetails, ProductImage
 from django.contrib.auth import authenticate, login
 from core.models import SubCategory
 from .models import Product, SellerDetails
@@ -14,35 +14,65 @@ def view_product(request):
     products=Product.objects.all()
     return render(request,"seller/sellerdashboard.html",{"product":products})
 
-def add_product(request):
-    if request.method=="POST":
-        print(".,,,")
-        seller = SellerDetails.objects.get(user=request.user)
-        subcategory_id = request.POST.get("subcategory")
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        stock = request.POST.get("stock")
-        color = request.POST.get("color")
-        size = request.POST.get("size")
-        slug = slugify(name)
-        subcategory = SubCategory.objects.get(id=subcategory_id)
+from django.shortcuts import render, redirect
+from django.utils.text import slugify
+from .models import Product, SellerDetails, SubCategory, ProductImage
 
-        Product.objects.create(
+def add_product(request):
+    if request.method == "POST":
+
+        seller = SellerDetails.objects.get(user=request.user)
+
+        name = request.POST.get('name')
+        subcat_id = request.POST.get('subcategory')
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        stock = request.POST.get('stock')
+        color = request.POST.get('color')
+        size = request.POST.get('size')
+
+        main_image = request.FILES.get('main_image')
+        gallery_images = request.FILES.getlist('gallery_images')
+
+        subcategory = SubCategory.objects.get(id=subcat_id)
+
+
+        product = Product.objects.create(
             seller=seller,
             subcategory=subcategory,
             name=name,
-            slug=slug,
             description=description,
             price=price,
             stock=stock,
             color=color,
-            size=size,
+            size=size
         )
+
+        if main_image:
+            ProductImage.objects.create(
+                product=product,
+                image=main_image,
+                image_type="Main"
+            )
+
+
+        for img in gallery_images:
+            ProductImage.objects.create(
+                product=product,
+                image=img,
+                image_type="Gallery"
+            )
+
         return redirect("seller_dashboard")
 
+
+
+
+
     products = Product.objects.all()
-    return  render(request,"seller/features.html")
+    subcategories = SubCategory.objects.all()
+    return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
+
 
 def seller_registration(request):
     if request.method=="POST":
@@ -120,6 +150,5 @@ def login_seller(request):
 
 
 
-    subcategories = SubCategory.objects.all()
-    return render(request, "seller/features.html", {"subcategories": subcategories,"products":products})
+
 

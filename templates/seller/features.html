@@ -844,11 +844,12 @@
             display: none;
             position: relative;
             left: auto;
-            top: auto;
+            top: -60px;
             z-index: 101;
             background: var(--primary-color);
             color: white;
             border: none;
+            margin-right:20px;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -1145,9 +1146,7 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">ShopHub Seller</div>
-        </div>
+
 
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
@@ -1294,14 +1293,14 @@
                 <button class="close-btn" onclick="closeModal()">✕</button>
             </div>
 
-            <form id="productForm">
-                {% csrf_token %}
+            <form id="productForm" method="POST">
+               {% csrf_token %}
                 <div class="form-group">
                     <label for="productName">Product Name *</label>
                     <input type="text" id="productName" name="name" required placeholder="Enter product name">
                 </div>
 
-       <div class="form-group">
+                <div class="form-group">
     <label for="productSubcategory">Sub Category *</label>
     <select id="productSubcategory" name="subcategory" required>
         <option value="">Select sub category</option>
@@ -1460,418 +1459,122 @@
             </div>
         </div>
     </footer>
+<script>
+    /* ======================= PROFILE DROPDOWN ======================= */
+    function toggleProfileMenu() {
+        const dropdown = document.getElementById('profileDropdown');
+        const menu = document.getElementById('dropdownMenu');
+        dropdown.classList.toggle('active');
+        menu.classList.toggle('show');
+    }
 
-    <script>
-        // Sample products data
-        let products = [
-            {
-                id: 1,
-                name: 'iPhone 14 Pro',
-                category: 'electronics',
-                price: 79999,
-                stock: 45,
-                description: 'Latest iPhone with advanced features',
-                icon: '📱',
-                status: 'active'
-            },
-            {
-                id: 2,
-                name: 'Wireless Earbuds',
-                category: 'electronics',
-                price: 4999,
-                stock: 8,
-                description: 'Premium quality wireless earbuds',
-                icon: '🎧',
-                status: 'active'
-            },
-            {
-                id: 3,
-                name: 'Smart Watch',
-                category: 'electronics',
-                price: 12999,
-                stock: 0,
-                description: 'Feature-rich smartwatch',
-                icon: '⌚',
-                status: 'inactive'
-            },
-            {
-                id: 4,
-                name: 'Winter Jacket',
-                category: 'clothing',
-                price: 3499,
-                stock: 25,
-                description: 'Warm and stylish winter jacket',
-                icon: '🧥',
-                status: 'active'
-            },
-            {
-                id: 5,
-                name: 'Coffee Table',
-                category: 'home',
-                price: 8999,
-                stock: 5,
-                description: 'Modern coffee table',
-                icon: '🛋️',
-                status: 'active'
-            },
-            {
-                id: 6,
-                name: 'Harry Potter Book',
-                category: 'books',
-                price: 350,
-                stock: 50,
-                description: 'Classic fantasy book',
-                icon: '📚',
-                status: 'active'
-            }
-        ];
-
-        const categories = [
-            { id: 'all', label: 'All Products' },
-            { id: 'electronics', label: 'Electronics' },
-            { id: 'clothing', label: 'Clothing' },
-            { id: 'home', label: 'Home & Furniture' },
-            { id: 'books', label: 'Books' },
-            { id: 'beauty', label: 'Beauty' }
-        ];
-
-        let currentFilter = 'all';
-        let currentEditId = null;
-        let currentDeleteId = null;
-
-        // Toggle Profile Menu
-        function toggleProfileMenu() {
-            const dropdown = document.getElementById('profileDropdown');
-            const menu = document.getElementById('dropdownMenu');
-            dropdown.classList.toggle('active');
-            menu.classList.toggle('show');
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('profileDropdown');
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+            document.getElementById('dropdownMenu').classList.remove('show');
         }
+    });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('profileDropdown');
-            if (!dropdown.contains(e.target)) {
-                dropdown.classList.remove('active');
-                document.getElementById('dropdownMenu').classList.remove('show');
-            }
-        });
+    /* ======================= SIDEBAR ======================= */
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
 
-        // Initialize category tabs
-        function initCategoryTabs() {
-            const container = document.getElementById('categoryTabs');
-            container.innerHTML = categories.map(cat => `
-                <div class="category-tab ${cat.id === 'all' ? 'active' : ''}" onclick="filterByCategory('${cat.id}')">
-                    ${cat.label}
-                </div>
-            `).join('');
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+    }
+
+    function navigateTo(page) {
+        document.querySelectorAll('.sidebar-menu-link')
+            .forEach(link => link.classList.remove('active'));
+
+        event.target.closest('.sidebar-menu-link').classList.add('active');
+        showToast("Loading " + page + "...", "success");
+
+        if (window.innerWidth < 1024) {
+            toggleSidebar();
         }
+    }
 
-        // Filter by category
-        function filterByCategory(category) {
-            currentFilter = category;
-            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            renderProducts();
+    function checkScreenSize() {
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        if (window.innerWidth > 1024) {
+            toggleBtn.style.display = 'block';
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        } else {
+            toggleBtn.style.display = 'none';
+            sidebar.classList.add('show');
+            overlay.classList.remove('show');
         }
+    }
 
-        // Filter by status
-        function filterByStatus(status) {
-            let filtered = [];
+    window.addEventListener('resize', checkScreenSize);
+    checkScreenSize();
 
-            if (status === 'all') {
-                filtered = products;
-            } else if (status === 'active') {
-                filtered = products.filter(p => p.status === 'active');
-            } else if (status === 'low-stock') {
-                filtered = products.filter(p => p.stock > 0 && p.stock <= 20);
-            } else if (status === 'out-of-stock') {
-                filtered = products.filter(p => p.stock === 0);
-            }
+    /* ======================= MODALS ======================= */
+    function openAddModal() {
+        document.getElementById('productForm').reset();
+        document.getElementById('modalTitle').innerText = "Add New Product";
+        document.getElementById('productModal').classList.add('show');
+    }
 
-            displayProducts(filtered);
-            currentFilter = 'all';
-            document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelector('.category-tab').classList.add('active');
-        }
+    function closeModal() {
+        document.getElementById('productModal').classList.remove('show');
+    }
 
-        // Search products
-        document.getElementById('searchInput')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = products.filter(p =>
-                p.name.toLowerCase().includes(searchTerm) ||
-                p.description.toLowerCase().includes(searchTerm)
-            );
-            displayProducts(filtered);
-        });
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
 
-        // Update stats
-        function updateStats() {
-            document.getElementById('totalProducts').textContent = products.length;
-            document.getElementById('activeProducts').textContent = products.filter(p => p.status === 'active').length;
-            document.getElementById('lowStockProducts').textContent = products.filter(p => p.stock > 0 && p.stock <= 20).length;
-            document.getElementById('outOfStockProducts').textContent = products.filter(p => p.stock === 0).length;
-        }
+    function openDeleteModal(id) {
+        document.getElementById('deleteMessage').textContent =
+            "Are you sure you want to delete this product?";
+        document.getElementById('deleteModal').classList.add('show');
+    }
 
-        // Render products
-        function renderProducts() {
-            const filtered = currentFilter === 'all'
-                ? products
-                : products.filter(p => p.category === currentFilter);
-            displayProducts(filtered);
-        }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+    }
 
-        // Display products
-        function displayProducts(productsToShow) {
-            const grid = document.getElementById('productsGrid');
-            const emptyState = document.getElementById('emptyState');
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
 
-            if (productsToShow.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
+    /* ======================= TOAST ======================= */
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
 
-            grid.style.display = 'grid';
-            emptyState.style.display = 'none';
+        document.body.appendChild(toast);
 
-            grid.innerHTML = productsToShow.map(product => `
-                <div class="product-card">
-                    <div class="product-image">
-                        ${product.icon}
-                        <div class="product-badge ${product.status === 'active' ? 'badge-active' : 'badge-inactive'}">
-                            ${product.status === 'active' ? '✓ Active' : '✕ Inactive'}
-                        </div>
-                        ${product.stock <= 20 && product.stock > 0 ? '<div class="product-badge badge-low-stock">Low Stock</div>' : ''}
-                    </div>
-                    <div class="product-body">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-category">${product.category}</div>
+        setTimeout(() => toast.remove(), 3000);
+    }
 
-                        <div class="product-meta">
-                            <div class="product-meta-item">
-                                <div class="meta-label">Price</div>
-                                <div class="meta-value">₹${product.price.toLocaleString()}</div>
-                            </div>
-                            <div class="product-meta-item">
-                                <div class="meta-label">Stock</div>
-                                <div class="meta-value">${product.stock}</div>
-                            </div>
-                        </div>
+    /* ======================= NOTIFICATION ======================= */
+    function showNotifications() {
+        showToast("🔔 You have new notifications!", "success");
+    }
 
-                        <div class="stock-status ${product.stock > 20 ? 'in-stock' : product.stock > 0 ? 'low-stock' : 'out-of-stock'}">
-                            ${product.stock > 20 ? '✓ In Stock' : product.stock > 0 ? '⚠️ Low Stock' : '❌ Out of Stock'}
-                        </div>
+    /* ======================= LOGOUT ======================= */
+    function logout() {
+        showToast("Logging out...", "success");
+        setTimeout(() => window.location.href = "/logout", 1000);
+    }
 
-                        <div class="product-actions">
-                            <button class="edit-btn" onclick="openEditModal(${product.id})">✏️ Edit</button>
-                            <button class="delete-btn" onclick="openDeleteModal(${product.id})">🗑️ Delete</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Open Add Modal
-        function openAddModal() {
-            currentEditId = null;
-            document.getElementById('modalTitle').textContent = '➕ Add New Product';
-            document.getElementById('productForm').reset();
-            document.getElementById('productModal').classList.add('show');
-        }
-
-        // Open Edit Modal
-        function openEditModal(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-
-            currentEditId = id;
-            document.getElementById('modalTitle').textContent = '✏️ Edit Product';
-            document.getElementById('productName').value = product.name;
-            document.getElementById('productSubcategory').value = product.subcategory || '';
-            document.getElementById('productDescription').value = product.description;
-            document.getElementById('productPrice').value = product.price;
-            document.getElementById('productStock').value = product.stock;
-            document.getElementById('productColor').value = product.color || '';
-            document.getElementById('productSize').value = product.size || '';
-
-            document.getElementById('productModal').classList.add('show');
-        }
-
-        // Close Modal
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('show');
-            currentEditId = null;
-        }
-
-        // Open Delete Modal
-        function openDeleteModal(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
-
-            currentDeleteId = id;
-            document.getElementById('deleteMessage').textContent = `Are you sure you want to delete "${product.name}"? This will permanently remove it from your inventory.`;
-            document.getElementById('deleteModal').classList.add('show');
-        }
-
-        // Close Delete Modal
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('show');
-            currentDeleteId = null;
-        }
-
-        // Confirm Delete
-        function confirmDelete() {
-            if (currentDeleteId !== null) {
-                const product = products.find(p => p.id === currentDeleteId);
-                products = products.filter(p => p.id !== currentDeleteId);
-                closeDeleteModal();
-                showToast(`✓ Product "${product.name}" deleted successfully!`, 'success');
-                updateStats();
-                renderProducts();
-            }
-        }
-
-        // Handle Form Submit
-        document.getElementById('productForm').addEventListener('submit', function(e) {
-
-
-            const formData = {
-                name: document.getElementById('productName').value,
-                subcategory: document.getElementById('productSubcategory').value,
-                description: document.getElementById('productDescription').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                stock: parseInt(document.getElementById('productStock').value),
-                color: document.getElementById('productColor').value,
-                size: document.getElementById('productSize').value
-            };
-
-            if (currentEditId !== null) {
-                // UPDATE
-                const index = products.findIndex(p => p.id === currentEditId);
-                products[index] = { ...products[index], ...formData };
-                showToast(`✓ Product "${formData.name}" updated successfully!`, 'success');
-            } else {
-                // ADD
-                const newProduct = {
-                    id: Math.max(...products.map(p => p.id), 0) + 1,
-                    category: 'electronics',
-                    icon: '📦',
-                    status: 'active',
-                    ...formData
-                };
-                products.push(newProduct);
-                showToast(`✓ Product "${formData.name}" added successfully!`, 'success');
-            }
-
+    /* ======================= ESC KEY ======================= */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
             closeModal();
-            updateStats();
-            renderProducts();
-        });
-
-        // Show Toast
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            closeDeleteModal();
         }
+    });
+</script>
 
-        // Notifications
-        function showNotifications() {
-            showToast('🔔 You have 3 new notifications!', 'success');
-        }
-
-        // Logout
-        function logout() {
-            showToast('👋 Logged out successfully!', 'success');
-            setTimeout(() => {
-                window.location.href = '/logout';
-            }, 1500);
-        }
-
-        // Close modal on outside click
-        document.getElementById('productModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-
-        document.getElementById('deleteModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDeleteModal();
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeDeleteModal();
-            }
-        });
-
-        // Initial setup
-        initCategoryTabs();
-        updateStats();
-        renderProducts();
-
-        // ===== SIDEBAR FUNCTIONS =====
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
-        }
-
-        function navigateTo(page) {
-            // Remove active from all links
-            document.querySelectorAll('.sidebar-menu-link').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            // Add active to clicked link
-            event.target.closest('.sidebar-menu-link').classList.add('active');
-
-            // Show toast
-            const pageNames = {
-                'dashboard': '📊 Dashboard',
-                'products': '📦 Products',
-                'orders': '🛒 Orders',
-                'earnings': '💰 Earnings',
-                'reviews': '⭐ Reviews',
-                'analytics': '📈 Analytics',
-                'settings': '⚙️ Settings'
-            };
-
-            showToast(`Navigating to ${pageNames[page]}...`, 'success');
-
-            // Close sidebar on mobile after navigation
-            if (window.innerWidth < 1024) {
-                toggleSidebar();
-            }
-        }
-
-        // Show toggle button on mobile
-        function checkScreenSize() {
-            const toggleBtn = document.getElementById('toggleSidebarBtn');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            if (window.innerWidth < 1024) {
-                toggleBtn.style.display = 'block';
-                sidebar.classList.remove('show');
-                overlay.classList.remove('show');
-            } else {
-                toggleBtn.style.display = 'none';
-                sidebar.classList.add('show');
-                overlay.classList.remove('show');
-            }
-        }
-
-        // Check screen size on load and resize
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-    </script>
 </body>
 </html>
