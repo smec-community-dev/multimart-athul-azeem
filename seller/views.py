@@ -1,4 +1,7 @@
+from django.core.checks import messages
 from django.shortcuts import render, redirect
+
+from core.models import User
 from .models import Product, SellerDetails
 from django.contrib.auth import authenticate, login
 
