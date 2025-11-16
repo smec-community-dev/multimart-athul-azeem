@@ -1,22 +1,26 @@
 from django.contrib.auth import authenticate
 from django.core.checks import messages
+from django.db.models import Count, Sum, F, ExpressionWrapper, DecimalField, Q
+from django.http import HttpResponse
 from django.utils.text import slugify
 from django.shortcuts import render, redirect
-
 from core.models import User
+from user.models import Order
 from .models import Product, SellerDetails, ProductImage
 from django.contrib.auth import authenticate, login
 from core.models import SubCategory
 from .models import Product, SellerDetails
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.db.models import F, ExpressionWrapper, DecimalField
+
 
 
 def view_product(request):
     products=Product.objects.all()
     return render(request,"seller/sellerdashboard.html",{"product":products})
 
-from django.shortcuts import render, redirect
-from django.utils.text import slugify
-from .models import Product, SellerDetails, SubCategory, ProductImage
+
 
 def add_product(request):
     if request.method == "POST":
@@ -124,6 +128,74 @@ def seller_registration(request):
 
     return render(request,"seller/seller_registration.html")
 
+
+
+
+def order_product(request):
+    seller = getattr(request.user, "seller_details", None)
+    search = request.GET.get("search", "").strip()
+
+    if not seller:
+        return HttpResponse("You are not a seller")
+
+    orders = (
+        Order.objects.filter(seller=seller)
+        .prefetch_related("items", "items__product")
+        .annotate(
+            items_count=Count("items"),
+            total_price=Sum(F("items__unit_price") * F("items__quantity"))
+        )
+    )
+    if search:
+        orders = orders.filter(
+            Q(id__icontains=search) |
+            Q(user__username__icontains=search) |
+            Q(items__product__name__icontains=search)
+        ).distinct()
+
+    # Get status filter from URL query parameter
+    status = request.GET.get('status', None)
+
+    # Filter by status if provided
+    if status and status != 'all':
+        orders = orders.filter(status=status.capitalize())
+
+    notification_count = Order.objects.filter(seller=seller, status='Pending').count()
+
+    return render(
+        request,
+        "seller/seller_order.html",
+        {
+            "orders": orders,
+            "notification_count": notification_count,
+            "current_status": status if status else 'all'
+        }
+    )
+
+
+
+@login_required
+def order_detail(request, id):
+    seller = request.user.seller_details
+
+    order = get_object_or_404(
+        Order,
+        id=id,
+        seller=seller
+    )
+
+    items = (
+        order.items.select_related("product")
+        .annotate(
+            total=ExpressionWrapper(
+                F("unit_price") * F("quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2)
+            )
+        )
+    )
+    order_total = sum(item.total for item in items)
+
+    return render(request,"seller/seller_order_product_detail.html",   {"order": order, "items": items,"order_total": order_total  })
 
 
 def login_seller(request):
