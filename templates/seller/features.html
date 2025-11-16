@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Seller Dashboard - ShopHub{% endblock %}</title>
 
@@ -17,357 +17,693 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
     <style>
-      /* --- keep your full CSS from the page; truncated here for brevity in this message.
-         Paste your full CSS from your existing template. Below are critical layout rules so
-         the example JS selector IDs/classes match. --- */
+        /* -------------------- Full UI CSS (restored/cleaned) -------------------- */
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-hover: 0 12px 32px rgba(255, 127, 50, 0.2);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
 
-      :root{ --primary-color:#FF7F32; --accent-color:#FFB273; --bg-color:#F5F5F5; --card-bg:#fff; --text-color:#3A3A3A; --light-text:#666; --border-color:#E0E0E0; --shadow-light:0 2px 8px rgba(0,0,0,0.08); --shadow-medium:0 8px 24px rgba(0,0,0,0.12); --shadow-hover:0 12px 32px rgba(255,127,50,0.2); --font-heading:'Playfair Display',serif; --font-body:'Open Sans',sans-serif;}
-      *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:var(--font-body);background:var(--bg-color);color:var(--text-color)}
-      .container{max-width:1400px;margin:0 auto;padding:2rem}
-      .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
-      .product-card{background:var(--card-bg);border-radius:12px;box-shadow:var(--shadow-light);overflow:hidden}
-      .product-image{height:160px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,178,115,0.2),rgba(255,127,50,0.2));position:relative}
-      .product-body{padding:1.25rem}
-      .product-actions{display:flex;gap:.5rem;margin-top:0.75rem}
-      .edit-btn{background:rgba(255,127,50,0.12);border:1px solid var(--primary-color);padding:.6rem;border-radius:6px;cursor:pointer}
-      .delete-btn{background:rgba(244,67,54,0.12);border:1px solid #f44336;padding:.6rem;border-radius:6px;cursor:pointer}
-      .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-      .modal.show{display:flex}
-      .modal-content{background:var(--card-bg);border-radius:12px;padding:2rem;max-width:680px;width:100%;max-height:90vh;overflow:auto}
-      .form-group{margin-bottom:1rem}
-      input, textarea, select{width:100%;padding:.65rem;border:1.5px solid var(--border-color);border-radius:8px;background:#fafafa}
-      .modal-actions{display:flex;gap:.75rem;margin-top:1.25rem}
-      .btn{padding:.7rem 1rem;border-radius:8px;border:none;font-weight:600;cursor:pointer}
-      .btn-primary{background:linear-gradient(135deg,var(--accent-color),var(--primary-color));color:#fff}
-      .btn-secondary{background:var(--border-color);color:var(--text-color)}
-      .toast{position:fixed;right:1rem;bottom:1rem;padding:1rem;border-radius:8px;color:#fff}
-      .toast.success{background:var(--primary-color)}
-      /* add any additional styling you want (use your original CSS). */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; }
+        body { font-family: var(--font-body); background-color: var(--bg-color); color: var(--text-color); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes slideInLeft { from { transform: translateX(-100%);} to { transform: translateX(0);} }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+        .navbar-left { display:flex; align-items:center; gap:1rem; }
+        .logo { font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--primary-color); white-space:nowrap; }
+        .navbar-title { font-size:1rem; color:var(--light-text); border-left:2px solid var(--primary-color); padding-left:1rem; white-space:nowrap; }
+        .navbar-right { display:flex; align-items:center; gap:2rem; }
+
+        .notification-bell { position:relative; cursor:pointer; font-size:1.3rem; transition:transform .3s ease; }
+        .notification-bell:hover { transform:scale(1.1); }
+        .notification-badge { position:absolute; top:-5px; right:-8px; background:var(--danger-color); color:white; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; }
+
+        /* PROFILE DROPDOWN */
+        .profile-dropdown { position:relative; }
+        .profile-toggle { display:flex; align-items:center; gap:.75rem; padding:.5rem .75rem; background:rgba(255,127,50,0.1); border-radius:20px; cursor:pointer; transition:all .3s ease; border:1px solid transparent; white-space:nowrap; }
+        .profile-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:.9rem; flex-shrink:0; }
+        .dropdown-menu { position:absolute; top:100%; right:0; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow-medium); min-width:280px; margin-top:10px; display:none; z-index:1000; animation:slideDown .3s ease; border:1px solid var(--border-color); overflow:hidden; }
+        .dropdown-menu.show { display:block; }
+        .dropdown-item { display:flex; align-items:center; gap:.75rem; padding:.75rem 1.25rem; color:var(--text-color); cursor:pointer; border-left:3px solid transparent; }
+        .dropdown-item:hover { background:rgba(255,127,50,0.1); border-left-color:var(--primary-color); color:var(--primary-color); }
+        .dropdown-item.logout { color:var(--danger-color); }
+        .dropdown-item.logout:hover { background:rgba(244,67,54,0.1); border-left-color:var(--danger-color); }
+
+        /* CONTAINER */
+        .container { max-width:1400px; margin:0 auto; padding:2rem; width:100%; }
+
+        /* STATS */
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; margin-bottom:3rem; animation:fadeIn .6s ease; }
+        .stat-card { background:var(--card-bg); padding:1.5rem; border-radius:12px; box-shadow:var(--shadow-light); border-left:4px solid var(--primary-color); transition:all .3s ease; }
+        .stat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+        .stat-card.success { border-left-color:var(--success-color); }
+        .stat-card.warning { border-left-color:var(--warning-color); }
+        .stat-card.danger { border-left-color:var(--danger-color); }
+        .stat-icon { font-size:2rem; margin-bottom:.5rem; }
+        .stat-label { font-size:.85rem; color:var(--light-text); text-transform:uppercase; letter-spacing:.5px; margin-bottom:.5rem; }
+        .stat-value { font-family:var(--font-heading); font-size:2rem; font-weight:700; color:var(--primary-color); }
+
+        /* PAGE HEADER */
+        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; gap:1rem; flex-wrap:wrap; }
+        .page-header h1 { font-family:var(--font-heading); font-size:2rem; font-weight:700; color:var(--text-color); }
+        .header-controls { display:flex; gap:1rem; flex-wrap:wrap; }
+        .search-box { display:flex; align-items:center; gap:.5rem; padding:.75rem 1rem; background:var(--card-bg); border:1.5px solid var(--border-color); border-radius:8px; }
+        .search-box input { border:none; background:transparent; font-size:.95rem; width:250px; outline:none; }
+        .search-box input::placeholder { color:var(--light-text); }
+
+        /* CATEGORY TABS */
+        .category-tabs { display:flex; gap:1rem; margin-bottom:2rem; overflow-x:auto; padding-bottom:.5rem; animation:fadeIn .6s ease; }
+        .category-tab { padding:.75rem 1.5rem; border:1.5px solid var(--border-color); border-radius:8px; background:var(--card-bg); cursor:pointer; transition:all .3s ease; white-space:nowrap; font-weight:600; color:var(--text-color); }
+        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .category-tab.active { background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); color:white; border-color:var(--primary-color); }
+
+        /* BUTTONS */
+        .btn { padding:.75rem 1.5rem; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all .3s ease; font-size:.95rem; display:inline-flex; align-items:center; gap:.5rem; white-space:nowrap; }
+        .btn-primary { background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); color:white; box-shadow:var(--shadow-light); }
+        .btn-secondary { background:var(--border-color); color:var(--text-color); }
+        .btn-sm { padding:.5rem 1rem; font-size:.85rem; }
+        .btn-danger { background:var(--danger-color); color:white; }
+
+        /* PRODUCTS GRID */
+        .products-section { margin-bottom:3rem; }
+        .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; animation:fadeIn .6s ease; }
+        .product-card { background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow-light); overflow:hidden; transition:all .3s ease; animation:scaleIn .4s ease; position:relative; }
+        .product-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-hover); }
+        .product-image { background:linear-gradient(135deg, rgba(255,178,115,0.2), rgba(255,127,50,0.2)); height:200px; display:flex; align-items:center; justify-content:center; font-size:3.5rem; position:relative; overflow:hidden; }
+        .product-badge { position:absolute; top:12px; right:12px; padding:.5rem .75rem; border-radius:6px; font-size:.75rem; font-weight:700; text-transform:uppercase; }
+        .badge-active { background:rgba(76,175,80,0.2); color:var(--success-color); }
+        .badge-inactive { background:rgba(244,67,54,0.2); color:var(--danger-color); }
+        .badge-low-stock { background:rgba(255,193,7,0.2); color:var(--warning-color); }
+        .product-body { padding:1.25rem; }
+        .product-name { font-weight:700; font-size:1.1rem; color:var(--text-color); margin-bottom:.5rem; line-height:1.3; }
+        .product-category { font-size:.85rem; color:var(--light-text); text-transform:capitalize; margin-bottom:1rem; }
+        .product-meta { display:flex; justify-content:space-between; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border-color); }
+        .product-meta-item { display:flex; flex-direction:column; }
+        .meta-label { font-size:.75rem; color:var(--light-text); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px; }
+        .meta-value { font-weight:700; font-size:1.1rem; color:var(--primary-color); }
+        .stock-status { padding:.5rem .75rem; border-radius:6px; font-size:.85rem; font-weight:600; margin-bottom:1rem; text-align:center; }
+        .stock-status.in-stock { background:rgba(76,175,80,0.1); color:var(--success-color); }
+        .stock-status.low-stock { background:rgba(255,193,7,0.1); color:var(--warning-color); }
+        .stock-status.out-of-stock { background:rgba(244,67,54,0.1); color:var(--danger-color); }
+        .product-actions { display:flex; gap:.5rem; }
+        .product-actions button { flex:1; padding:.65rem; font-size:.85rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:all .3s ease; }
+
+        .edit-btn { background:rgba(255,127,50,0.2); color:var(--primary-color); border:1.5px solid var(--primary-color); }
+        .edit-btn:hover { background:var(--primary-color); color:white; }
+
+        .delete-btn { background:rgba(244,67,54,0.2); color:var(--danger-color); border:1.5px solid var(--danger-color); }
+        .delete-btn:hover { background:var(--danger-color); color:white; }
+
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--light-text); }
+
+        /* MODAL */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
+        .modal.show { display:flex; }
+        .modal-content { background:var(--card-bg); border-radius:12px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; padding:2rem; animation:slideDown .3s ease; box-shadow:var(--shadow-medium); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border-color); gap:1rem; }
+        .modal-title { font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--text-color); }
+        .close-btn { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--light-text); }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; margin-bottom:.5rem; font-weight:600; color:var(--text-color); }
+        input, select, textarea { width:100%; padding:.75rem; border:1.5px solid var(--border-color); border-radius:8px; font-family:var(--font-body); font-size:1rem; background:#fafafa; }
+        textarea { min-height:100px; resize:vertical; }
+        .modal-actions { display:flex; gap:.75rem; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-color); }
+        .toast { position:fixed; bottom:1.25rem; right:1.25rem; padding:1rem 1.5rem; border-radius:8px; color:white; font-weight:600; animation:slideDown .3s ease; z-index:2000; max-width:400px; }
+        .toast.success { background:var(--success-color); }
+        .toast.danger { background:var(--danger-color); color:white; }
+
+        /* SIDEBAR */
+        .sidebar { position:fixed; left:0; top:0; width:280px; height:100vh; background:var(--card-bg); box-shadow:var(--shadow-medium); overflow-y:auto; padding-top:1rem; margin-top:70px; z-index:99; transition:transform .3s ease; transform:translateX(-100%); }
+        .sidebar.show { transform:translateX(0); }
+        .sidebar-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:98; display:none; }
+        .sidebar-overlay.show { display:block; }
+        .sidebar-menu { list-style:none; padding:0; margin:0; }
+        .sidebar-menu-link { display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; color:var(--text-color); text-decoration:none; cursor:pointer; border-left:3px solid transparent; font-weight:500; }
+        .sidebar-menu-link.active { background:rgba(255,127,50,0.15); color:var(--primary-color); border-left-color:var(--primary-color); font-weight:700; }
+
+        /* RESPONSIVE */
+        @media (max-width:1024px){ .container{padding:1.5rem} .sidebar{width:250px;animation:slideInLeft .3s ease;} .toggle-sidebar-btn{display:flex} .products-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))} .search-box input{width:200px} }
+        @media (max-width:768px){ .navbar{padding:1rem;flex-wrap:wrap} .page-header{flex-direction:column;align-items:stretch} .products-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))} .form-row{grid-template-columns:1fr} .modal-content{padding:1.5rem} }
+        @media (max-width:480px){ .product-image{height:150px;font-size:2.5rem} .modal-content{padding:1rem} input,select,textarea{padding:.625rem;font-size:16px} }
+        /* -------------------- End CSS -------------------- */
     </style>
 </head>
 <body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Seller Dashboard</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showToast('You have new notifications', 'success')">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">📱</div>
+                    <div style="max-width:120px;">
+                        <div style="font-size:.85rem; font-weight:600;">{{ user.username|default:"Mobile Store" }}</div>
+                        <div style="font-size:.7rem; color:var(--light-text);">Store Owner</div>
+                    </div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="showToast('Profile opened!', 'success')">👤 My Profile</div>
+                    <div class="dropdown-item" onclick="showToast('Settings opened!', 'success')">⚙️ Settings</div>
+                    <div class="dropdown-item logout" onclick="window.location.href='/logout'">🚪 Logout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR (kept but hidden on wide screens by default) -->
+    <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()" style="display:none; position:fixed; left:16px; top:84px; z-index:101; background:var(--primary-color); color:white; border-radius:50%; width:40px; height:40px; border:none;">☰</button>
+    <aside class="sidebar" id="sidebar">
+        <div style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color);">
+            <div class="sidebar-title">Seller Menu</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a class="sidebar-menu-link active" onclick="navigateTo('dashboard')"><span class="sidebar-icon">📊</span> Dashboard</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('products')"><span class="sidebar-icon">📦</span> Products</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('orders')"><span class="sidebar-icon">🛒</span> Orders</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('earnings')"><span class="sidebar-icon">💰</span> Earnings</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('reviews')"><span class="sidebar-icon">⭐</span> Reviews</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('analytics')"><span class="sidebar-icon">📈</span> Analytics</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('settings')"><span class="sidebar-icon">⚙️</span> Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTAINER -->
     <div class="container">
-
-      <!-- header (simplified) -->
-      <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-        <div><h2 style="font-family:var(--font-heading)">ShopHub</h2><small>Seller Dashboard</small></div>
-        <div>
-          <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
-        </div>
-      </header>
-
-      <!-- stats (optional) -->
-      <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
-        <div style="background:var(--card-bg);padding:1rem;border-radius:10px;box-shadow:var(--shadow-light)">Total: <strong id="totalProducts">{{ total_products|default:products.count }}</strong></div>
-        <div style="background:var(--card-bg);padding:1rem;border-radius:10px;box-shadow:var(--shadow-light)">Active: <strong id="activeProducts">{{ active_products|default:0 }}</strong></div>
-      </div>
-
-      <!-- PRODUCTS GRID -->
-      <section class="products-section">
-        <div id="productsGrid" class="products-grid">
-          {% for product in products %}
-            {# Each card exports the needed product details as data attributes.
-               data-update-url uses your named url 'update' with product.id.
-               If you have a delete view, name it 'delete' (adjust accordingly). #}
-  <div class="product-card"
-     data-id="{{ product.id }}"
-     data-name="{{ product.name|escapejs }}"
-     data-description="{{ product.description|default_if_none:''|escapejs }}"
-     data-price="{{ product.price }}"
-     data-stock="{{ product.stock }}"
-     data-color="{{ product.color|default_if_none:''|escapejs }}"
-     data-size="{{ product.size|default_if_none:''|escapejs }}"
-     data-subcategory="{% if product.subcategory %}{{ product.subcategory.id }}{% endif %}"
-     data-update-url="{% url 'update' product.id %}"
->
-
-                 {% comment %} If you have a delete view, uncomment and set the url name 'delete' in urls.py {% endcomment %}
-                 data-delete-url="{% url 'delete' product.id %}">
-              <div class="product-image">
-                {% if product.images.all|length > 0 %}
-                  <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" style="max-height:100%;max-width:100%;object-fit:contain">
-                {% else %}
-                  <div style="font-size:3rem;">📦</div>
-                {% endif %}
-                <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.05);padding:6px;border-radius:6px;font-weight:700;">
-                  {{ product.name }}
-                </div>
-              </div>
-              <div class="product-body">
-                <div style="font-weight:700;margin-bottom:.35rem">{{ product.name }}</div>
-               <div style="color:var(--light-text);font-size:.9rem;margin-bottom:.6rem">
-    {% if product.subcategory %}
-        {{ product.subcategory.name }}
-    {% endif %}
-</div>
-
-                <div style="display:flex;justify-content:space-between;gap:1rem">
-                  <div>₹{{ product.price }}</div>
-                  <div>Stock: {{ product.stock }}</div>
-                </div>
-
-                <div class="product-actions">
-                  <!-- Edit opens modal and also the <a> provides update url if someone wants a separate page -->
-                  <button type="button" class="edit-btn" onclick="openEditModal({{ product.id }})">✏️ Edit</button>
-
-                  <!-- Delete triggers JS POST; requires data-delete-url present -->
-                  <button type="button" class="delete-btn" onclick="openDeleteModal({{ product.id }})">🗑️ Delete</button>
-                </div>
-              </div>
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="filterByStatus('all')" style="cursor:pointer;">
+                <div class="stat-icon">📦</div>
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value" id="totalProducts">{{ total_products|default:products.count }}</div>
             </div>
-          {% empty %}
-            <div style="padding:2rem;text-align:center;background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow-light)">
-              No products yet — click Add Product to create one.
+            <div class="stat-card success" onclick="filterByStatus('active')" style="cursor:pointer;">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">Active Products</div>
+                <div class="stat-value" id="activeProducts">{{ active_products|default:0 }}</div>
             </div>
-          {% endfor %}
+            <div class="stat-card warning" onclick="filterByStatus('low-stock')" style="cursor:pointer;">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-label">Low Stock</div>
+                <div class="stat-value" id="lowStockProducts">{{ low_stock_products|default:0 }}</div>
+            </div>
+            <div class="stat-card danger" onclick="filterByStatus('out-of-stock')" style="cursor:pointer;">
+                <div class="stat-icon">❌</div>
+                <div class="stat-label">Out of Stock</div>
+                <div class="stat-value" id="outOfStockProducts">{{ out_of_stock_products|default:0 }}</div>
+            </div>
         </div>
-      </section>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>📦 Manage Products</h1>
+            <div class="header-controls">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+                </div>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY TABS (optional) -->
+        <div class="category-tabs" id="categoryTabs">
+            <!-- You can render category tabs server-side if you want -->
+        </div>
+
+        <!-- PRODUCTS GRID -->
+        <section class="products-section">
+            <div id="productsGrid" class="products-grid">
+                {% for product in products %}
+                <div class="product-card"
+                     data-id="{{ product.id }}"
+                     data-name="{{ product.name|escapejs }}"
+                     data-description="{{ product.description|default_if_none:''|escapejs }}"
+                     data-price="{{ product.price }}"
+                     data-stock="{{ product.stock }}"
+                     data-color="{{ product.color|default_if_none:''|escapejs }}"
+                     data-size="{{ product.size|default_if_none:''|escapejs }}"
+                     data-subcategory="{% if product.subcategory %}{{ product.subcategory.id }}{% endif %}"
+                     data-update-url="{% url 'update' product.id %}"
+                     data-delete-url="/seller/seller_dashboard/delete/{{ product.id }}">
+                    <div class="product-image">
+                        {% if product.images.all|length > 0 %}
+                            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" style="max-height:100%; max-width:100%; object-fit:contain;">
+                        {% else %}
+                            <div style="font-size:3rem;">📦</div>
+                        {% endif %}
+                        <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.05); padding:6px; border-radius:6px; font-weight:700;">
+                            {{ product.name }}
+                        </div>
+                    </div>
+
+                    <div class="product-body">
+                        <div class="product-name">{{ product.name }}</div>
+
+                        <div class="product-category" style="color:var(--light-text); font-size:.9rem; margin-bottom:.6rem;">
+                            {% if product.subcategory %}
+                                {{ product.subcategory.name }}
+                            {% endif %}
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; gap:1rem; margin-bottom:.6rem;">
+                            <div style="font-weight:700; color:var(--primary-color);">₹{{ product.price }}</div>
+                            <div style="color:var(--light-text)">Stock: {{ product.stock }}</div>
+                        </div>
+
+                        <div class="stock-status {% if product.stock > 20 %}in-stock{% elif product.stock > 0 %}low-stock{% else %}out-of-stock{% endif %}">
+                            {% if product.stock > 20 %}✓ In Stock{% elif product.stock > 0 %}⚠️ Low Stock{% else %}❌ Out of Stock{% endif %}
+                        </div>
+
+                        <div class="product-actions">
+                            <button type="button" class="edit-btn" onclick="openEditModal({{ product.id }})">✏️ Edit</button>
+                            <button type="button" class="delete-btn" onclick="openDeleteModal({{ product.id }})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">No products found</div>
+                    <button class="btn btn-primary" onclick="openAddModal()">Create Your First Product</button>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
     </div>
 
-    <!-- ADD PRODUCT MODAL (keeps file upload) -->
+    <!-- ADD PRODUCT MODAL -->
     <div id="addProductModal" class="modal" aria-hidden="true">
-      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <h3 id="addModalTitle">Add New Product</h3>
-          <button onclick="closeAddModal()" class="close-btn">✕</button>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="addModalTitle">Add New Product</h2>
+                <button class="close-btn" onclick="closeAddModal()">✕</button>
+            </div>
+
+            <form id="addProductForm" method="POST" action="{% url 'add' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="addName">Product Name *</label>
+                    <input id="addName" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="addSubcategory">Sub Category *</label>
+                    <select id="addSubcategory" name="subcategory" required>
+                        <option value="">Select sub category</option>
+                        {% for x in subcategories %}
+                            <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="addDescription">Description *</label>
+                    <textarea id="addDescription" name="description" required></textarea>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="addPrice">Price (₹) *</label>
+                        <input id="addPrice" name="price" type="number" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStock">Stock Quantity *</label>
+                        <input id="addStock" name="stock" type="number" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="addColor">Color</label>
+                        <input id="addColor" name="color" placeholder="e.g., Black, Blue">
+                    </div>
+                    <div class="form-group">
+                        <label for="addSize">Size</label>
+                        <input id="addSize" name="size" placeholder="e.g., S, M, L">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="addMainImage">Main Product Image</label>
+                    <input id="addMainImage" type="file" name="main_image" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="addGalleryImages">Gallery Images</label>
+                    <input id="addGalleryImages" type="file" name="gallery_images" accept="image/*" multiple>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
         </div>
-
-        <form id="addProductForm" method="POST" action="{% url 'add' %}" enctype="multipart/form-data">
-          {% csrf_token %}
-          <div class="form-group">
-            <label>Product Name *</label>
-            <input name="name" required>
-          </div>
-
-          <div class="form-group">
-            <label>Sub Category *</label>
-            <select name="subcategory" required>
-              <option value="">Select</option>
-              {% for x in subcategories %}
-                <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Description *</label>
-            <textarea name="description" required></textarea>
-          </div>
-
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="form-group"><label>Price (₹)</label><input name="price" type="number" step="0.01" min="0" required></div>
-            <div class="form-group"><label>Stock</label><input name="stock" type="number" min="0" required></div>
-          </div>
-
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="form-group"><label>Color</label><input name="color"></div>
-            <div class="form-group"><label>Size</label><input name="size"></div>
-          </div>
-
-          <div class="form-group">
-            <label>Main image</label>
-            <input type="file" name="main_image" accept="image/*">
-          </div>
-
-          <div class="form-group">
-            <label>Gallery images</label>
-            <input type="file" name="gallery_images" accept="image/*" multiple>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Product</button>
-          </div>
-        </form>
-      </div>
     </div>
 
-    <!-- EDIT PRODUCT MODAL (NO image/file inputs) -->
+    <!-- EDIT PRODUCT MODAL -->
     <div id="editProductModal" class="modal" aria-hidden="true">
-      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <h3 id="editModalTitle">Edit Product</h3>
-          <button onclick="closeEditModal()" class="close-btn">✕</button>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="editModalTitle">Edit Product</h2>
+                <button class="close-btn" onclick="closeEditModal()">✕</button>
+            </div>
+
+            <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" id="editProductId">
+
+                <div class="form-group">
+                    <label for="editName">Product Name *</label>
+                    <input id="editName" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubcategory">Sub Category *</label>
+                    <select id="editSubcategory" name="subcategory" required>
+                        <option value="">Select sub category</option>
+                        {% for x in subcategories %}
+                            <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Description *</label>
+                    <textarea id="editDescription" name="description" required></textarea>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="editPrice">Price (₹) *</label>
+                        <input id="editPrice" name="price" type="number" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStock">Stock Quantity *</label>
+                        <input id="editStock" name="stock" type="number" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="editColor">Color</label>
+                        <input id="editColor" name="color">
+                    </div>
+                    <div class="form-group">
+                        <label for="editSize">Size</label>
+                        <input id="editSize" name="size">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editMainImage">Replace Main Image (optional)</label>
+                    <input id="editMainImage" type="file" name="main_image" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="editGalleryImages">Add Gallery Images (optional)</label>
+                    <input id="editGalleryImages" type="file" name="gallery_images" accept="image/*" multiple>
+                </div>
+
+                <div style="color:var(--light-text); font-size:.9rem; margin-top:.25rem;">
+                    Note: If you want to manage images separately, keep image uploads here optional.
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
         </div>
-
-        <!-- action will be set by JS using the product's data-update-url -->
-        <form id="editProductForm" method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="product_id" id="editProductId">
-
-          <div class="form-group">
-            <label>Product Name *</label>
-            <input type="text" name="name" id="editName" required>
-          </div>
-
-          <div class="form-group">
-            <label>Sub Category *</label>
-            <select name="subcategory" id="editSubcategory" required>
-              <option value="">Select</option>
-              {% for x in subcategories %}
-                <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Description *</label>
-            <textarea name="description" id="editDescription" required></textarea>
-          </div>
-
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="form-group"><label>Price (₹)</label><input type="number" step="0.01" name="price" id="editPrice" required></div>
-            <div class="form-group"><label>Stock</label><input type="number" name="stock" id="editStock" required></div>
-          </div>
-
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="form-group"><label>Color</label><input type="text" name="color" id="editColor"></div>
-            <div class="form-group"><label>Size</label><input type="text" name="size" id="editSize"></div>
-          </div>
-
-          <div style="color:var(--light-text);font-size:.9rem;margin-top:.25rem">Note: Manage product images on the product images page (separate UI)</div>
-
-          <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-          </div>
-        </form>
-      </div>
     </div>
 
-    <!-- DELETE CONFIRMATION MODAL -->
+    <!-- DELETE MODAL -->
     <div id="deleteModal" class="modal" aria-hidden="true">
-      <div class="modal-content" style="max-width:420px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <h3>Delete Product</h3>
-          <button onclick="closeDeleteModal()" class="close-btn">✕</button>
-        </div>
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🗑️ Delete Product</h2>
+                <button class="close-btn" onclick="closeDeleteModal()">✕</button>
+            </div>
 
-        <p id="deleteMessage">Are you sure?</p>
+            <p id="deleteMessage" style="color:var(--light-text); margin-bottom:1rem;">Are you sure you want to delete this product?</p>
 
-        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.25rem">
-          <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            <div style="display:flex; gap:.75rem; justify-content:flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Permanently</button>
+            </div>
         </div>
-      </div>
     </div>
+
+    <!-- FOOTER (keeps original feel) -->
+    <footer style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); color:#e0e0e0; padding:3rem 2rem 1.5rem; margin-top:4rem; border-top:2px solid var(--primary-color);">
+        <div style="max-width:1400px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem; margin-bottom:2rem;">
+            <div>
+                <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:1.5rem;">
+                    <span style="font-size:2rem;">🛍️</span>
+                    <span style="font-size:1.8rem; font-weight:800; color:var(--primary-color);">ShopHub</span>
+                </div>
+                <p style="color:#999; margin-bottom:1.5rem; line-height:1.6;">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+            </div>
+
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Quick Links</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Home</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Products</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">About Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Customer Service</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Shipping Policy</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Returns & Refunds</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Contact Us</h3>
+                <p style="color:#999;">📍 123 Shopping Street, Mumbai, India</p>
+                <p style="color:#999;">✉️ support@shophub.com</p>
+            </div>
+        </div>
+
+        <div style="border-top:1px solid rgba(255,127,50,0.2); padding-top:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <p style="color:#999;">&copy; 2024 ShopHub. All rights reserved.</p>
+            <p style="color:#999;">Made with ❤️ for Sellers & Shoppers</p>
+        </div>
+    </footer>
 
 <script>
-  // ----- helpers -----
-  function toast(message, type = 'success') {
-    const el = document.createElement('div');
-    el.className = 'toast ' + (type === 'success' ? 'success' : 'danger');
-    el.textContent = message;
-    document.body.appendChild(el);
-    setTimeout(()=> el.remove(), 3000);
-  }
-
-  // read CSRF token from meta tag
-  function getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  }
-
-  // ----- Add modal -----
-  function openAddModal(){ document.getElementById('addProductModal').classList.add('show'); }
-  function closeAddModal(){ document.getElementById('addProductModal').classList.remove('show'); }
-
-  // ----- Edit modal -----
-  function openEditModal(id){
-    const card = document.querySelector(`.product-card[data-id="${id}"]`);
-    if(!card){ toast('Product not found', 'danger'); return; }
-
-    // fill fields
-    document.getElementById('editProductId').value = id;
-    document.getElementById('editName').value = card.dataset.name || '';
-    document.getElementById('editDescription').value = card.dataset.description || '';
-    document.getElementById('editPrice').value = card.dataset.price || '';
-    document.getElementById('editStock').value = card.dataset.stock || '';
-    document.getElementById('editColor').value = card.dataset.color || '';
-    document.getElementById('editSize').value = card.dataset.size || '';
-    document.getElementById('editSubcategory').value = card.dataset.subcategory || '';
-
-    // set action to the product's update url
-    const updateUrl = card.dataset.updateUrl;
-    if(updateUrl){
-      const editForm = document.getElementById('editProductForm');
-      editForm.action = updateUrl;
-    } else {
-      toast('Update URL not found for this product', 'danger');
+    /* -------------------- Helper functions -------------------- */
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + (type === 'success' ? 'success' : 'danger');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    document.getElementById('editProductModal').classList.add('show');
-  }
-  function closeEditModal(){ document.getElementById('editProductModal').classList.remove('show'); }
-
-  // ----- Delete -----
-  let deleteTarget = null;
-  function openDeleteModal(id){
-    const card = document.querySelector(`.product-card[data-id="${id}"]`);
-    if(!card){ toast('Product not found', 'danger'); return; }
-    deleteTarget = card;
-    const name = card.dataset.name || 'this product';
-    document.getElementById('deleteMessage').textContent = `Are you sure you want to permanently delete "${name}"?`;
-    document.getElementById('deleteModal').classList.add('show');
-  }
-  function closeDeleteModal(){ deleteTarget = null; document.getElementById('deleteModal').classList.remove('show'); }
-
-  document.getElementById('confirmDeleteBtn').addEventListener('click', async function(){
-    if(!deleteTarget) return closeDeleteModal();
-    const deleteUrl = deleteTarget.dataset.deleteUrl;
-    if(!deleteUrl){
-      // fallback: POST to update with some flag OR show message
-      toast('Delete URL not configured. Add a delete view with name "delete" in urls.py', 'danger');
-      closeDeleteModal();
-      return;
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
     }
 
-    try{
-      const resp = await fetch(deleteUrl, {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': getCsrfToken(),
-          'Accept': 'application/json',
-        },
-        body: null
-      });
-      if(resp.ok){
-        toast('Product deleted', 'success');
-        // remove card from DOM
-        deleteTarget.remove();
-        deleteTarget = null;
-        closeDeleteModal();
-      } else {
-        const text = await resp.text();
-        toast('Delete failed: ' + resp.status, 'danger');
-        console.error('delete failed', resp.status, text);
-      }
-    } catch(err){
-      console.error(err);
-      toast('Network error during delete', 'danger');
+    function toggleProfileMenu() {
+        const menu = document.getElementById('dropdownMenu');
+        menu.classList.toggle('show');
     }
-  });
 
-  // close modals on backdrop click
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', function(e){
-      if(e.target === modal) modal.classList.remove('show');
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('profileDropdown');
+        if (!dropdown.contains(e.target)) {
+            document.getElementById('dropdownMenu').classList.remove('show');
+        }
     });
-  });
 
-  // ESC key closes
-  document.addEventListener('keydown', (e)=> {
-    if(e.key === 'Escape'){
-      document.querySelectorAll('.modal.show').forEach(m=> m.classList.remove('show'));
+    /* -------------------- Sidebar -------------------- */
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('show');
+        document.getElementById('sidebarOverlay').classList.toggle('show');
     }
-  });
+    function navigateTo(page) {
+        // mark active visually
+        document.querySelectorAll('.sidebar-menu-link').forEach(link => link.classList.remove('active'));
+        // safe guard: event may be undefined if called programmatically
+        try {
+            event.target.closest('.sidebar-menu-link').classList.add('active');
+        } catch(e){}
+        showToast("Loading " + page + "...", "success");
+        if (window.innerWidth < 1024) toggleSidebar();
+    }
+    window.addEventListener('resize', checkScreenSize);
+    function checkScreenSize() {
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (window.innerWidth < 1024) {
+            toggleBtn.style.display = 'none';
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        } else {
+            toggleBtn.style.display = 'block';
+            // keep sidebar hidden until toggled
+        }
+    }
+    checkScreenSize();
 
-  // optional: show toast after page load if messages exist (Django messages)
-  {% if messages %}
-    {% for m in messages %}
-      toast("{{ m|escapejs }}", "{{ m.tags }}");
-    {% endfor %}
-  {% endif %}
+    /* -------------------- Modal controls -------------------- */
+    function openAddModal() { document.getElementById('addProductModal').classList.add('show'); }
+    function closeAddModal() { document.getElementById('addProductModal').classList.remove('show'); }
+
+    function openEditModal(id) {
+        const card = document.querySelector('.product-card[data-id="'+id+'"]');
+        if (!card) { showToast('Product not found', 'danger'); return; }
+
+        // Fill form fields with card data
+        document.getElementById('editProductId').value = id;
+        document.getElementById('editName').value = card.dataset.name || '';
+        document.getElementById('editDescription').value = card.dataset.description || '';
+        document.getElementById('editPrice').value = card.dataset.price || '';
+        document.getElementById('editStock').value = card.dataset.stock || '';
+        document.getElementById('editColor').value = card.dataset.color || '';
+        document.getElementById('editSize').value = card.dataset.size || '';
+        document.getElementById('editSubcategory').value = card.dataset.subcategory || '';
+
+        // Set form action to update url from data attribute
+        const updateUrl = card.dataset.updateUrl;
+        const editForm = document.getElementById('editProductForm');
+        if (updateUrl) {
+            editForm.action = updateUrl;
+        } else {
+            // fallback: submit to current page (your view can handle by product_id)
+            editForm.action = window.location.pathname;
+        }
+
+        document.getElementById('editProductModal').classList.add('show');
+    }
+    function closeEditModal() { document.getElementById('editProductModal').classList.remove('show'); }
+
+    let deleteTargetCard = null;
+    function openDeleteModal(id) {
+        const card = document.querySelector('.product-card[data-id="'+id+'"]');
+        if (!card) { showToast('Product not found', 'danger'); return; }
+        deleteTargetCard = card;
+        const name = card.dataset.name || 'this product';
+        document.getElementById('deleteMessage').textContent = `Are you sure you want to permanently delete "${name}"?`;
+        document.getElementById('deleteModal').classList.add('show');
+    }
+    function closeDeleteModal() { deleteTargetCard = null; document.getElementById('deleteModal').classList.remove('show'); }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+        if (!deleteTargetCard) { closeDeleteModal(); return; }
+        const deleteUrl = deleteTargetCard.dataset.deleteUrl || (deleteTargetCard.dataset.updateUrl ? deleteTargetCard.dataset.updateUrl + '?delete=1' : null);
+        if (!deleteUrl) {
+            showToast('Delete URL not configured. Add a delete view or set data-delete-url on product cards.', 'danger');
+            closeDeleteModal();
+            return;
+        }
+
+        try {
+            const resp = await fetch(deleteUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCsrfToken(),
+                    'Accept': 'application/json'
+                },
+                body: null
+            });
+            if (resp.ok) {
+                showToast('Product deleted', 'success');
+                deleteTargetCard.remove();
+                deleteTargetCard = null;
+                closeDeleteModal();
+            } else {
+                const txt = await resp.text();
+                showToast('Delete failed: ' + resp.status, 'danger');
+                console.error('delete failed', resp.status, txt);
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Network error during delete', 'danger');
+        }
+    });
+
+    /* Close modals on backdrop click */
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) modal.classList.remove('show');
+        });
+    });
+
+    /* ESC closes modals */
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
+    /* Simple client-side search/filter (non-destructive) */
+    function filterProducts() {
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        document.querySelectorAll('.product-card').forEach(card => {
+            const name = (card.dataset.name || '').toLowerCase();
+            const desc = (card.dataset.description || '').toLowerCase();
+            if (!q || name.includes(q) || desc.includes(q)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    /* Optional: show Django messages as toast */
+    {% if messages %}
+        {% for m in messages %}
+            showToast("{{ m|escapejs }}", "{{ m.tags }}");
+        {% endfor %}
+    {% endif %}
 </script>
 </body>
 </html>
