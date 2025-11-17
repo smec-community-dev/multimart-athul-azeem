@@ -1,11 +1,14 @@
 import random
 import requests
-from django.db import connection
 from django.core.files.base import ContentFile
-from django.utils.text import slugify
 
 from core.models import Category, SubCategory
 from seller.models import Product, ProductImage, SellerDetails
+
+
+def download_image(url, filename):
+    response = requests.get(url)
+    return ContentFile(response.content, name=filename)
 
 
 PRODUCT_IMAGES = [
@@ -13,45 +16,50 @@ PRODUCT_IMAGES = [
     "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1",
     "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c",
     "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+    "https://images.unsplash.com/photo-1593642532973-d31b6557fa68",
+]
+
+CATEGORY_DATA = [
+    ("Electronics", ["Mobiles", "Laptops", "Headphones"]),
+    ("Fashion", ["Men", "Women", "Kids"]),
+    ("Cosmetics", ["Makeup", "Skincare"]),
+    ("Gaming", ["Consoles", "Accessories"]),
+    ("Books", ["Fiction", "Educational"]),
+    ("Wearables", ["Watches", "Fitness Bands"]),
 ]
 
 
-def download_image(url, name):
-    response = requests.get(url)
-    return ContentFile(response.content, name=name)
-
-
 def run():
+
     seller = SellerDetails.objects.first()
     if not seller:
-        print("⚠ Add at least 1 Seller from admin first")
+        print("⚠ No seller exists. Please create one seller user from Django admin first.")
         return
 
+    # Create categories and subcategories
+    for cat_name, subs in CATEGORY_DATA:
+        category, _ = Category.objects.get_or_create(name=cat_name)
+
+        for sub_name in subs:
+            SubCategory.objects.get_or_create(category=category, name=sub_name)
+
+    # Create dummy products (150)
     for i in range(1, 151):
         name = f"Product {i}"
         subcategory = SubCategory.objects.order_by("?").first()
 
-        # Create product WITHOUT slug (to avoid override duplicate issue)
-        product = Product(
+        product = Product.objects.create(
             name=name,
-            description=f"Dummy description for product {i}",
+            description=f"This is sample description for product {i}",
             price=random.randint(300, 90000),
             stock=random.randint(5, 100),
             seller=seller,
             subcategory=subcategory,
         )
-        product.save(force_insert=True)
 
-        # Generate correct unique slug manually using SQL (bypass save override)
-        unique_slug = f"{slugify(name)}-{product.id}"
-        with connection.cursor() as cursor:
-            cursor.execute("UPDATE seller_product SET slug=%s WHERE id=%s", [unique_slug, product.id])
+        # Add 2 images for each product
+        for count, url in enumerate(PRODUCT_IMAGES[:2]):
+            image_file = download_image(url + "?w=400&h=400&fit=crop", f"product-{i}-{count}.jpg")
+            ProductImage.objects.create(product=product, image=image_file)
 
-        # Add two images
-        for index, img_url in enumerate(PRODUCT_IMAGES[:2]):
-            img = download_image(img_url + "?w=400&h=400&fit=crop", f"{unique_slug}-{index}.jpg")
-            ProductImage.objects.create(product=product, image=img)
-
-    print("🎉 SUCCESS: 150 dummy products created!")
-
-
+    print("🎉 Successfully created 150 dummy products with images!")
