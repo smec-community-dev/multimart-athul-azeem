@@ -9,16 +9,12 @@ from core.models import User
 from .models import Product, SellerDetails, ProductImage
 from django.contrib.auth import authenticate, login
 from core.models import SubCategory
-from .models import Product, SellerDetails
+
 
 
 def view_product(request):
     products=Product.objects.all()
     return render(request,"seller/sellerdashboard.html",{"product":products})
-
-from django.shortcuts import render, redirect
-from django.utils.text import slugify
-from .models import Product, SellerDetails, SubCategory, ProductImage
 
 def add_product(request):
     if request.method == "POST":
