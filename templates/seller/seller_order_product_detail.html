@@ -1,0 +1,394 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order #{{ order.id }} - ShopHub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #FF7F32;
+        --accent-color: #FFB273;
+        --success-color: #4CAF50;
+        --warning-color: #FFC107;
+        --danger-color: #F44336;
+        --text-color: #3A3A3A;
+        --light-text: #666;
+        --card-bg: #fff;
+        --bg: #F5F5F5;
+        --border-color: #e0e0e0;
+        --font-heading: 'Playfair Display', serif;
+        --font-body: 'Open Sans', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-body);
+        color: var(--text-color);
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    /* Background animation */
+    .bg-animated {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(135deg, #fff4ec, #ffe2cc, #fff4ec);
+        background-size: 300% 300%;
+        animation: bgFlow 10s ease infinite;
+    }
+
+    @keyframes bgFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Enhanced Floating products animation */
+    .floating-products {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+
+    .floating-product {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(255, 127, 50, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        opacity: 0;
+        animation: floatBubble ease-in-out infinite;
+        transition: transform 0.3s ease;
+    }
+
+    /* Floating bubble animation */
+    @keyframes floatBubble {
+        0% {
+            transform: translateY(100vh) translateX(0) scale(0.8);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.7;
+        }
+        90% {
+            opacity: 0.7;
+        }
+        100% {
+            transform: translateY(-100px) translateX(calc(100vw * var(--random-x))) scale(1);
+            opacity: 0;
+        }
+    }
+
+    /* Container styles */
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        position: relative;
+        z-index: 1;
+        animation: fadeInPage 0.8s ease-out;
+    }
+
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+        animation: fadeSlow 0.8s ease-in;
+    }
+
+    @keyframes fadeSlow {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Order card animation */
+    .order-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        border-left: 4px solid var(--primary-color);
+        padding-left: .8rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Detail box hover effect */
+    .detail-box {
+        background: #fff;
+        padding: 1rem 1.2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        transition: 0.3s ease;
+        animation: fadeInDetail 0.5s ease both;
+    }
+
+    .detail-box:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+
+    @keyframes fadeInDetail {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-label {
+        font-size: .9rem;
+        color: var(--light-text);
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-top: 0.3rem;
+    }
+
+    /* Items table with animation */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        animation: fadeInTable 0.7s ease-in-out;
+    }
+
+    @keyframes fadeInTable {
+        from { opacity: 0; transform: scale(0.98); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .items-table th {
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .items-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: .95rem;
+        animation: fadeRow 0.4s ease;
+    }
+
+    @keyframes fadeRow {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .items-table tr {
+        transition: all 0.25s ease-in-out;
+    }
+
+    .items-table tr:hover {
+        background: #fff7f0;
+        transform: scale(1.01);
+        box-shadow: 0 8px 14px rgba(0,0,0,0.08);
+    }
+
+    /* Status colors */
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: .9rem;
+        display: inline-block;
+        animation: pulseGlow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 127, 50, 0.4); }
+        50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(255, 127, 50, 0.4); }
+        100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 127, 50, 0.4); }
+    }
+
+    .pending { background: rgba(255,193,7,0.2); color: var(--warning-color); }
+    .processing { background: rgba(33,150,243,0.2); color: #2196f3; }
+    .shipped { background: rgba(76,175,80,0.2); color: var(--success-color); }
+    .delivered { background: rgba(76,175,80,0.25); color: var(--success-color); }
+    .cancelled { background: rgba(244,67,54,0.2); color: var(--danger-color); }
+
+    /* Back button animation */
+    .back-btn {
+        margin-top: 2rem;
+        display: inline-block;
+        padding: .7rem 1.4rem;
+        border-radius: 6px;
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: .3s ease;
+        animation: fadeSlow 1s ease;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateX(-4px);
+    }
+</style>
+</head>
+
+<body>
+<div class="bg-animated"></div>
+
+<!-- Enhanced Floating products container -->
+<div class="floating-products" id="floatingProducts"></div>
+
+<div class="container">
+    <h1 class="page-title">Order #{{ order.id }}</h1>
+
+    <div class="order-card">
+        <!-- ORDER INFO -->
+        <h2 class="section-title">Order Details</h2>
+
+        <div class="info-grid">
+            <div class="detail-box">
+                <div class="detail-label">Customer</div>
+                <div class="detail-value">{{ order.user.username }}</div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">Order Status</div>
+                <div class="detail-value">
+                    <span class="status-badge {{ order.status|lower }}">
+                        {{ order.status }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">Payment Method</div>
+                <div class="detail-value">{{ order.payment_method }}</div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">Total Amount</div>
+                <div class="detail-value">₹{{ order_total|floatformat:2 }}</div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">Order Date</div>
+                <div class="detail-value">{{ order.order_date }}</div>
+            </div>
+
+            <div class="detail-box">
+                <div class="detail-label">Delivery Address</div>
+                <div class="detail-value">{{ order.shipping_address }}</div>
+            </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <h2 class="section-title">Items in this Order</h2>
+
+        <table class="items-table">
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.unit_price|floatformat:2 }}</td>
+                <td>₹{{ item.total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- BACK BUTTON -->
+        <a href="{% url 'order' %}" class="back-btn">← Back to Orders</a>
+    </div>
+</div>
+
+<script>
+    // Create enhanced floating products in the background
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('floatingProducts');
+        const productIcons = ['🛍️', '📦', '👕', '👖', '👟', '👜', '💄', '📱', '💻', '⌚', '🎧', '👓'];
+
+        // Create 12 floating products
+        for (let i = 0; i < 12; i++) {
+            const product = document.createElement('div');
+            product.className = 'floating-product';
+            product.innerHTML = productIcons[Math.floor(Math.random() * productIcons.length)];
+
+            // Random properties for each product
+            const size = Math.random() * 20 + 40; // 40-60px
+            const duration = Math.random() * 10 + 15; // 15-25 seconds
+            const delay = Math.random() * 15; // 0-15 seconds delay
+            const randomX = Math.random(); // For horizontal movement
+
+            product.style.width = `${size}px`;
+            product.style.height = `${size}px`;
+            product.style.fontSize = `${size * 0.4}px`;
+            product.style.animationDuration = `${duration}s`;
+            product.style.animationDelay = `${delay}s`;
+            product.style.setProperty('--random-x', randomX);
+
+            // Add subtle color variations
+            const hue = Math.random() * 30 + 15; // Orange-ish hues
+            product.style.backgroundColor = `hsla(${hue}, 100%, 95%, 0.8)`;
+
+            container.appendChild(product);
+        }
+    });
+</script>
+
+</body>
+</html>
