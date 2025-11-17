@@ -1,6 +1,10 @@
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render,redirect
 from core.models import Category,SubCategory
 from seller.models import Product
+User = get_user_model()
 def  products(request):
     return render(request,"user/user_home.html")
 
