@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% block title %}Seller Dashboard - ShopHub{% endblock %}</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.js"></script>
@@ -65,6 +66,26 @@
         @keyframes scaleIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.8); }
+        }
+
+        @keyframes warning-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 193, 7, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(255, 193, 7, 0.8); }
         }
 
         /* ======================== NAVBAR ======================== */
@@ -462,21 +483,34 @@
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
+            animation: bounce 0.6s ease-in-out;
+            letter-spacing: 0.5px;
         }
 
         .badge-active {
-            background: rgba(76, 175, 80, 0.2);
+            background: rgba(76, 175, 80, 0.3);
             color: var(--success-color);
+            border: 2px solid var(--success-color);
+            animation: glow 2s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
         }
 
         .badge-inactive {
-            background: rgba(244, 67, 54, 0.2);
-            color: var(--danger-color);
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.9), rgba(244, 67, 54, 0.7));
+            color: white;
+            border: 2px solid #c62828;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.8), inset 0 0 10px rgba(0, 0, 0, 0.2);
+            font-weight: 800;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            animation: pulse 1.2s ease-in-out infinite;
         }
 
         .badge-low-stock {
-            background: rgba(255, 193, 7, 0.2);
+            background: rgba(255, 193, 7, 0.3);
             color: var(--warning-color);
+            border: 2px solid var(--warning-color);
+            animation: warning-glow 1.5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
         }
 
         .product-body {
@@ -526,27 +560,34 @@
         }
 
         .stock-status {
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 1rem;
             text-align: center;
+            border: 2px solid transparent;
+            animation: slideDown 0.5s ease;
         }
 
         .stock-status.in-stock {
-            background: rgba(76, 175, 80, 0.1);
+            background: rgba(76, 175, 80, 0.15);
             color: var(--success-color);
+            border-color: var(--success-color);
+            animation: glow 2s ease-in-out infinite;
         }
 
         .stock-status.low-stock {
-            background: rgba(255, 193, 7, 0.1);
+            background: rgba(255, 193, 7, 0.15);
             color: var(--warning-color);
+            border-color: var(--warning-color);
+            animation: warning-glow 1.5s ease-in-out infinite;
         }
 
         .stock-status.out-of-stock {
-            background: rgba(244, 67, 54, 0.1);
+            background: rgba(244, 67, 54, 0.15);
             color: var(--danger-color);
+            border-color: var(--danger-color);
         }
 
         .product-actions {
@@ -770,20 +811,7 @@
             transform: translateX(0);
         }
 
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 98;
-            display: none;
-        }
 
-        .sidebar-overlay.show {
-            display: block;
-        }
 
         .sidebar-header {
             padding: 0 1.5rem;
@@ -842,14 +870,9 @@
 
         .toggle-sidebar-btn {
             display: none;
-            position: relative;
-            left: auto;
-            top: -60px;
-            z-index: 101;
             background: var(--primary-color);
             color: white;
             border: none;
-            margin-right:20px;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -857,8 +880,9 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: var(--shadow-light);
-            margin: 0;
-            padding: 0;
+             margin: 0 auto;
+            padding: 5px 10px;
+
             flex-shrink: 0;
         }
 
@@ -867,7 +891,7 @@
             box-shadow: var(--shadow-medium);
         }
 
-        /* ======================== RESPONSIVE ======================== */
+        /* ======================== FOOTER ======================== */
         .footer {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #e0e0e0;
@@ -897,224 +921,187 @@
             list-style: none;
         }
 
-        .footer-section ul li {
-            margin-bottom: 0.75rem;
+    <!-- expose CSRF token for JS fetch -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- third party -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.css">
+
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* -------------------- Full UI CSS (restored/cleaned) -------------------- */
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-hover: 0 12px 32px rgba(255, 127, 50, 0.2);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
         }
 
-        .footer-section ul li a {
-            color: #999;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow-x: hidden; }
+        body { font-family: var(--font-body); background-color: var(--bg-color); color: var(--text-color); }
 
-        .footer-section ul li a:hover {
-            color: var(--primary-color);
-            transform: translateX(5px);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+        @keyframes slideInLeft { from { transform: translateX(-100%);} to { transform: translateX(0);} }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
 
-        .footer-section p {
-            color: #999;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .footer-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .footer-description {
-            color: #999;
-            line-height: 1.6;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 127, 50, 0.2);
-            padding-top: 2rem;
+        /* NAVBAR */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
         }
+        .navbar-left { display:flex; align-items:center; gap:1rem; }
+        .logo { font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--primary-color); white-space:nowrap; }
+        .navbar-title { font-size:1rem; color:var(--light-text); border-left:2px solid var(--primary-color); padding-left:1rem; white-space:nowrap; }
+        .navbar-right { display:flex; align-items:center; gap:2rem; }
 
-        .footer-bottom p {
-            color: #999;
-        }
+        .notification-bell { position:relative; cursor:pointer; font-size:1.3rem; transition:transform .3s ease; }
+        .notification-bell:hover { transform:scale(1.1); }
+        .notification-badge { position:absolute; top:-5px; right:-8px; background:var(--danger-color); color:white; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; }
 
-        .social-links {
-            display: flex;
-            gap: 1.5rem;
-        }
+        /* PROFILE DROPDOWN */
+        .profile-dropdown { position:relative; }
+        .profile-toggle { display:flex; align-items:center; gap:.75rem; padding:.5rem .75rem; background:rgba(255,127,50,0.1); border-radius:20px; cursor:pointer; transition:all .3s ease; border:1px solid transparent; white-space:nowrap; }
+        .profile-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:.9rem; flex-shrink:0; }
+        .dropdown-menu { position:absolute; top:100%; right:0; background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow-medium); min-width:280px; margin-top:10px; display:none; z-index:1000; animation:slideDown .3s ease; border:1px solid var(--border-color); overflow:hidden; }
+        .dropdown-menu.show { display:block; }
+        .dropdown-item { display:flex; align-items:center; gap:.75rem; padding:.75rem 1.25rem; color:var(--text-color); cursor:pointer; border-left:3px solid transparent; }
+        .dropdown-item:hover { background:rgba(255,127,50,0.1); border-left-color:var(--primary-color); color:var(--primary-color); }
+        .dropdown-item.logout { color:var(--danger-color); }
+        .dropdown-item.logout:hover { background:rgba(244,67,54,0.1); border-left-color:var(--danger-color); }
 
-        .social-links a {
-            color: #999;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
+        /* CONTAINER */
+        .container { max-width:1400px; margin:0 auto; padding:2rem; width:100%; }
 
-        .social-links a:hover {
-            color: var(--primary-color);
-        }
+        /* STATS */
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; margin-bottom:3rem; animation:fadeIn .6s ease; }
+        .stat-card { background:var(--card-bg); padding:1.5rem; border-radius:12px; box-shadow:var(--shadow-light); border-left:4px solid var(--primary-color); transition:all .3s ease; }
+        .stat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+        .stat-card.success { border-left-color:var(--success-color); }
+        .stat-card.warning { border-left-color:var(--warning-color); }
+        .stat-card.danger { border-left-color:var(--danger-color); }
+        .stat-icon { font-size:2rem; margin-bottom:.5rem; }
+        .stat-label { font-size:.85rem; color:var(--light-text); text-transform:uppercase; letter-spacing:.5px; margin-bottom:.5rem; }
+        .stat-value { font-family:var(--font-heading); font-size:2rem; font-weight:700; color:var(--primary-color); }
 
-        .footer-icon {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-        }
+        /* PAGE HEADER */
+        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; gap:1rem; flex-wrap:wrap; }
+        .page-header h1 { font-family:var(--font-heading); font-size:2rem; font-weight:700; color:var(--text-color); }
+        .header-controls { display:flex; gap:1rem; flex-wrap:wrap; }
+        .search-box { display:flex; align-items:center; gap:.5rem; padding:.75rem 1rem; background:var(--card-bg); border:1.5px solid var(--border-color); border-radius:8px; }
+        .search-box input { border:none; background:transparent; font-size:.95rem; width:250px; outline:none; }
+        .search-box input::placeholder { color:var(--light-text); }
 
-        /* ======================== RESPONSIVE ======================== */
-        @media (max-width: 1024px) {
-            .container {
-                padding: 1.5rem;
-            }
+        /* CATEGORY TABS */
+        .category-tabs { display:flex; gap:1rem; margin-bottom:2rem; overflow-x:auto; padding-bottom:.5rem; animation:fadeIn .6s ease; }
+        .category-tab { padding:.75rem 1.5rem; border:1.5px solid var(--border-color); border-radius:8px; background:var(--card-bg); cursor:pointer; transition:all .3s ease; white-space:nowrap; font-weight:600; color:var(--text-color); }
+        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .category-tab.active { background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); color:white; border-color:var(--primary-color); }
 
-            .sidebar {
-                width: 250px;
-                animation: slideInLeft 0.3s ease;
-            }
+        /* BUTTONS */
+        .btn { padding:.75rem 1.5rem; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:all .3s ease; font-size:.95rem; display:inline-flex; align-items:center; gap:.5rem; white-space:nowrap; }
+        .btn-primary { background:linear-gradient(135deg,var(--accent-color),var(--primary-color)); color:white; box-shadow:var(--shadow-light); }
+        .btn-secondary { background:var(--border-color); color:var(--text-color); }
+        .btn-sm { padding:.5rem 1rem; font-size:.85rem; }
+        .btn-danger { background:var(--danger-color); color:white; }
 
-            .toggle-sidebar-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+        /* PRODUCTS GRID */
+        .products-section { margin-bottom:3rem; }
+        .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; animation:fadeIn .6s ease; }
+        .product-card { background:var(--card-bg); border-radius:12px; box-shadow:var(--shadow-light); overflow:hidden; transition:all .3s ease; animation:scaleIn .4s ease; position:relative; }
+        .product-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-hover); }
+        .product-image { background:linear-gradient(135deg, rgba(255,178,115,0.2), rgba(255,127,50,0.2)); height:200px; display:flex; align-items:center; justify-content:center; font-size:3.5rem; position:relative; overflow:hidden; }
+        .product-badge { position:absolute; top:12px; right:12px; padding:.5rem .75rem; border-radius:6px; font-size:.75rem; font-weight:700; text-transform:uppercase; }
+        .badge-active { background:rgba(76,175,80,0.2); color:var(--success-color); }
+        .badge-inactive { background:rgba(244,67,54,0.2); color:var(--danger-color); }
+        .badge-low-stock { background:rgba(255,193,7,0.2); color:var(--warning-color); }
+        .product-body { padding:1.25rem; }
+        .product-name { font-weight:700; font-size:1.1rem; color:var(--text-color); margin-bottom:.5rem; line-height:1.3; }
+        .product-category { font-size:.85rem; color:var(--light-text); text-transform:capitalize; margin-bottom:1rem; }
+        .product-meta { display:flex; justify-content:space-between; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border-color); }
+        .product-meta-item { display:flex; flex-direction:column; }
+        .meta-label { font-size:.75rem; color:var(--light-text); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px; }
+        .meta-value { font-weight:700; font-size:1.1rem; color:var(--primary-color); }
+        .stock-status { padding:.5rem .75rem; border-radius:6px; font-size:.85rem; font-weight:600; margin-bottom:1rem; text-align:center; }
+        .stock-status.in-stock { background:rgba(76,175,80,0.1); color:var(--success-color); }
+        .stock-status.low-stock { background:rgba(255,193,7,0.1); color:var(--warning-color); }
+        .stock-status.out-of-stock { background:rgba(244,67,54,0.1); color:var(--danger-color); }
+        .product-actions { display:flex; gap:.5rem; }
+        .product-actions button { flex:1; padding:.65rem; font-size:.85rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:all .3s ease; }
 
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
+        .edit-btn { background:rgba(255,127,50,0.2); color:var(--primary-color); border:1.5px solid var(--primary-color); }
+        .edit-btn:hover { background:var(--primary-color); color:white; }
 
-            .search-box input {
-                width: 200px;
-            }
-        }
+        .delete-btn { background:rgba(244,67,54,0.2); color:var(--danger-color); border:1.5px solid var(--danger-color); }
+        .delete-btn:hover { background:var(--danger-color); color:white; }
 
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-                flex-wrap: wrap;
-            }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--light-text); }
 
-            .navbar-left {
-                gap: 0.75rem;
-            }
+        /* MODAL */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
+        .modal.show { display:flex; }
+        .modal-content { background:var(--card-bg); border-radius:12px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; padding:2rem; animation:slideDown .3s ease; box-shadow:var(--shadow-medium); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border-color); gap:1rem; }
+        .modal-title { font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--text-color); }
+        .close-btn { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--light-text); }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; margin-bottom:.5rem; font-weight:600; color:var(--text-color); }
+        input, select, textarea { width:100%; padding:.75rem; border:1.5px solid var(--border-color); border-radius:8px; font-family:var(--font-body); font-size:1rem; background:#fafafa; }
+        textarea { min-height:100px; resize:vertical; }
+        .modal-actions { display:flex; gap:.75rem; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-color); }
+        .toast { position:fixed; bottom:1.25rem; right:1.25rem; padding:1rem 1.5rem; border-radius:8px; color:white; font-weight:600; animation:slideDown .3s ease; z-index:2000; max-width:400px; }
+        .toast.success { background:var(--success-color); }
+        .toast.danger { background:var(--danger-color); color:white; }
 
-            .navbar-title {
-                display: none;
-            }
+        /* SIDEBAR */
+        .sidebar { position:fixed; left:0; top:0; width:280px; height:100vh; background:var(--card-bg); box-shadow:var(--shadow-medium); overflow-y:auto; padding-top:1rem; margin-top:70px; z-index:99; transition:transform .3s ease; transform:translateX(-100%); }
+        .sidebar.show { transform:translateX(0); }
+        .sidebar-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:98; display:none; }
+        .sidebar-overlay.show { display:block; }
+        .sidebar-menu { list-style:none; padding:0; margin:0; }
+        .sidebar-menu-link { display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; color:var(--text-color); text-decoration:none; cursor:pointer; border-left:3px solid transparent; font-weight:500; }
+        .sidebar-menu-link.active { background:rgba(255,127,50,0.15); color:var(--primary-color); border-left-color:var(--primary-color); font-weight:700; }
 
-            .page-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .page-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .header-controls {
-                width: 100%;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-
-            .category-tabs {
-                overflow-x: auto;
-            }
-
-            .product-card {
-                animation: none;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                padding: 1.5rem;
-            }
-
-            .modal-actions {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar {
-                gap: 0.5rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .page-header h1 {
-                font-size: 1.25rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .search-box {
-                width: 100%;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .product-image {
-                height: 150px;
-                font-size: 2.5rem;
-            }
-
-            .modal-content {
-                padding: 1rem;
-            }
-
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                padding: 0.625rem;
-                font-size: 16px;
-            }
-        }
+        /* RESPONSIVE */
+        @media (max-width:1024px){ .container{padding:1.5rem} .sidebar{width:250px;animation:slideInLeft .3s ease;} .toggle-sidebar-btn{display:flex} .products-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))} .search-box input{width:200px} }
+        @media (max-width:768px){ .navbar{padding:1rem;flex-wrap:wrap} .page-header{flex-direction:column;align-items:stretch} .products-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))} .form-row{grid-template-columns:1fr} .modal-content{padding:1.5rem} }
+        @media (max-width:480px){ .product-image{height:150px;font-size:2.5rem} .modal-content{padding:1rem} input,select,textarea{padding:.625rem;font-size:16px} }
+        /* -------------------- End CSS -------------------- */
     </style>
 </head>
 <body>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="navbar-left">
+            <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()">☰</button>
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Seller Dashboard</div>
         </div>
         <div class="navbar-right">
-            <div class="notification-bell" onclick="showNotifications()">
+            <div class="notification-bell" onclick="showToast('You have new notifications', 'success')">
                 🔔
                 <div class="notification-badge">3</div>
             </div>
@@ -1122,47 +1109,44 @@
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">📱</div>
-                    <div style="max-width: 120px;">
-                        <div style="font-size: 0.85rem; font-weight: 600;">{{ user.username|default:"Mobile Store" }}</div>
-                        <div style="font-size: 0.7rem; color: var(--light-text);">Store Owner</div>
+                    <div style="max-width:120px;">
+                        <div style="font-size:.85rem; font-weight:600;">{{ user.username|default:"Mobile Store" }}</div>
+                        <div style="font-size:.7rem; color:var(--light-text);">Store Owner</div>
                     </div>
-                    <div class="dropdown-arrow">▼</div>
                 </div>
-
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-item" onclick="showToast('Profile opened!', 'success')">👤 My Profile</div>
                     <div class="dropdown-item" onclick="showToast('Settings opened!', 'success')">⚙️ Settings</div>
-                    <div class="dropdown-item logout" onclick="logout()">🚪 Logout</div>
+                    <div class="dropdown-item logout"  onclick="logout()">🚪<a href="{% url 'logout' %}"> Logout</a></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SIDEBAR OVERLAY (closes sidebar on mobile) -->
+    <!-- SIDEBAR OVERLAY -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
-    <!-- SIDEBAR TOGGLE BUTTON -->
-    <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()">☰</button>
 
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
 
+        </div>
 
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link active" onclick="navigateTo('dashboard')">
+                <a class="sidebar-menu-link active" href="{% url 'seller_dashboard' %}" onclick="navigateTo('dashboard')">
                     <span class="sidebar-icon">📊</span>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" onclick="navigateTo('products')">
+                <a class="sidebar-menu-link" href="#" onclick="navigateTo('products')">
                     <span class="sidebar-icon">📦</span>
                     <span>Products</span>
                 </a>
             </li>
             <li class="sidebar-menu-item">
-                <a class="sidebar-menu-link" onclick="navigateTo('orders')">
+                <a class="sidebar-menu-link" href="{% url 'order' %}" onclick="navigateTo('orders')">
                     <span class="sidebar-icon">🛒</span>
                     <span>Orders</span>
                 </a>
@@ -1191,29 +1175,43 @@
                     <span>Settings</span>
                 </a>
             </li>
+    <!-- SIDEBAR (kept but hidden on wide screens by default) -->
+    <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()" style="display:none; position:fixed; left:16px; top:84px; z-index:101; background:var(--primary-color); color:white; border-radius:50%; width:40px; height:40px; border:none;">☰</button>
+    <aside class="sidebar" id="sidebar">
+        <div style="padding:1rem 1.5rem; border-bottom:1px solid var(--border-color);">
+            <div class="sidebar-title">Seller Menu</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a class="sidebar-menu-link active" onclick="navigateTo('dashboard')"><span class="sidebar-icon">📊</span> Dashboard</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('products')"><span class="sidebar-icon">📦</span> Products</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('orders')"><span class="sidebar-icon">🛒</span> Orders</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('earnings')"><span class="sidebar-icon">💰</span> Earnings</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('reviews')"><span class="sidebar-icon">⭐</span> Reviews</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('analytics')"><span class="sidebar-icon">📈</span> Analytics</a></li>
+            <li><a class="sidebar-menu-link" onclick="navigateTo('settings')"><span class="sidebar-icon">⚙️</span> Settings</a></li>
         </ul>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN CONTAINER -->
     <div class="container">
-        <!-- STATS SECTION -->
+        <!-- STATS -->
         <div class="stats-grid">
-            <div class="stat-card" onclick="filterByStatus('all')" style="cursor: pointer;">
+            <div class="stat-card" onclick="filterByStatus('all')" style="cursor:pointer;">
                 <div class="stat-icon">📦</div>
                 <div class="stat-label">Total Products</div>
-                <div class="stat-value" id="totalProducts">{{ total_products|default:0 }}</div>
+                <div class="stat-value" id="totalProducts">{{ total_products|default:products.count }}</div>
             </div>
-            <div class="stat-card success" onclick="filterByStatus('active')" style="cursor: pointer;">
+            <div class="stat-card success" onclick="filterByStatus('active')" style="cursor:pointer;">
                 <div class="stat-icon">✅</div>
                 <div class="stat-label">Active Products</div>
                 <div class="stat-value" id="activeProducts">{{ active_products|default:0 }}</div>
             </div>
-            <div class="stat-card warning" onclick="filterByStatus('low-stock')" style="cursor: pointer;">
+            <div class="stat-card warning" onclick="filterByStatus('low-stock')" style="cursor:pointer;">
                 <div class="stat-icon">⚠️</div>
                 <div class="stat-label">Low Stock</div>
                 <div class="stat-value" id="lowStockProducts">{{ low_stock_products|default:0 }}</div>
             </div>
-            <div class="stat-card danger" onclick="filterByStatus('out-of-stock')" style="cursor: pointer;">
+            <div class="stat-card danger" onclick="filterByStatus('out-of-stock')" style="cursor:pointer;">
                 <div class="stat-icon">❌</div>
                 <div class="stat-label">Out of Stock</div>
                 <div class="stat-value" id="outOfStockProducts">{{ out_of_stock_products|default:0 }}</div>
@@ -1226,17 +1224,19 @@
             <div class="header-controls">
                 <div class="search-box">
                     <span>🔍</span>
-                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
                 </div>
                 <button class="btn btn-primary" onclick="openAddModal()">+ Add Product</button>
             </div>
         </div>
 
-        <!-- CATEGORY TABS -->
-        <div class="category-tabs" id="categoryTabs"></div>
+        <!-- CATEGORY TABS (optional) -->
+        <div class="category-tabs" id="categoryTabs">
+            <!-- You can render category tabs server-side if you want -->
+        </div>
 
         <!-- PRODUCTS GRID -->
-        <div class="products-section">
+        <section class="products-section">
             <div id="productsGrid" class="products-grid">
                 {% for product in products %}
                     <div class="product-card">
@@ -1246,335 +1246,382 @@
                                 {% if product.status == 'active' %}✓ Active{% else %}✕ Inactive{% endif %}
                             </div>
                             {% if product.stock <= 20 and product.stock > 0 %}
-                                <div class="product-badge badge-low-stock">Low Stock</div>
+
+                <div class="product-card"
+                     data-id="{{ product.id }}"
+                     data-name="{{ product.name|escapejs }}"
+                     data-description="{{ product.description|default_if_none:''|escapejs }}"
+                     data-price="{{ product.price }}"
+                     data-stock="{{ product.stock }}"
+                     data-color="{{ product.color|default_if_none:''|escapejs }}"
+                     data-size="{{ product.size|default_if_none:''|escapejs }}"
+                     data-subcategory="{% if product.subcategory %}{{ product.subcategory.id }}{% endif %}"
+                     data-update-url="{% url 'update' product.id %}"
+                     data-delete-url="/seller/seller_dashboard/delete/{{ product.id }}">
+                    <div class="product-image">
+                        {% if product.images.all|length > 0 %}
+                            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}" style="max-height:100%; max-width:100%; object-fit:contain;">
+                        {% else %}
+                            <div style="font-size:3rem;">📦</div>
+                        {% endif %}
+                        <div style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.05); padding:6px; border-radius:6px; font-weight:700;">
+                            {{ product.name }}
+                        </div>
+                    </div>
+
+                    <div class="product-body">
+                        <div class="product-name">{{ product.name }}</div>
+
+                        <div class="product-category" style="color:var(--light-text); font-size:.9rem; margin-bottom:.6rem;">
+                            {% if product.subcategory %}
+                                {{ product.subcategory.name }}
                             {% endif %}
                         </div>
-                        <div class="product-body">
-                            <div class="product-name">{{ product.name }}</div>
-                            <div class="product-category">{{ product.category }}</div>
 
-                            <div class="product-meta">
-                                <div class="product-meta-item">
-                                    <div class="meta-label">Price</div>
-                                    <div class="meta-value">₹{{ product.price|stringformat:",.2f" }}</div>
-                                </div>
-                                <div class="product-meta-item">
-                                    <div class="meta-label">Stock</div>
-                                    <div class="meta-value">{{ product.stock }}</div>
-                                </div>
-                            </div>
+                        <div style="display:flex; justify-content:space-between; gap:1rem; margin-bottom:.6rem;">
+                            <div style="font-weight:700; color:var(--primary-color);">₹{{ product.price }}</div>
+                            <div style="color:var(--light-text)">Stock: {{ product.stock }}</div>
+                        </div>
 
-                            <div class="stock-status {% if product.stock > 20 %}in-stock{% elif product.stock > 0 %}low-stock{% else %}out-of-stock{% endif %}">
-                                {% if product.stock > 20 %}✓ In Stock{% elif product.stock > 0 %}⚠️ Low Stock{% else %}❌ Out of Stock{% endif %}
-                            </div>
+                        <div class="stock-status {% if product.stock > 20 %}in-stock{% elif product.stock > 0 %}low-stock{% else %}out-of-stock{% endif %}">
+                            {% if product.stock > 20 %}✓ In Stock{% elif product.stock > 0 %}⚠️ Low Stock{% else %}❌ Out of Stock{% endif %}
+                        </div>
 
-                            <div class="product-actions">
-                                <button class="edit-btn" onclick="openEditModal({{ product.id }})">✏️ Edit</button>
-                                <button class="delete-btn" onclick="openDeleteModal({{ product.id }})">🗑️ Delete</button>
-                            </div>
+                        <div class="product-actions">
+                            <button type="button" class="edit-btn" onclick="openEditModal({{ product.id }})">✏️ Edit</button>
+                            <button type="button" class="delete-btn" onclick="openDeleteModal({{ product.id }})">🗑️ Delete</button>
                         </div>
                     </div>
+                </div>
                 {% empty %}
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <div class="empty-state-text">No products found</div>
-                        <button class="btn btn-primary" onclick="openAddModal()">Create Your First Product</button>
-                    </div>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">No products found</div>
+                    <button class="btn btn-primary" onclick="openAddModal()">Create Your First Product</button>
+                </div>
                 {% endfor %}
             </div>
-        </div>
+        </section>
     </div>
 
-    <!-- ADD/EDIT MODAL -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
+    <!-- ADD PRODUCT MODAL -->
+    <div id="addProductModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Add New Product</h2>
-                <button class="close-btn" onclick="closeModal()">✕</button>
+                <h2 class="modal-title" id="addModalTitle">Add New Product</h2>
+                <button class="close-btn" onclick="closeAddModal()">✕</button>
             </div>
 
-            <form id="productForm" method="POST">
-               {% csrf_token %}
+            <form id="addProductForm" method="POST" action="{% url 'add' %}" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="form-group">
-                    <label for="productName">Product Name *</label>
-                    <input type="text" id="productName" name="name" required placeholder="Enter product name">
+                    <label for="addName">Product Name *</label>
+                    <input id="addName" name="name" required>
                 </div>
 
                 <div class="form-group">
-    <label for="productSubcategory">Sub Category *</label>
-    <select id="productSubcategory" name="subcategory" required>
-        <option value="">Select sub category</option>
+                    <label for="productSubcategory">Sub Category *</label>
+                    <select id="productSubcategory" name="subcategory" required>
+                        <option value="">Select sub category</option>
 
-        {% for x in subcategories %}
-            <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
-        {% endfor %}
-    </select>
-</div>
-
+                    <label for="addSubcategory">Sub Category *</label>
+                    <select id="addSubcategory" name="subcategory" required>
+                        <option value="">Select sub category</option>
+                        {% for x in subcategories %}
+                            <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
                 <div class="form-group">
-                    <label for="productDescription">Description *</label>
-                    <textarea id="productDescription" name="description" required placeholder="Enter detailed product description..."></textarea>
+                    <label for="addDescription">Description *</label>
+                    <textarea id="addDescription" name="description" required></textarea>
                 </div>
 
-                <div class="form-row">
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
                     <div class="form-group">
-                        <label for="productPrice">Price (₹) *</label>
-                        <input type="number" id="productPrice" name="price" required placeholder="0.00" step="0.01" min="0">
+                        <label for="addPrice">Price (₹) *</label>
+                        <input id="addPrice" name="price" type="number" step="0.01" min="0" required>
                     </div>
                     <div class="form-group">
-                        <label for="productStock">Stock Quantity *</label>
-                        <input type="number" id="productStock" name="stock" required placeholder="0" min="0">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="productColor">Color</label>
-                        <input type="text" id="productColor" name="color" placeholder="e.g., Black, Blue, Red">
-                    </div>
-                    <div class="form-group">
-                        <label for="productSize">Size</label>
-                        <input type="text" id="productSize" name="size" placeholder="e.g., S, M, L, XL">
+                        <label for="addStock">Stock Quantity *</label>
+                        <input id="addStock" name="stock" type="number" min="0" required>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="productMainImage">Main Product Image</label>
-                    <input type="file" id="productMainImage" name="main_image" accept="image/*">
-                    <small style="color: var(--light-text);">Upload main product image (JPG, PNG, etc.)</small>
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="addColor">Color</label>
+                        <input id="addColor" name="color" placeholder="e.g., Black, Blue">
+                    </div>
+                    <div class="form-group">
+                        <label for="addSize">Size</label>
+                        <input id="addSize" name="size" placeholder="e.g., S, M, L">
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="productGalleryImages">Gallery Images</label>
-                    <input type="file" id="productGalleryImages" name="gallery_images" multiple accept="image/*">
-                    <small style="color: var(--light-text);">Upload multiple gallery images</small>
+                    <label for="addMainImage">Main Product Image</label>
+                    <input id="addMainImage" type="file" name="main_image" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="addGalleryImages">Gallery Images</label>
+                    <input id="addGalleryImages" type="file" name="gallery_images" accept="image/*" multiple>
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Product</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- DELETE CONFIRMATION MODAL -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
+    <!-- EDIT PRODUCT MODAL -->
+    <div id="editProductModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="editModalTitle">Edit Product</h2>
+                <button class="close-btn" onclick="closeEditModal()">✕</button>
+            </div>
+
+            <form id="editProductForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" id="editProductId">
+
+                <div class="form-group">
+                    <label for="editName">Product Name *</label>
+                    <input id="editName" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editSubcategory">Sub Category *</label>
+                    <select id="editSubcategory" name="subcategory" required>
+                        <option value="">Select sub category</option>
+                        {% for x in subcategories %}
+                            <option value="{{ x.id }}">{{ x.category.name }} - {{ x.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editDescription">Description *</label>
+                    <textarea id="editDescription" name="description" required></textarea>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="editPrice">Price (₹) *</label>
+                        <input id="editPrice" name="price" type="number" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStock">Stock Quantity *</label>
+                        <input id="editStock" name="stock" type="number" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="form-group">
+                        <label for="editColor">Color</label>
+                        <input id="editColor" name="color">
+                    </div>
+                    <div class="form-group">
+                        <label for="editSize">Size</label>
+                        <input id="editSize" name="size">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editMainImage">Replace Main Image (optional)</label>
+                    <input id="editMainImage" type="file" name="main_image" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label for="editGalleryImages">Add Gallery Images (optional)</label>
+                    <input id="editGalleryImages" type="file" name="gallery_images" accept="image/*" multiple>
+                </div>
+
+                <div style="color:var(--light-text); font-size:.9rem; margin-top:.25rem;">
+                    Note: If you want to manage images separately, keep image uploads here optional.
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div id="deleteModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="max-width:420px;">
             <div class="modal-header">
                 <h2 class="modal-title">🗑️ Delete Product</h2>
                 <button class="close-btn" onclick="closeDeleteModal()">✕</button>
             </div>
 
-            <div style="margin-bottom: 1.5rem;">
-                <p id="deleteMessage" style="color: var(--light-text); margin-bottom: 1rem;"></p>
-                <div style="background: rgba(244, 67, 54, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid var(--danger-color);">
-                    <strong style="color: var(--danger-color);">⚠️ Warning:</strong>
-                    <p style="color: var(--light-text); margin-top: 0.5rem; font-size: 0.9rem;">This action cannot be undone.</p>
-                </div>
-            </div>
+            <p id="deleteMessage" style="color:var(--light-text); margin-bottom:1rem;">Are you sure you want to delete this product?</p>
 
-            <div class="modal-actions">
+            <div style="display:flex; gap:.75rem; justify-content:flex-end;">
                 <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete Permanently</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Permanently</button>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="footer" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e0e0e0; padding: 4rem 2rem 1.5rem; margin-top: 4rem; border-top: 2px solid var(--primary-color);">
-        <div style="max-width: 1400px; margin: 0 auto;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-                <!-- Logo Section -->
-                <div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-                        <span style="font-size: 2rem;">🛍️</span>
-                        <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary-color);">ShopHub</span>
-                    </div>
-                    <p style="color: #999; margin-bottom: 1.5rem; line-height: 1.6;">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
-                    <div style="display: flex; gap: 1rem;">
-                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">f</a>
-                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">𝕏</a>
-                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">📷</a>
-                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">💼</a>
-                    </div>
+    <!-- FOOTER (keeps original feel) -->
+    <footer style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); color:#e0e0e0; padding:3rem 2rem 1.5rem; margin-top:4rem; border-top:2px solid var(--primary-color);">
+        <div style="max-width:1400px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem; margin-bottom:2rem;">
+            <div>
+                <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:1.5rem;">
+                    <span style="font-size:2rem;">🛍️</span>
+                    <span style="font-size:1.8rem; font-weight:800; color:var(--primary-color);">ShopHub</span>
                 </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Quick Links</h3>
-                    <ul style="list-style: none;">
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Home</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Products</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">About Us</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Contact</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">FAQ</a></li>
-                    </ul>
-                </div>
-
-                <!-- Customer Service -->
-                <div>
-                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Customer Service</h3>
-                    <ul style="list-style: none;">
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Shipping Policy</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Returns & Refunds</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Privacy Policy</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Terms & Conditions</a></li>
-                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Track Your Order</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Us -->
-                <div>
-                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Contact Us</h3>
-                    <ul style="list-style: none;">
-                        <li style="margin-bottom: 0.75rem; display: flex; align-items: flex-start; color: #999;">
-                            <span style="color: var(--primary-color); margin-right: 0.75rem; margin-top: 2px;">📍</span>
-                            <span>123 Shopping Street, Mumbai, India</span>
-                        </li>
-                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; color: #999;">
-                            <span style="color: var(--primary-color); margin-right: 0.75rem;">📞</span>
-                            <span>+91 98765 43210</span>
-                        </li>
-                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; color: #999;">
-                            <span style="color: var(--primary-color); margin-right: 0.75rem;">✉️</span>
-                            <span>support@shophub.com</span>
-                        </li>
-                    </ul>
-                    <div style="margin-top: 1.5rem;">
-                        <h4 style="color: white; margin-bottom: 0.75rem; font-weight: bold;">Subscribe to Newsletter</h4>
-                        <div style="display: flex;">
-                            <input type="email" placeholder="Your email" style="flex: 1; background: #333; color: white; padding: 0.5rem; border-radius: 6px 0 0 6px; border: none; outline: none;">
-                            <button style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 0 6px 6px 0; border: none; cursor: pointer; transition: all 0.3s ease; font-weight: 600;">➤</button>
-                        </div>
-                    </div>
-                </div>
+                <p style="color:#999; margin-bottom:1.5rem; line-height:1.6;">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
             </div>
 
-            <!-- Footer Bottom -->
-            <div style="border-top: 1px solid rgba(255, 127, 50, 0.2); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; text-align: center;">
-                <p style="color: #999;">&copy; 2024 ShopHub. All rights reserved.</p>
-                <p style="color: #999;">Made with ❤️ for Sellers & Shoppers</p>
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Quick Links</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Home</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Products</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">About Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Customer Service</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Shipping Policy</a></li>
+                    <li style="margin-bottom:.75rem;"><a href="#" style="color:#999; text-decoration:none;">Returns & Refunds</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:1rem; font-family:var(--font-heading);">Contact Us</h3>
+                <p style="color:#999;">📍 123 Shopping Street, Mumbai, India</p>
+                <p style="color:#999;">✉️ support@shophub.com</p>
             </div>
         </div>
+
+        <div style="border-top:1px solid rgba(255,127,50,0.2); padding-top:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <p style="color:#999;">&copy; 2024 ShopHub. All rights reserved.</p>
+            <p style="color:#999;">Made with ❤️ for Sellers & Shoppers</p>
+        </div>
     </footer>
-<script>
-    /* ======================= PROFILE DROPDOWN ======================= */
-    function toggleProfileMenu() {
-        const dropdown = document.getElementById('profileDropdown');
-        const menu = document.getElementById('dropdownMenu');
-        dropdown.classList.toggle('active');
-        menu.classList.toggle('show');
-    }
 
-    document.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('profileDropdown');
-        if (!dropdown.contains(e.target)) {
-            dropdown.classList.remove('active');
-            document.getElementById('dropdownMenu').classList.remove('show');
+     <script>
+        /* ======================= PROFILE DROPDOWN ======================= */
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('active');
+            menu.classList.toggle('show');
         }
-    });
 
-    /* ======================= SIDEBAR ======================= */
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+                document.getElementById('dropdownMenu').classList.remove('show');
+            }
+        });
 
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
+        /* ======================= SIDEBAR ======================= */
+        function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('show');
+}
+
+function navigateTo(page) {
+    document.querySelectorAll('.sidebar-menu-link')
+        .forEach(link => link.classList.remove('active'));
+
+    event.target.closest('.sidebar-menu-link').classList.add('active');
+    showToast("Loading " + page + "...", "success");
+
+    // Auto-close sidebar only in mobile view
+    if (window.innerWidth < 1024) {
+        toggleSidebar();
     }
+}
 
-    function navigateTo(page) {
-        document.querySelectorAll('.sidebar-menu-link')
-            .forEach(link => link.classList.remove('active'));
+function checkScreenSize() {
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const sidebar = document.getElementById('sidebar');
 
-        event.target.closest('.sidebar-menu-link').classList.add('active');
-        showToast("Loading " + page + "...", "success");
+    if (window.innerWidth < 1024) {
+        toggleBtn.style.display = 'flex';
+        sidebar.classList.remove('show');
+    } else {
+        toggleBtn.style.display = 'flex';
+        sidebar.classList.add('show');
+    }
+}
 
-        if (window.innerWidth < 1024) {
-            toggleSidebar();
+window.addEventListener('resize', checkScreenSize);
+checkScreenSize();
+
+        /* ======================= MODALS ======================= */
+        function openAddModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('modalTitle').innerText = "Add New Product";
+            document.getElementById('productModal').classList.add('show');
         }
-    }
 
-    function checkScreenSize() {
-        const toggleBtn = document.getElementById('toggleSidebarBtn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-
-        if (window.innerWidth > 1024) {
-            toggleBtn.style.display = 'block';
-            sidebar.classList.remove('show');
-            overlay.classList.remove('show');
-        } else {
-            toggleBtn.style.display = 'none';
-            sidebar.classList.add('show');
-            overlay.classList.remove('show');
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('show');
         }
-    }
 
-    window.addEventListener('resize', checkScreenSize);
-    checkScreenSize();
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
 
-    /* ======================= MODALS ======================= */
-    function openAddModal() {
-        document.getElementById('productForm').reset();
-        document.getElementById('modalTitle').innerText = "Add New Product";
-        document.getElementById('productModal').classList.add('show');
-    }
-
-    function closeModal() {
-        document.getElementById('productModal').classList.remove('show');
-    }
-
-    document.getElementById('productModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-
-    function openDeleteModal(id) {
-        document.getElementById('deleteMessage').textContent =
-            "Are you sure you want to delete this product?";
-        document.getElementById('deleteModal').classList.add('show');
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('show');
-    }
-
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeleteModal();
-    });
-
-    /* ======================= TOAST ======================= */
-    function showToast(message, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-
-        document.body.appendChild(toast);
-
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    /* ======================= NOTIFICATION ======================= */
-    function showNotifications() {
-        showToast("🔔 You have new notifications!", "success");
-    }
-
-    /* ======================= LOGOUT ======================= */
-    function logout() {
-        showToast("Logging out...", "success");
-        setTimeout(() => window.location.href = "/logout", 1000);
-    }
-
-    /* ======================= ESC KEY ======================= */
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal();
-            closeDeleteModal();
+        function openDeleteModal(id) {
+            document.getElementById('deleteMessage').textContent =
+                "Are you sure you want to delete this product?";
+            document.getElementById('deleteModal').classList.add('show');
         }
-    });
-</script>
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+
+        /* ======================= TOAST ======================= */
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        /* ======================= NOTIFICATION ======================= */
+        function showNotifications() {
+            showToast("🔔 You have new notifications!", "success");
+        }
+
+        /* ======================= LOGOUT ======================= */
+        function logout() {
+            showToast("Logging out...", "success");
+            setTimeout(() => window.location.href = "/logout", 1000);
+        }
+
+        /* ======================= ESC KEY ======================= */
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDeleteModal();
+            }
+        });
 
 </body>
 </html>
