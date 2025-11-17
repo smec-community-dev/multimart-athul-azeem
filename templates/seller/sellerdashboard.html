@@ -37,7 +37,11 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
+
         }
+        a {
+    text-decoration: none;
+}
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -887,7 +891,7 @@
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">MS</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">Mobile Store</div>
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
                         <div class="profile-role">Seller</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
@@ -980,7 +984,7 @@
             <ul class="sidebar-menu">
                 <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
                 <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="#"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="#"><span>💰</span> Earnings</a></li>
                 <li><a href="#"><span>⭐</span> Reviews</a></li>
                 <li><a href="#"><span>📈</span> Analytics</a></li>
@@ -1064,7 +1068,8 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Top Performing Products</div>
-                    <button class="btn-primary">View All Products</button>
+                  <a href="{% url 'add' %}" class="btn-primary" >View All Products</a>
+
                 </div>
                 <div class="table-container">
                     <table>
@@ -1079,21 +1084,31 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {%  for x in product %}
-                            <tr>
-                                <td>
-                                    <div class="product-name">
-                                        <div class="product-icon">📱</div>
-                                        x.name
-                                    </div>
-                                </td>
-                                <td>x.subcategory</td>
-                                <td><strong>x.price</strong></td>
-                                <td>x.stock</td>
-                                <td>x.color</td>
-                                <td><span class="status-badge status-active">Active</span></td>
-                            </tr>
-                         {%  endfor %}
+                  {% for x in product %}
+<tr>
+    <td>
+        <div class="product-name">
+            <div class="product-icon">📱</div>
+            {{ x.name }}
+        </div>
+    </td>
+
+    <td>{{ x.subcategory }}</td>
+    <td><strong>{{ x.price }}</strong></td>
+    <td>{{ x.stock }}</td>
+    <td>{{ x.color }}</td>
+
+  <td>
+    {% if x.stock > 0 %}
+        <span class="status-badge status-active">Active</span>
+    {% else %}
+        <span class="status-badge status-inactive">Out of Stock</span>
+    {% endif %}
+</td>
+
+</tr>
+{% endfor %}
+
                         </tbody>
                     </table>
                 </div>
@@ -1103,7 +1118,7 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Recent Orders</div>
-                    <button class="btn-primary">View All Orders</button>
+                    <a href="{% url 'order' %}"><button class="btn-primary">View All Orders</button></a>
                 </div>
                 <div class="order-item">
                     <div class="order-info">
