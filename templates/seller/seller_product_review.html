@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews - ShopHub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #FF7F32;
+        --accent-color: #FFB273;
+        --text-color: #3A3A3A;
+        --light-text: #777;
+        --card-bg: #fff;
+        --bg: #F5F5F5;
+        --border-color: #e6e6e6;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1rem;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .page-title img {
+        width: 35px;
+    }
+
+    /* Review Card */
+    .review-card {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.2rem;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        animation: fadeIn 0.5s ease;
+        transition: 0.3s;
+    }
+
+    .review-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(255, 127, 50, 0.25);
+    }
+
+    .product-img {
+        width: 90px;
+        height: 90px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+    }
+
+    .review-content {
+        flex: 1;
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 5px;
+    }
+
+    .review-text {
+        color: var(--light-text);
+        font-size: 0.95rem;
+        margin: 8px 0;
+        line-height: 1.5;
+    }
+
+    .reviewer {
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        margin-top: 8px;
+        font-weight: 600;
+    }
+
+    .stars {
+        color: gold;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 class="page-title">
+        ⭐ Reviews
+    </h1>
+
+    {% comment %} Loop Reviews {% endcomment %}
+    {% for review in reviews %}
+    <div class="review-card">
+
+        <!-- Product Image -->
+        <img src="{{ review.product.image.url }}" class="product-img" alt="product">
+
+        <div class="review-content">
+
+            <div class="product-name">{{ review.product.name }}</div>
+
+            <!-- Star Rating -->
+            <div class="stars">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                        ⭐
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Review Text -->
+            <div class="review-text">{{ review.comment }}</div>
+
+            <!-- Reviewer Name -->
+            <div class="reviewer">Reviewed by: {{ review.user.username }}</div>
+
+        </div>
+
+    </div>
+    {% empty %}
+        <p style="color:var(--light-text); font-size:1rem;">No reviews yet.</p>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

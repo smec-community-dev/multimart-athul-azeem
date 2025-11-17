@@ -1117,7 +1117,7 @@
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-item" onclick="showToast('Profile opened!', 'success')">👤 My Profile</div>
                     <div class="dropdown-item" onclick="showToast('Settings opened!', 'success')">⚙️ Settings</div>
-                    <div class="dropdown-item logout" onclick="window.location.href='/logout'">🚪 Logout</div>
+                    <div class="dropdown-item logout"  onclick="logout()">🚪<a href="{% url 'logout' %}"> Logout</a></div>
                 </div>
             </div>
         </div>
