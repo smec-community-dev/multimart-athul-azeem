@@ -1,8 +1,9 @@
-
-from django.contrib.auth import authenticate, login
 from django.shortcuts import render,redirect
-from django.contrib.auth.hashers import make_password
-from django.contrib import messages
+from core.models import Category,SubCategory
+from seller.models import Product
+def  products(request):
+    return render(request,"user/user_home.html")
+
 
 def user_login(request):
     if request.method == "POST":
@@ -24,10 +25,6 @@ def user_login(request):
         return redirect("/user/login")
 
     return render(request, "user/login.html")
-
-def products(request):
-    return render(request,"user/user_home.html")
-
 
 
 def user_register(request):
@@ -69,4 +66,25 @@ def user_register(request):
         return redirect("login")
 
     return render(request, "user/register.html")
+
+
+
+
+def category_products(request,slug):
+    try:
+        category=Category.objects.get(slug=slug)
+        products=Product.objects.filter(subcategory__category=category)
+    except Category.DoesNotExist:
+        category=None
+        products=[]
+    return render(request,"user/category_products.html",{"category":category,"products":products})
+
+
+
+def product_detail(request, slug):
+    product = Product.objects.get(slug=slug)
+    return render(request, "user/product_detail.html", {"product": product})
+
+
+
 
