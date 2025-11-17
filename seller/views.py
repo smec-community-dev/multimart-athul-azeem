@@ -17,6 +17,7 @@ from django.db.models import F, ExpressionWrapper, DecimalField
 
 def view_product(request):
     products=Product.objects.all()
+
     return render(request,"seller/sellerdashboard.html",{"product":products})
 
 
@@ -59,7 +60,7 @@ def add_product(request):
             )
 
 
-        for img in gallery_images:
+        for img in  gallery_images:
             ProductImage.objects.create(
                 product=product,
                 image=img,
@@ -258,7 +259,7 @@ def login_seller(request):
                 return redirect('seller_dashboard')
 
             else:
-                return redirect('/home')
+                return redirect('home')
         return render(request,"seller/login.html",{"error":"invalid username or password"})
     return render(request,"seller/login.html")
 
@@ -269,6 +270,10 @@ def logout_seller(request):
 
 def home(request):
     return render(request,"seller/seller_home.html")
+
+def seller_profile_view(request):
+
+    return render(request,"seller/profile.html")
 
 
 
