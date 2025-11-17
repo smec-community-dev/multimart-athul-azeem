@@ -1,0 +1,1037 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Seller Orders - ShopHub{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-hover: 0 12px 32px rgba(255, 127, 50, 0.2);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        .navbar-title {
+            font-size: 1rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 1rem;
+            white-space: nowrap;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 280px;
+            margin-top: 10px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item.logout {
+            color: var(--danger-color);
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        /* ======================== CONTAINER ======================== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--card-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            width: 250px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: var(--light-text);
+        }
+
+        /* ======================== FILTER TABS ======================== */
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .filter-tab {
+            padding: 0.75rem 1.5rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .filter-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* ======================== ORDERS TABLE ======================== */
+        .orders-table {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr 0.5fr 1fr 1fr 0.8fr;
+            gap: 1rem;
+            font-weight: 600;
+        }
+
+        .table-row {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr 0.5fr 1fr 1fr 0.8fr;
+            gap: 1rem;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background-color: rgba(255, 127, 50, 0.05);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .order-total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-processing {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+
+        .status-shipped {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-delivered {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-cancelled {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger-color);
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: 1.5px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--light-text);
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ======================== SIDEBAR ======================== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-medium);
+            overflow-y: auto;
+            padding-top: 1rem;
+            margin-top: 70px;
+            z-index: 99;
+            transition: transform 0.3s ease;
+            transform: translateX(-100%);
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 98;
+            display: none;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .sidebar-menu-link:hover {
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu-link.active {
+            background: rgba(255, 127, 50, 0.15);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .sidebar-icon {
+            font-size: 1.5rem;
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-sidebar-btn {
+            display: none;
+            position: relative;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            margin: 0 auto;
+            padding: 5px 10px;
+            flex-shrink: 1;
+        }
+
+        .toggle-sidebar-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 4rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+            width: 100%;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .toggle-sidebar-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr 1fr 1fr 0.8fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .navbar-left {
+                gap: 0.75rem;
+            }
+
+            .navbar-title {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-controls {
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .order-total {
+                display: none;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                gap: 0.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <button class="toggle-sidebar-btn" id="toggleSidebarBtn" onclick="toggleSidebar()">☰</button>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Orders</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">{{ notification_count|default:0 }}</div>
+            </div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">📱</div>
+                    <div style="max-width: 120px;">
+                        <div style="font-size: 0.85rem; font-weight: 600;">{{ user.username|default:"Mobile Store" }}</div>
+                        <div style="font-size: 0.7rem; color: var(--light-text);">Store Owner</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="showToast('Profile opened!', 'success')">👤 My Profile</div>
+                    <div class="dropdown-item" onclick="showToast('Settings opened!', 'success')">⚙️ Settings</div>
+                    <div class="dropdown-item logout" onclick="logout()">🚪 Logout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" href="{% url 'seller_dashboard'  %}" onclick="navigateTo('dashboard')">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" href="{% url 'add'  %}" onclick="navigateTo('products')">
+                    <span class="sidebar-icon">📦</span>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link active" onclick="navigateTo('orders')">
+                    <span class="sidebar-icon">🛒</span>
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" onclick="navigateTo('earnings')">
+                    <span class="sidebar-icon">💰</span>
+                    <span>Earnings</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" onclick="navigateTo('reviews')">
+                    <span class="sidebar-icon">⭐</span>
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" onclick="navigateTo('analytics')">
+                    <span class="sidebar-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a class="sidebar-menu-link" onclick="navigateTo('settings')">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+            <h1>🛒 Orders</h1>
+            <div class="header-controls">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <form method="GET">
+    <input type="text" id="searchInput" name="search" placeholder="Search by Order ID or Customer...">
+</form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER TABS -->
+        <div class="filter-tabs">
+            <div class="filter-tab {% if current_status == 'all' or not current_status %}active{% endif %}" onclick="filterOrders('all')">All Orders</div>
+            <div class="filter-tab {% if current_status == 'pending' %}active{% endif %}" onclick="filterOrders('pending')">⏳ Pending</div>
+            <div class="filter-tab {% if current_status == 'processing' %}active{% endif %}" onclick="filterOrders('processing')">⚙️ Processing</div>
+            <div class="filter-tab {% if current_status == 'shipped' %}active{% endif %}" onclick="filterOrders('shipped')">📦 Shipped</div>
+            <div class="filter-tab {% if current_status == 'delivered' %}active{% endif %}" onclick="filterOrders('delivered')">✅ Delivered</div>
+            <div class="filter-tab {% if current_status == 'cancelled' %}active{% endif %}" onclick="filterOrders('cancelled')">❌ Cancelled</div>
+        </div>
+
+        <!-- ORDERS TABLE -->
+        <div class="orders-table">
+            <div class="table-header">
+                <div>Order ID</div>
+                <div>Customer</div>
+                <div>Product Name</div>
+                <div>Qty</div>
+                <div>Total</div>
+                <div>Status</div>
+                <div>Action</div>
+            </div>
+
+            {% for order in orders %}
+                {% for item in order.items.all %}
+                    <div class="table-row">
+                        <div class="order-id">#{{ order.id }}</div>
+                        <div class="customer-name">{{ order.user.username }}</div>
+                        <div>{{ item.product.name }}</div>
+                        <div>{{ item.quantity }}</div>
+                        <div class="order-total">₹{{ order.total_price|stringformat:".2f" }}</div>
+                        <div>
+                            <div class="status-badge status-{{ order.status|lower }}">
+                                {% if order.status == 'Pending' %}⏳ Pending
+                                {% elif order.status == 'Processing' %}⚙️ Processing
+                                {% elif order.status == 'Shipped' %}📦 Shipped
+                                {% elif order.status == 'Delivered' %}✅ Delivered
+                                {% elif order.status == 'Cancelled' %}❌ Cancelled
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <a href="{% url 'seller_order_view' order.id %}" class="action-btn">View</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% empty %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div>No orders found</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Logo Section -->
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <span style="font-size: 2rem;">🛍️</span>
+                        <span style="font-size: 1.8rem; font-weight: 800; color: var(--primary-color);">ShopHub</span>
+                    </div>
+                    <p style="color: #999; margin-bottom: 1.5rem; line-height: 1.6;">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">f</a>
+                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">𝕏</a>
+                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">📷</a>
+                        <a href="#" style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: all 0.3s ease; font-weight: bold;">💼</a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Quick Links</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Home</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Products</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">About Us</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">Contact</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Customer Service</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Shipping Policy</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Returns & Refunds</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Privacy Policy</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Terms & Conditions</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: #999; text-decoration: none; transition: all 0.3s ease;">Track Your Order</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Us -->
+                <div>
+                    <h3 style="color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading);">Contact Us</h3>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: flex-start; color: #999;">
+                            <span style="color: var(--primary-color); margin-right: 0.75rem; margin-top: 2px;">📍</span>
+                            <span>123 Shopping Street, Mumbai, India</span>
+                        </li>
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; color: #999;">
+                            <span style="color: var(--primary-color); margin-right: 0.75rem;">📞</span>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li style="margin-bottom: 0.75rem; display: flex; align-items: center; color: #999;">
+                            <span style="color: var(--primary-color); margin-right: 0.75rem;">✉️</span>
+                            <span>support@shophub.com</span>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="color: white; margin-bottom: 0.75rem; font-weight: bold;">Subscribe to Newsletter</h4>
+                        <div style="display: flex;">
+                            <input type="email" placeholder="Your email" style="flex: 1; background: #333; color: white; padding: 0.5rem; border-radius: 6px 0 0 6px; border: none; outline: none;">
+                            <button style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 0 6px 6px 0; border: none; cursor: pointer; transition: all 0.3s ease; font-weight: 600;">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p style="color: #999;">&copy; 2024 ShopHub. All rights reserved.</p>
+                <p style="color: #999;">Made with ❤️ for Sellers & Shoppers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle Profile Menu
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('active');
+            menu.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+                document.getElementById('dropdownMenu').classList.remove('show');
+            }
+        });
+
+        // Filter Orders - Sends request to Django backend
+        function filterOrders(status) {
+            const url = new URL(window.location.href);
+            if (status === 'all') {
+                url.searchParams.delete('status');
+            } else {
+                url.searchParams.set('status', status);
+            }
+            window.location.href = url.toString();
+        }
+
+        // Search Orders
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.table-row');
+
+            rows.forEach(row => {
+                const orderId = row.querySelector('.order-id').textContent.toLowerCase();
+                const customerName = row.querySelector('.customer-name').textContent.toLowerCase();
+
+                if (orderId.includes(searchTerm) || customerName.includes(searchTerm)) {
+                    row.style.display = 'grid';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Show Toast
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 1.25rem;
+                right: 1.25rem;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                animation: slideDown 0.3s ease;
+                z-index: 2000;
+                max-width: 400px;
+                background: ${type === 'success' ? '#4CAF50' : type === 'danger' ? '#F44336' : '#FFC107'};
+                color: ${type === 'warning' ? '#3A3A3A' : 'white'};
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Notifications
+        function showNotifications() {
+            showToast('🔔 You have {{ notification_count|default:0 }} new pending orders!', 'success');
+        }
+
+        // Logout
+        function logout() {
+            showToast('👋 Logged out successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = '/logout/';
+            }, 1500);
+        }
+
+        // ===== SIDEBAR FUNCTIONS =====
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        function navigateTo(page) {
+            document.querySelectorAll('.sidebar-menu-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            event.target.closest('.sidebar-menu-link').classList.add('active');
+
+            const pageNames = {
+                'dashboard': '📊 Dashboard',
+                'products': '📦 Products',
+                'orders': '🛒 Orders',
+                'earnings': '💰 Earnings',
+                'reviews': '⭐ Reviews',
+                'analytics': '📈 Analytics',
+                'settings': '⚙️ Settings'
+            };
+
+            showToast(`Navigating to ${pageNames[page]}...`, 'success');
+
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+
+        // Check screen size
+        function checkScreenSize() {
+            const toggleBtn = document.getElementById('toggleSidebarBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            if (window.innerWidth > 1024) {
+                toggleBtn.style.display = 'flex';
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            } else {
+                toggleBtn.style.display = 'none';
+                sidebar.classList.add('show');
+                overlay.classList.remove('show');
+            }
+        }
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+    </script>
+</body>
+</html>
