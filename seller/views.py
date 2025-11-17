@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 
 from core.models import User
 from .models import Product, SellerDetails, ProductImage
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from core.models import SubCategory
 from .models import Product, SellerDetails
 
@@ -147,6 +147,15 @@ def login_seller(request):
                 return redirect('/home')
         return render(request,"seller/login.html",{"error":"invalid username or password"})
     return render(request,"seller/login.html")
+
+def logout_seller(request):
+    logout(request)
+    return redirect('home')
+
+
+def home(request):
+    return render(request,"seller/seller_home.html")
+
 
 
 
