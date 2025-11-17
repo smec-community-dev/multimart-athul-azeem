@@ -772,106 +772,45 @@
         <div class="cart-container">
             <div class="cart-grid">
                 <!-- Cart Items -->
-                <div class="cart-items">
-                    <div class="cart-header">
-                        <h2 class="cart-title">Cart Items (3)</h2>
-                        <button class="clear-cart">
-                            <i class="fas fa-trash"></i>
-                            <span>Clear Cart</span>
-                        </button>
+                {% if cart_items %}
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="item-image">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
                     </div>
 
-                    <!-- Cart Item 1 -->
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1592286927505-ed303e3d0eef?w=400"
-                                 alt="iPhone 15"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">iPhone 15 Pro Max</h3>
-                            <p class="item-description">Color: Space Black • Storage: 256GB</p>
-                            <div class="item-controls">
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="quantity">1</span>
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                                <div class="item-pricing">
-                                    <p class="original-price">₹89,999</p>
-                                    <p class="current-price">₹79,999</p>
-                                </div>
+                    <div class="item-details">
+                        <h3 class="item-name">{{ item.product.name }}</h3>
+                        <p class="item-description">{{ item.product.description|truncatewords:10 }}</p>
+
+                        <div class="item-controls">
+                            <div class="quantity-controls">
+                                <button class="quantity-btn">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+
+                                <span class="quantity">{{ item.quantity }}</span>
+
+                                <button class="quantity-btn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+
+                            <div class="item-pricing">
+                                <p class="current-price">₹{{ item.product.price }}</p>
                             </div>
                         </div>
-                        <button class="remove-item">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
 
-                    <!-- Cart Item 2 -->
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400"
-                                 alt="Bluetooth Speaker"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Portable Bluetooth Speaker</h3>
-                            <p class="item-description">Color: Blue • Waterproof</p>
-                            <div class="item-controls">
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="quantity">2</span>
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                                <div class="item-pricing">
-                                    <p class="current-price">₹3,998</p>
-                                    <p class="savings">You save ₹2,000</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="remove-item">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
+                    <a href="#" class="remove-item">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; font-size:18px; padding:20px;">Your cart is empty 🛒</p>
+        {% endif %}
 
-                    <!-- Cart Item 3 -->
-                    <div class="cart-item">
-                        <div class="item-image">
-                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-                                 alt="Headphones"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <div class="item-details">
-                            <h3 class="item-name">Noise-Cancelling Headphones</h3>
-                            <p class="item-description">Color: Black • Wireless</p>
-                            <div class="item-controls">
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="quantity">1</span>
-                                    <button class="quantity-btn">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                                <div class="item-pricing">
-                                    <p class="current-price">₹2,499</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="remove-item">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
 
                     <!-- Continue Shopping -->
                     <div class="continue-shopping">
