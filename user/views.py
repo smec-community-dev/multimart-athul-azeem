@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -13,6 +13,8 @@ from user.models import Cart
 
 def  products(request):
     return render(request,"user/user_home.html")
+def profile(request):
+    return render(request, "user/profile.html")
 
 def product_detail(request, slug):
     product = Product.objects.get(slug=slug)
@@ -69,6 +71,10 @@ def cart_page(request):
 
 
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect("user_home")
+
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -77,17 +83,25 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
-            messages.success(request, "Login successful!")
+            # messages.info(request, "Login successful!")
 
             if user.role == "seller":
                 return redirect("seller_dashboard")
 
-            return redirect("/user/home")
+            return redirect("user_home")
 
         messages.error(request, "Invalid username or password")
-        return redirect("/user/login")
+        return redirect("login")
 
     return render(request, "user/login.html")
+
+
+
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, "Logged out successfully!")
+    return redirect("/user/home")
 
 
 def user_register(request):
