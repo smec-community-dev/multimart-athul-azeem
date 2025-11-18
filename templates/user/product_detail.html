@@ -86,44 +86,39 @@
     <section class="py-8 bg-white">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Product Images -->
-                <div class="image-gallery">
-                    <div class="mb-4 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100">
-                      <img src="{{ product.image.url }}"
-                         alt="{{ product.name }}"
-                         class="w-full h-96 object-cover" id="mainImage">
 
-                    </div>
-                    <div class="grid grid-cols-4 gap-4">
-                        <div class="cursor-pointer border-2 border-orange-500 rounded-lg overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50">
-                            <img src="{{ product.image.url }}"
-                                 alt="{{ product.name }}"
-                                 class="w-full h-20 object-cover"
-                                 onclick="changeImage(this.src)">
-                        </div>
-                        <div class="cursor-pointer border border-gray-200 rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
-                           <img src="{{ product.image.url }}"
+           <!-- Product Images -->
+            <div class="image-gallery">
+                <div class="mb-4 rounded-2xl overflow-hidden bg-gray-100">
+                    {% if main_image %}
+                        <img src="{{ main_image.image.url }}"
                              alt="{{ product.name }}"
-                             class="w-full h-20 object-cover"
-                             onclick="changeImage(this.src)">
-
-<!--                        </div>-->
-<!--                        <div class="cursor-pointer border border-gray-200 rounded-lg overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50">-->
-<!--                            <img src="https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=200"-->
-<!--                                 alt="iPhone Side"-->
-<!--                                 class="w-full h-20 object-cover"-->
-<!--                                 onclick="changeImage(this.src)">-->
-<!--                        </div>-->
-<!--                        <div class="cursor-pointer border border-gray-200 rounded-lg overflow-hidden bg-gradient-to-br from-pink-50 to-red-50">-->
-<!--                            <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=200"-->
-<!--                                 alt="iPhone Display"-->
-<!--                                 class="w-full h-20 object-cover"-->
-<!--                                 onclick="changeImage(this.src)">-->
-<!--                        </div>-->
-                    </div>
+                             class="w-full h-[500px] object-contain"
+                             id="mainImage">
+                    {% else %}
+                        {% if gallery %}
+                            <img src="{{ gallery.0.image.url }}"
+                                 alt="{{ product.name }}"
+                                 class="w-full h-[500px] object-contain"
+                                 id="mainImage">
+                        {% else %}
+                            <div>No Image Available</div>
+                        {% endif %}
+                    {% endif %}
                 </div>
 
-                <!-- Product Info -->
+                <div class="grid grid-cols-4 gap-4">
+                    {% for img in gallery %}
+                            <div class="cursor-pointer border border-gray-300 rounded-lg overflow-hidden hover:border-orange-500">
+                                <img src="{{ img.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="w-full h-20 object-contain"
+                                     onclick="changeImage(this.src)">
+                            </div>
+                    {% endfor %}
+                </div>
+            </div>
+        <!-- Product Info -->
                 <div class="lg:pl-8">
                     <div class="mb-4">
                         <span class="inline-block px-3 py-1 bg-orange-100 text-orange-600 text-sm font-semibold rounded-full">
@@ -588,7 +583,15 @@ document.getElementById("addCartMain").addEventListener("click", function(e) {
     const url = this.getAttribute("data-url") + `?quantity=${qty}`;
     window.location.href = url;
 });
+
+
+function changeImage(src) {
+    const mainImage = document.getElementById("mainImage");
+    mainImage.src = src;
+}
 </script>
+
+
 
 
 
