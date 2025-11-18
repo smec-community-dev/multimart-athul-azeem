@@ -20,13 +20,22 @@ def add_to_cart(request, slug):
         messages.error(request, "Product not found")
         return redirect("user/user_home")
 
+    quantity = int(request.GET.get("quantity", 1))
+
     cart_item, created = Cart.objects.get_or_create(
         user=request.user,
-        product=product
+        product=product,
+        defaults={"quantity": quantity}
     )
 
     if not created:
-        cart_item.quantity += 1
+        # replace old quantity with new quantity, not add
+        cart_item.quantity = quantity
+
+        # stock check
+        if cart_item.quantity > product.stock:
+            cart_item.quantity = product.stock
+
         cart_item.save()
 
     messages.success(request, f"{product.name} added to cart")
