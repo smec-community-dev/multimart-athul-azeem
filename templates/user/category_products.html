@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -725,6 +726,87 @@
                 margin-top: 20px;
             }
         }
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+}
+
+.profile-avatar {
+    background: #ff9900;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    width: 260px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 15px 0;
+    display: none;
+    z-index: 999;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff4ec;
+}
+
+.dropdown-header-avatar {
+    background: #ff9900;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.dropdown-item {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropdown-item a {
+    text-decoration: none;
+    color: #333;
+}
+
+.dropdown-item.logout a {
+    color: red;
+    font-weight: bold;
+}
+
+
     </style>
 </head>
 <body>
@@ -750,20 +832,38 @@
             </div>
 
             <div class="header-right">
-                <button class="icon-btn">
-                    <i class="fas fa-heart"></i>
-                    <span class="badge">2</span>
-                </button>
-                <button class="icon-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">3</span>
-                </button>
-                <div class="auth-buttons">
-                    <button class="login-btn">Login</button>
-                    <button class="register-btn">Register</button>
+
+    <a href="{% url 'wishlist_page' %}" class="icon-btn">
+        <i class="fas fa-heart"></i>
+        <span class="badge">{{ wishlist_count }}</span>
+    </a>
+
+    <a href="{% url 'cart_page' %}" class="icon-btn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge">{{ cart_count }}</span>
+    </a>
+
+    {% if user.is_authenticated %}
+        <div class="profile-menu-container">
+            <div class="profile-toggle" onclick="toggleProfileMenu()">
+                <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </div>
+
+            <div class="dropdown-menu" id="dropdownMenu">
+                <div class="dropdown-header">
+                    <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <div>
+                        <h4>{{ user.username }}</h4>
+                        <p>{{ user.email }}</p>
+                    </div>
                 </div>
+                <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> My Profile</a>
+                <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             </div>
         </div>
+        {% endif %}
+
     </header>
 
     <!-- Breadcrumb -->
@@ -1063,5 +1163,23 @@
 
         // Auto-slide every 5 seconds
         setInterval(nextSlide, 5000);
+
+
+        function toggleProfileMenu() {
+    document.getElementById("dropdownMenu").classList.toggle("show");
+}
+
+window.addEventListener("click", function(e){
+    const menu = document.getElementById("dropdownMenu");
+    const profileBtn = document.querySelector(".profile-toggle");
+
+
+function toggleProfileMenu() {
+    document.getElementById("dropdownMenu").classList.toggle("show");
+}
+
+});
+
     </script>
 </body>
+</html>

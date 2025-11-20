@@ -671,14 +671,6 @@
         <div class="form-section">
             <h1>Welcome Back</h1>
             <p>Sign in to your ShopHub account</p>
-            {% if messages %}
-              {% for message in messages %}
-                  <div class="error-message">
-                      {{ message }}
-                  </div>
-              {% endfor %}
-            {% endif %}
-
             <form method="POST">
                 {% csrf_token %}
 

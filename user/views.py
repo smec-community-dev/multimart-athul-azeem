@@ -8,7 +8,7 @@ from core.models import Category,SubCategory
 from seller.models import Product
 User = get_user_model()
 from seller.models import Product
-from user.models import Cart
+from user.models import Cart, Wishlist
 
 
 def  products(request):
@@ -17,14 +17,28 @@ def profile(request):
     return render(request, "user/profile.html")
 
 def product_detail(request, slug):
-    product = Product.objects.get(slug=slug)
+    product = Product.objects.filter(slug=slug).first()
+
+    if product is None:
+        return redirect("home")   # If product not found
+
     main_image = product.images.filter(image_type='Main').first()
     gallery_images = product.images.all()
+
+
+    wishlist_count = Wishlist.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
+
+
+    in_wishlist = False
+    if request.user.is_authenticated:
+        in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
 
     return render(request, "user/product_detail.html", {
         "product": product,
         "main_image": main_image,
-        "gallery": gallery_images
+        "gallery": gallery_images,
+        "wishlist_count": wishlist_count,
+        "in_wishlist": in_wishlist
     })
 
 
@@ -68,6 +82,53 @@ def cart_page(request):
         "cart_items": cart_items,
         "total": total_amount
     })
+
+
+def update_cart(request, item_id):
+    item = Cart.objects.filter(id=item_id, user=request.user).first()
+
+    if not item:
+        return redirect("cart_page")
+
+    action = request.POST.get("action")
+
+    if action == "increase":
+        item.quantity += 1
+        item.save()
+
+    elif action == "decrease":
+        if item.quantity > 1:
+            item.quantity -= 1
+            item.save()
+        else:
+            item.delete()
+
+    return redirect("cart_page")
+
+
+def remove_cart_item(request, item_id):
+    Cart.objects.filter(id=item_id, user=request.user).delete()
+    return redirect("cart_page")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def user_login(request):
@@ -160,5 +221,26 @@ def category_products(request,slug):
 
 
 
+@login_required(login_url="login")
+def add_to_wishlist(request, slug):
+    product = Product.objects.filter(slug=slug).first()
+    if product is None:
+        return redirect("user_home")
+
+    wishlist_item = Wishlist.objects.filter(user=request.user, product=product)
+
+    if wishlist_item.exists():
+        wishlist_item.delete()
+        messages.info(request, f"{product.name} removed from wishlist")
+    else:
+        Wishlist.objects.create(user=request.user, product=product)
+        messages.success(request, f"{product.name} added to wishlist")
+
+    return redirect(request.META.get("HTTP_REFERER", "user_home"))
+
+@login_required(login_url="login")
+def wishlist_page(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    return render(request, "user/wishlist.html", {"wishlist_items": wishlist_items})
 
 

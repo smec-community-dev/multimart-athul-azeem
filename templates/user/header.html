@@ -1,0 +1,95 @@
+
+
+<header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <nav class="nav-center">
+            <a href="#">Home</a>
+            <a href="#">Products</a>
+            <a href="#">About</a>
+            <a href="#">Deals & Offers</a>
+            <a href="#">Contact</a>
+
+            </nav>
+
+
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products...">
+            </div>
+
+           <div class="header-right">
+    <a href="{% url 'wishlist_page' %}" class="icon-btn">
+        <i class="fas fa-heart"></i>
+        <span class="badge">{{ wishlist_count }}</span>
+    </a>
+
+    <a href="{% url 'cart_page' %}" class="icon-btn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge">{{ cart_count }}</span>
+    </a>
+
+    {% if user.is_authenticated %}
+        <!-- PROFILE DROPDOWN -->
+         <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-toggle" onclick="toggleProfileMenu()">
+            <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+            <div class="profile-info-text">
+                <div class="profile-name">{{ user.username }}</div>
+                <div class="profile-role">Customer</div>
+            </div>
+            <div class="dropdown-arrow">▼</div>
+        </div>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+                <div class="dropdown-header-content">
+                    <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <div class="dropdown-header-info">
+                        <h3>{{ user.username }}</h3>
+                        <p>{{ user.email }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-item">
+                <span class="dropdown-item-icon">👤</span>
+                <a href="{% url 'profile' %}">
+                    <span class="dropdown-item-label">My Profile</span>
+                </a>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <div class="dropdown-item logout">
+                <span class="dropdown-item-icon">🚪</span>
+                <a href="{% url 'logout' %}">
+                    <span class="dropdown-item-label">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+        </div>
+
+    {% else %}
+        <div class="auth-buttons">
+            <a href="{% url 'login' %}">
+                <button class="login-btn">Login</button>
+            </a>
+            <a href="{% url 'register' %}">
+                <button class="register-btn">Register</button>
+            </a>
+        </div>
+    {% endif %}
+           </div>
+        </div>
+
+</header>
