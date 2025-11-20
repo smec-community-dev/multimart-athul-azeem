@@ -1,69 +1,64 @@
-
-    <!-- Footer -->
-    <footer id="contact" class="bg-gray-900 text-white py-12 lg:py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="animate-on-scroll">
-                    <div class="flex items-center space-x-3 mb-6">
-                        <i class="fas fa-shopping-bag text-orange-500 text-2xl"></i>
-                        <span class="text-2xl font-bold">ShopHub</span>
-                    </div>
-                    <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and
-                        more.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-linkedin-in"></i></a>
-                    </div>
+<!-- Footer -->
+<footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div class="animate-on-scroll">
+                <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                    <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                    <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
                 </div>
-
-                <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Products</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
-                    </ul>
-                </div>
-
-                <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Customer Service</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Returns</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Shipping Info</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Track Order</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Contact Info</h3>
-                    <ul class="space-y-3 text-gray-400">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-orange-500"></i>
-                            <span>123 Commerce Street, Mumbai, India</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-3 text-orange-500"></i>
-                            <span>+91 98765 43210</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3 text-orange-500"></i>
-                            <span>info@shophub.com</span>
-                        </li>
-                    </ul>
+                <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                <div class="flex space-x-3 sm:space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 animate-on-scroll">
-                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            <div class="animate-on-scroll">
+                <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                <ul class="space-y-2 sm:space-y-3">
+                    <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                    <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                    <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="animate-on-scroll">
+                <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                <ul class="space-y-2 sm:space-y-3">
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Track Order</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="animate-on-scroll">
+                <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                        <span>123 Commerce Street, Mumbai, India</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                        <span>+91 98765 43210</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                        <span>info@shophub.com</span>
+                    </li>
+                </ul>
             </div>
         </div>
-    </footer>
+
+        <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
+            <p>&copy; 2023 ShopHub. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

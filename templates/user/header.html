@@ -1,95 +1,110 @@
-
-
 <header>
-        <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-shopping-bag"></i>
-                <span>ShopHub</span>
-            </div>
+    <div class="header-container">
+        <!-- Mobile menu button - visible only on small screens -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
 
-            <nav class="nav-center">
-            <a href="#">Home</a>
-            <a href="#">Products</a>
-            <a href="#">About</a>
-            <a href="#">Deals & Offers</a>
-            <a href="#">Contact</a>
-
-            </nav>
-
-
-
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search products...">
-            </div>
-
-           <div class="header-right">
-    <a href="{% url 'wishlist_page' %}" class="icon-btn">
-        <i class="fas fa-heart"></i>
-        <span class="badge">{{ wishlist_count }}</span>
-    </a>
-
-    <a href="{% url 'cart_page' %}" class="icon-btn">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="badge">{{ cart_count }}</span>
-    </a>
-
-    {% if user.is_authenticated %}
-        <!-- PROFILE DROPDOWN -->
-         <div class="profile-dropdown" id="profileDropdown">
-        <div class="profile-toggle" onclick="toggleProfileMenu()">
-            <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
-            <div class="profile-info-text">
-                <div class="profile-name">{{ user.username }}</div>
-                <div class="profile-role">Customer</div>
-            </div>
-            <div class="dropdown-arrow">▼</div>
+        <div class="logo">
+            <i class="fas fa-shopping-bag"></i>
+            <span>ShopHub</span>
         </div>
 
-        <div class="dropdown-menu" id="dropdownMenu">
-            <div class="dropdown-header">
-                <div class="dropdown-header-content">
-                    <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
-                    <div class="dropdown-header-info">
-                        <h3>{{ user.username }}</h3>
-                        <p>{{ user.email }}</p>
+        <!-- Navigation for medium screens and up -->
+        <nav class="nav-center">
+            <a href="{% url 'user_home' %}">Home</a>
+            <a href="{% url 'products_list' %}">Products</a>
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>
+            <a href="{% url 'contact' %}">Contact</a>
+        </nav>
+
+        <!-- Search box -->
+        <form method="GET" action="{% url 'user_home' %}" class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+        </form>
+
+        <div class="header-right">
+
+            <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                <i class="fas fa-heart"></i>
+                <span class="badge">{{ wishlist_count }}</span>
+            </a>
+
+            <a href="{% url 'cart_page' %}" class="icon-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge">{{ cart_count }}</span>
+            </a>
+
+            {% if user.is_authenticated %}
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.username }}</h3>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a href="{% url 'profile' %}" class="dropdown-item">
+                        <span class="dropdown-item-icon">👤</span>
+                        <span class="dropdown-item-label">My Profile</span>
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+
+                    <a href="{% url 'logout' %}" class="dropdown-item logout">
+                        <span class="dropdown-item-icon">🚪</span>
+                        <span class="dropdown-item-label">Logout</span>
+                    </a>
                 </div>
             </div>
-
-            <div class="dropdown-divider"></div>
-
-            <div class="dropdown-item">
-                <span class="dropdown-item-icon">👤</span>
-                <a href="{% url 'profile' %}">
-                    <span class="dropdown-item-label">My Profile</span>
+            {% else %}
+            <div class="auth-buttons">
+                <a href="{% url 'login' %}">
+                    <button class="login-btn">Login</button>
+                </a>
+                <a href="{% url 'register' %}">
+                    <button class="register-btn">Register</button>
                 </a>
             </div>
+            {% endif %}
 
-            <div class="dropdown-divider"></div>
-
-            <div class="dropdown-item logout">
-                <span class="dropdown-item-icon">🚪</span>
-                <a href="{% url 'logout' %}">
-                    <span class="dropdown-item-label">Logout</span>
-                </a>
-            </div>
-        </div>
+        </div> <!-- closes .header-right -->
     </div>
 
+    <!-- Mobile menu - hidden by default -->
+    <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex flex-col space-y-4">
+                <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+                
+                <!-- Mobile search box -->
+                <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                    <div class="flex">
+                        <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}" 
+                               class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </nav>
         </div>
-
-    {% else %}
-        <div class="auth-buttons">
-            <a href="{% url 'login' %}">
-                <button class="login-btn">Login</button>
-            </a>
-            <a href="{% url 'register' %}">
-                <button class="register-btn">Register</button>
-            </a>
-        </div>
-    {% endif %}
-           </div>
-        </div>
-
+    </div>
 </header>

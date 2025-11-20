@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .slider {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .slide-in {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .arrow:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .arrow-left {
+            left: 25px;
+        }
+
+        .arrow-right {
+            right: 25px;
+        }
+
+        /* Animation for elements on scroll */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animation for category icons */
+        .category-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .category-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation for product cards */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Animation for buttons */
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 32px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-left: 60px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 280px;
+            margin-right: 30px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 12px;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff8c00;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .auth-buttons button {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        /* About specific styles */
+        .about-gradient {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <nav class="nav-center">
+                <a href="userhome.html">Home</a>
+                <a href="productdetail.html">Products</a>
+                <a href="aboutus.html" style="color: #ff8c00;">About</a>
+                <a href="dealsandoffers.html">Deals & offers</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products...">
+            </div>
+
+            <div class="header-right">
+                <button class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">2</span>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="auth-buttons">
+                  <a href="{% url 'login' %}"> <button class="login-btn">Login</button></a>
+                  <a href="{% url 'register' %}"> <button class="register-btn">Register</button></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="about-gradient py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">About ShopHub</h1>
+                <p class="text-xl text-gray-700 mb-8">Your trusted partner in online shopping since 2018</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            ShopHub was founded in 2018 with a simple mission: to make online shopping accessible,
+                            reliable, and enjoyable for everyone in India. What started as a small startup with just
+                            three team members has grown into one of India's most trusted e-commerce platforms.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            We believe that shopping should be a delightful experience, not a chore. That's why we've
+                            built a platform that combines cutting-edge technology with personalized service to bring
+                            you the best products at the best prices.
+                        </p>
+                        <div class="grid grid-cols-2 gap-6 mt-8">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-orange-500 mb-2">50K+</div>
+                                <div class="text-gray-600">Happy Customers</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-orange-500 mb-2">10K+</div>
+                                <div class="text-gray-600">Products</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-orange-500 mb-2">500+</div>
+                                <div class="text-gray-600">Brand Partners</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-orange-500 mb-2">5+</div>
+                                <div class="text-gray-600">Years of Service</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600"
+                             alt="Our Team"
+                             class="rounded-2xl shadow-2xl">
+                        <div class="absolute -bottom-6 -left-6 bg-orange-500 text-white p-6 rounded-2xl shadow-xl">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-white p-3 rounded-full">
+                                    <i class="fas fa-trophy text-orange-500 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold">Award Winning</p>
+                                    <p class="text-orange-100 text-sm">Best E-commerce Platform 2023</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Values -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">The principles that guide everything we do</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Value 1 -->
+                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-users text-orange-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Customer First</h3>
+                        <p class="text-gray-700">
+                            Our customers are at the heart of everything we do. We listen, we learn, and we continuously
+                            improve to exceed your expectations.
+                        </p>
+                    </div>
+
+                    <!-- Value 2 -->
+                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-shield-alt text-orange-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Trust & Transparency</h3>
+                        <p class="text-gray-700">
+                            We believe in building trust through transparency. No hidden fees, no surprises - just honest
+                            pricing and clear communication.
+                        </p>
+                    </div>
+
+                    <!-- Value 3 -->
+                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-rocket text-orange-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Innovation</h3>
+                        <p class="text-gray-700">
+                            We embrace change and constantly innovate to bring you the latest technology and the best
+                            shopping experience possible.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Team -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">The passionate people behind ShopHub's success</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Team Member 1 -->
+                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-orange-600">RD</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Rajesh Desai</h3>
+                        <p class="text-orange-500 font-semibold mb-3">Founder & CEO</p>
+                        <p class="text-gray-600 text-sm">
+                            With 15+ years in e-commerce, Rajesh leads ShopHub's vision and strategic direction.
+                        </p>
+                        <div class="flex justify-center space-x-3 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 2 -->
+                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-blue-600">PS</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Priya Sharma</h3>
+                        <p class="text-orange-500 font-semibold mb-3">Chief Technology Officer</p>
+                        <p class="text-gray-600 text-sm">
+                            Priya oversees our technology stack and ensures seamless shopping experiences.
+                        </p>
+                        <div class="flex justify-center space-x-3 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 3 -->
+                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-green-600">AK</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Amit Kumar</h3>
+                        <p class="text-orange-500 font-semibold mb-3">Head of Operations</p>
+                        <p class="text-gray-600 text-sm">
+                            Amit ensures our logistics and supply chain run smoothly across India.
+                        </p>
+                        <div class="flex justify-center space-x-3 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 4 -->
+                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
+                        <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl font-bold text-purple-600">NM</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Neha Mehta</h3>
+                        <p class="text-orange-500 font-semibold mb-3">Customer Experience Director</p>
+                        <p class="text-gray-600 text-sm">
+                            Neha leads our customer support team to ensure every customer feels valued.
+                        </p>
+                        <div class="flex justify-center space-x-3 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-orange-500">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-16 bg-gradient-to-r from-orange-500 to-orange-600">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center text-white">
+                <h2 class="text-3xl font-bold mb-4">Join the ShopHub Family</h2>
+                <p class="text-orange-100 mb-8 text-lg">Experience the difference of shopping with a platform that truly cares about you.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="shop.html" class="px-8 py-4 bg-white text-orange-500 rounded-lg hover:bg-gray-100 transition-colors font-medium text-lg">
+                        Start Shopping
+                    </a>
+                    <a href="contact.html" class="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white hover:text-orange-500 transition-colors font-medium text-lg">
+                        Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-12 lg:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-2xl"></i>
+                        <span class="text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and
+                        more.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="userhome.html" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="productdetail.html" class="text-gray-400 hover:text-white transition">Products</a></li>
+                        <li><a href="aboutus.html" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Customer Service</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Track Order</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-lg font-bold mb-6">Contact Info</h3>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-orange-500"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-orange-500"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-orange-500"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Team card hover effects
+        document.querySelectorAll('.team-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+
+            // Function to handle scroll event
+            function handleScroll() {
+                animatedElements.forEach(element => {
+                    if (isInViewport(element)) {
+                        element.classList.add('animated');
+                    }
+                });
+            }
+
+            // Initial check on page load
+            handleScroll();
+
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+    </script>
+</body>
+</html>

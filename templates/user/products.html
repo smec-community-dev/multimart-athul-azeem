@@ -1,0 +1,178 @@
+{% extends "user/base.html" %}
+{% block content %}
+    <!-- Sort and Category Header Section -->
+    <section class="bg-white py-8 lg:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-8">
+                <!-- Category Section -->
+                <div class="flex-1">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Shop by Category</h2>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                        <a href="{% url 'category_products' 'electronics' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-purple-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:shadow-lg transition">
+                                📱
+                            </div>
+                            <p class="font-semibold text-sm">Electronics</p>
+                        </a>
+
+                        <a href="{% url 'category_products' 'fashion' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-pink-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:shadow-lg transition">
+                                👗
+                            </div>
+                            <p class="font-semibold text-sm">Fashion</p>
+                        </a>
+
+                        <a href="{% url 'category_products' 'cosmetics' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-pink-50 rounded-full flex items-center justify-center mb-3 group-hover:shadow-lg transition">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3050/3050159.png" alt="Cosmetic" class="w-8 h-8 lg:w-10 lg:h-10 object-contain" />
+                            </div>
+                            <p class="font-semibold text-sm">Cosmetics</p>
+                        </a>
+
+                        <a href="{% url 'category_products' 'gaming' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-green-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:shadow-lg transition">
+                                🎮
+                            </div>
+                            <p class="font-semibold text-sm">Gaming</p>
+                        </a>
+
+                        <a href="{% url 'category_products' 'books' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-yellow-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:shadow-lg transition">
+                                📚
+                            </div>
+                            <p class="font-semibold text-sm">Books</p>
+                        </a>
+
+                        <a href="{% url 'category_products' 'wearables' %}" class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-red-50 rounded-full flex items-center justify-center text-2xl mb-3 group-hover:shadow-lg transition">
+                                ⌚
+                            </div>
+                            <p class="font-semibold text-sm">Wearables</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sort Section -->
+                <div class="bg-gray-50 p-6 rounded-xl shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <span class="text-gray-700 font-medium text-lg">Sort by:</span>
+                        <select class="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white font-medium">
+                            <option>Featured</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Customer Reviews</option>
+                            <option>Newest Arrivals</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid Section -->
+    <section class="py-8 lg:py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for p in products %}
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card animate-on-scroll">
+
+                <a href="{% url 'product_detail' p.slug %}" class="block">
+                    <div class="relative h-64 bg-gray-200 overflow-hidden">
+                        <img src="{{ p.images.first.image.url }}" alt="{{ p.name }}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                    </div>
+
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-3">
+                            {{ p.category.name }}
+                        </span>
+
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 truncate">{{ p.name }}</h3>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-gray-900">₹{{ p.price }}</span>
+                            <button class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-semibold text-sm">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+            {% endfor %}
+        </div>
+
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-12">
+                <nav class="flex items-center space-x-2">
+                    <a href="#" class="px-4 py-2 text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Previous
+                    </a>
+                    <a href="#" class="px-4 py-2 text-white bg-orange-500 border border-orange-500 rounded-lg">
+                        1
+                    </a>
+                    <a href="#" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        2
+                    </a>
+                    <a href="#" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        3
+                    </a>
+                    <a href="#" class="px-4 py-2 text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Next
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 lg:py-20 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl lg:text-4xl font-bold mb-4 animate-on-scroll">Can't Find What You're Looking For?</h2>
+            <p class="text-xl mb-8 text-orange-100 animate-on-scroll">Contact our support team for personalized assistance</p>
+            <button class="px-8 py-3 bg-white text-orange-600 font-bold rounded-lg hover:bg-gray-100 transition btn-animate">
+                Contact Support
+            </button>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+
+            // Function to handle scroll event
+            function handleScroll() {
+                animatedElements.forEach(element => {
+                    if (isInViewport(element)) {
+                        element.classList.add('animated');
+                    }
+                });
+            }
+
+            // Initial check on page load
+            handleScroll();
+
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            menu.classList.toggle("show");
+        }
+    </script>
+{% endblock %}
+

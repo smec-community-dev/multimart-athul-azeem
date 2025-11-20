@@ -1,18 +1,55 @@
-from django.contrib import messages
+
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect
 from core.models import Category,SubCategory
-from seller.models import Product
 User = get_user_model()
 from seller.models import Product
-from user.models import Cart, Wishlist
+from user.models import Cart, Wishlist, Review
+from .models import Cart, Order, OrderItem
+from django.db.models import Q
+from difflib import get_close_matches
+
+def products(request):
+    bestseller_products = Product.objects.filter(is_featured=True)[:4]
+    slider_products = Product.objects.filter(is_featured=True)
+    query = request.GET.get("q", "")
+    all_products = Product.objects.all()
+    results = all_products
+
+    if query:
+        # First normal search
+        results = all_products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subcategory__name__icontains=query) |
+            Q(subcategory__category__name__icontains=query)
+        )
+
+        # If nothing found -> do fuzzy match
+        if not results.exists():
+            product_names = list(all_products.values_list("name", flat=True))
+            close_matches = get_close_matches(query, product_names, n=5, cutoff=0.3)
+
+            if close_matches:
+                results = all_products.filter(name__in=close_matches)
+
+    return render(request, "user/user_home.html", {
+        "products": results,
+        "slider_products": slider_products,
+        "query": query,
+        "bestseller_products": bestseller_products,
+    })
 
 
-def  products(request):
-    return render(request,"user/user_home.html")
+
+def productslist(request):
+    products = Product.objects.all()
+    return render(request, "user/products.html", {"products": products})
+
+
 def profile(request):
     return render(request, "user/profile.html")
 
@@ -20,7 +57,7 @@ def product_detail(request, slug):
     product = Product.objects.filter(slug=slug).first()
 
     if product is None:
-        return redirect("home")   # If product not found
+        return redirect("home")
 
     main_image = product.images.filter(image_type='Main').first()
     gallery_images = product.images.all()
@@ -76,12 +113,16 @@ def add_to_cart(request, slug):
 def cart_page(request):
     cart_items = Cart.objects.filter(user=request.user)
 
-    total_amount = sum(item.product.price * item.quantity for item in cart_items)
+    total_amount = 0
+    for item in cart_items:
+        item.subtotal = item.product.price * item.quantity
+        total_amount += item.subtotal
 
     return render(request, "user/cart.html", {
         "cart_items": cart_items,
         "total": total_amount
     })
+
 
 
 def update_cart(request, item_id):
@@ -111,23 +152,32 @@ def remove_cart_item(request, item_id):
     return redirect("cart_page")
 
 
+@login_required
+def add_review(request, slug):
+    product = Product.objects.filter(slug=slug).first()
 
+    if not product:
+        messages.error(request, "Product not found!")
+        return redirect("home_page")
 
+    if request.method == "POST":
+        rating = request.POST.get("rating")
+        comment = request.POST.get("comment")
 
+        if Review.objects.filter(user=request.user, product=product).exists():
+            messages.error(request, "You already reviewed this product.")
+            return redirect('product_detail', slug=slug)
 
+        Review.objects.create(
+            user=request.user,
+            product=product,
+            rating=rating,
+            comment=comment
+        )
+        messages.success(request, "Review submitted successfully!")
+        return redirect('product_detail', slug=slug)
 
-
-
-
-
-
-
-
-
-
-
-
-
+    return redirect('product_detail', slug=slug)
 
 
 
@@ -207,16 +257,28 @@ def user_register(request):
 
 
 
-
-def category_products(request,slug):
+def category_products(request, slug):
     try:
-        category=Category.objects.get(slug=slug)
-        products=Product.objects.filter(subcategory__category=category)
-    except Category.DoesNotExist:
-        category=None
-        products=[]
-    return render(request,"user/category_products.html",{"category":category,"products":products})
+        category = Category.objects.get(slug=slug)
 
+        # All products of this category
+        products = Product.objects.filter(subcategory__category=category)
+
+        # Featured/top products for slider (max 4)
+        slider_products = products.filter(is_featured=True)[:4]
+        if slider_products.count() < 4:
+            slider_products = products[:4]
+
+    except Category.DoesNotExist:
+        category = None
+        products = []
+        slider_products = []
+
+    return render(request, "user/category_products.html", {
+        "category": category,
+        "products": products,
+        "slider_products": slider_products
+    })
 
 
 
@@ -244,3 +306,76 @@ def wishlist_page(request):
     return render(request, "user/wishlist.html", {"wishlist_items": wishlist_items})
 
 
+
+def checkout(request):
+    items = Cart.objects.filter(user=request.user)
+    total = 0
+    for item in items:
+        item.subtotal = item.product.price * item.quantity
+        total += item.subtotal
+
+    return render(request, "user/checkout.html", {
+        "items": items,
+        "total": total,
+        "addresses": [],
+    })
+
+
+
+@login_required
+def place_order(request):
+    if request.method == "POST":
+        items = Cart.objects.filter(user=request.user)
+
+        if not items.exists():
+            messages.error(request, "No items in your cart.")
+            return redirect("cart_page")
+
+        total = sum(item.product.price * item.quantity for item in items)
+
+
+        address = f"{request.POST.get('address_line1')}, {request.POST.get('address_line2')}, " \
+                  f"{request.POST.get('city')}, {request.POST.get('state')}, {request.POST.get('pincode')}, {request.POST.get('country')}"
+
+        seller = items.first().product.seller
+
+        order = Order.objects.create(
+            user=request.user,
+            seller=seller,
+            total_amount=total,
+            shipping_address=address,
+            payment_method=request.POST.get("payment_method"),
+            status="Pending"
+        )
+
+        # Add order items
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                unit_price=item.product.price
+            )
+
+        items.delete()
+
+        messages.success(request, "Order placed successfully!")
+        return redirect("order_success")
+
+    return redirect("cart_page")
+
+
+def order_success(request):
+    return render(request, "user/order_success.html")
+
+
+def deals_and_offers(request):
+    return render(request,"user/deals_and_offers.html")
+
+
+def contact(request):
+    return render(request,"user/contact.html")
+
+
+def about(request):
+    return render(request,"user/about.html")
