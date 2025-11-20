@@ -17,6 +17,11 @@ from seller.decorators import seller_required
 from seller.models import Product, SellerDetails, ProductImage
 from user.models import Order, Review, OrderItem
 
+from django.db.models import Sum, Value, IntegerField
+from django.db.models.functions import Coalesce
+
+from django.utils.timezone import now
+from datetime import timedelta
 
 @login_required
 @seller_required
@@ -33,7 +38,7 @@ def view_product(request):
 
     products_count = Product.objects.filter(seller=seller).count()
 
-    pending_products = 0
+    pending_products = 0  # TODO: Implement if needed
 
     rating_data = Review.objects.filter(product__seller=seller).aggregate(
         avg=Avg("rating"),
@@ -43,12 +48,40 @@ def view_product(request):
     avg_rating = rating_data["avg"] or 0
     rating_count = rating_data["count"]
 
+    # Low stock threshold (customize based on your business logic)
+    low_stock_threshold = 10
 
-    top_products = (
-        Product.objects.filter(seller=seller)
-        .annotate(total_sold=Sum("orderitem__quantity"))
+    # First, try to get top products with low stock
+    top_low_stock_products = (
+        Product.objects.filter(seller=seller, stock__lt=low_stock_threshold)
+        .annotate(
+            total_sold=Coalesce(
+                Sum("orderitem__quantity"),
+                Value(0, output_field=IntegerField())
+            )
+        )
         .order_by("-total_sold")[:3]
     )
+
+    # Unsliced queryset for overall top to allow further filtering
+    overall_top_qs = (
+        Product.objects.filter(seller=seller)
+        .annotate(
+            total_sold=Coalesce(
+                Sum("orderitem__quantity"),
+                Value(0, output_field=IntegerField())
+            )
+        )
+        .order_by("-total_sold")
+    )
+
+    # Combine: prioritize low-stock ones, fill gaps with overall top
+    top_products = list(top_low_stock_products)  # Convert to list early to avoid issues
+    if len(top_products) < 3:
+        # Exclude already included low-stock ones to avoid duplicates
+        excluded_ids = [p.id for p in top_products]
+        fillers = overall_top_qs.exclude(id__in=excluded_ids)[:3 - len(top_products)]
+        top_products += list(fillers)
 
     recent_orders = (
         Order.objects.filter(seller=seller)
@@ -57,7 +90,25 @@ def view_product(request):
         .prefetch_related("items__product")
         .order_by("-order_date")[:4]
     )
+    today = now().date()
+    last_week = today - timedelta(days=6)
 
+    orders = Order.objects.filter(
+        seller=seller,
+        order_date__date__range=[last_week, today]
+    ).prefetch_related("items")
+
+    # Mon-Sun format
+    week_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    week_data = {day: 0 for day in week_days}
+
+    for order in orders:
+        day = order.order_date.strftime("%a")
+        total = sum(item.unit_price * item.quantity for item in order.items.all())
+        week_data[day] += float(total)
+
+    sales_labels = list(week_data.keys())
+    sales_values = list(week_data.values())
     context = {
         "total_revenue": total_revenue,
         "total_orders": total_orders,
@@ -65,8 +116,11 @@ def view_product(request):
         "pending_products": pending_products,
         "avg_rating": round(avg_rating, 1),
         "rating_count": rating_count,
-    "top_products": top_products,
+        "top_products": top_products,
         "recent_orders": recent_orders,
+        "low_stock_threshold": low_stock_threshold,
+    "sales_labels": sales_labels,
+    "sales_values": sales_values,
     }
 
     return render(request, "seller/sellerdashboard.html", context)
