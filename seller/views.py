@@ -1,3 +1,6 @@
+import os
+import time
+
 from django.core.checks import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -9,10 +12,11 @@ from django.db.models import (
 )
 from django.http import HttpResponse
 from django.utils.text import slugify
+from django.core.paginator import Paginator
 
 
 # Project models
-from core.models import User, SubCategory
+from core.models import User, SubCategory, Category  # Assuming Category is in core.models
 from seller.decorators import seller_required
 from seller.models import Product, SellerDetails, ProductImage
 from user.models import Order, Review, OrderItem
@@ -126,15 +130,25 @@ def view_product(request):
     return render(request, "seller/sellerdashboard.html", context)
 
 
-
+def sanitize_filename(filename):
+    """Sanitize filename: remove invalid chars, limit length, add timestamp."""
+    base, ext = os.path.splitext(filename)
+    # Remove invalid chars (Windows/Linux safe: alnum, space, -, _ only)
+    base = ''.join(c for c in base if c.isalnum() or c in (' ', '-', '_')).rstrip()
+    # Limit length
+    if len(base) > 100:
+        base = base[:100]
+    # Add timestamp to avoid collisions
+    timestamp = int(time.time())
+    return f"{base}_{timestamp}{ext}"
 
 @login_required()
 @seller_required
 def add_product(request):
-    if request.method == "POST":
+    seller = SellerDetails.objects.get(user=request.user)
 
+    if request.method == "POST":
         seller = SellerDetails.objects.get(user=request.user)
-        print(seller)
 
         name = request.POST.get('name')
         subcat_id = request.POST.get('subcategory')
@@ -148,7 +162,7 @@ def add_product(request):
         gallery_images = request.FILES.getlist('gallery_images')
 
         subcategory = SubCategory.objects.get(id=subcat_id)
-
+        print(subcategory)
 
         product = Product.objects.create(
             seller=seller,
@@ -158,18 +172,24 @@ def add_product(request):
             price=price,
             stock=stock,
             color=color,
-            size=size
+            size=size,
+            slug=slugify(name)  # Ensure slug is set
         )
 
+        # Sanitize and save main image
         if main_image:
+            sanitized_filename = sanitize_filename(main_image.name)
+            main_image.name = sanitized_filename
             ProductImage.objects.create(
                 product=product,
                 image=main_image,
                 image_type="Main"
             )
 
-
-        for img in  gallery_images:
+        # Sanitize and save gallery images
+        for img in gallery_images:
+            sanitized_filename = sanitize_filename(img.name)
+            img.name = sanitized_filename
             ProductImage.objects.create(
                 product=product,
                 image=img,
@@ -178,13 +198,53 @@ def add_product(request):
 
         return redirect("seller_dashboard")
 
+   
 
+    # GET request - handle filtering and pagination
+    products_qs = Product.objects.filter(seller=seller).order_by('-id')
 
+    # Search filter
+    search = request.GET.get('search', '').strip()
+    if search:
+        products_qs = products_qs.filter(name__icontains=search)
 
+    # Category filter (assuming Category exists and SubCategory has category field)
+    category_id = request.GET.get('category')
+    if category_id:
+        products_qs = products_qs.filter(subcategory__category_id=category_id)
 
-    products = Product.objects.all()
+    # Status filter based on stock
+    status = request.GET.get('status')
+    if status == 'active':
+        products_qs = products_qs.filter(stock__gt=10)
+    elif status == 'low_stock':
+        products_qs = products_qs.filter(stock__gt=0, stock__lte=10)
+    elif status == 'out_of_stock':
+        products_qs = products_qs.filter(stock__lte=0)
+
+    # Pagination
+    paginator = Paginator(products_qs, 10)  # Show 10 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    categories = Category.objects.all()
     subcategories = SubCategory.objects.all()
-    return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
+
+    # For filter display
+    selected_category = None
+    if category_id:
+        try:
+            selected_category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            pass
+
+    context = {
+        "products": products,
+        "categories": categories,
+        "subcategories": subcategories,
+        "selected_category": selected_category,
+    }
+    return render(request, "seller/features.html", context)
 
 @login_required()
 @seller_required
@@ -221,7 +281,8 @@ def update_product(request, slug):
 
         return redirect("add")
 
-    return render(request, "seller/update_product.html", {"product": product})
+    subcategories = SubCategory.objects.all()
+    return render(request, "seller/update_product.html", {"product": product, "subcategories": subcategories})
 
 
 
@@ -276,7 +337,7 @@ def seller_registration(request):
         )
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('seller/login')
+        return redirect('login')
 
 
 
@@ -347,12 +408,9 @@ def order_detail(request, id):
         )
 
         # Get order items with calculated totals
-        items = order.items.select_related('product').annotate(
-            item_total=ExpressionWrapper(
-                F('unit_price') * F('quantity'),
-                output_field=DecimalField(max_digits=12, decimal_places=2)
-            )
-        )
+        items = order.items.all()
+        order.total_amount = sum(item.unit_price * item.quantity for item in items)
+        order.save()
 
         # Calculate totals
         total_quantity = items.aggregate(total_qty=Sum('quantity'))['total_qty'] or 0
@@ -534,10 +592,3 @@ def product_details(request, slug):
             "order_count": order_count,
         }
     )
-
-
-
-
-
-
-
