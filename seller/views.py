@@ -24,7 +24,14 @@ from django.db.models import Sum, Value, IntegerField
 from django.db.models.functions import Coalesce
 
 from django.utils.timezone import now
-from datetime import timedelta
+from django.contrib.auth.decorators import login_required
+from django.db.models import Avg, Count, Q, F
+from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
+from datetime import datetime, timedelta
+import csv
+import json
+
 
 @login_required
 @seller_required
@@ -731,3 +738,387 @@ def product_details(request, slug):
             "monthly_sales": json.dumps(monthly_sales),
         }
     )
+
+
+# views.py
+
+
+# views.py - Review Dashboard (Compatible with your Review model)
+
+
+
+
+@login_required
+@seller_required
+def review_dashboard(request):
+    """
+    Main review dashboard view with summary, charts, insights, and reviews table
+    """
+    try:
+        seller = SellerDetails.objects.get(user=request.user)
+    except SellerDetails.DoesNotExist:
+        return redirect('seller_login')
+
+    # Get all products for this seller
+    seller_products = Product.objects.filter(seller=seller)
+
+    # Get all reviews for seller's products
+    all_reviews = Review.objects.filter(
+        product__in=seller_products
+    ).select_related('product', 'user').order_by('-created_at')
+
+    # ==================== FILTERING & SEARCHING ====================
+    search_query = request.GET.get('search', '').strip()
+    rating_filter = request.GET.get('rating', '')
+    product_filter = request.GET.get('product', '')
+    sort_by = request.GET.get('sort', 'newest')
+
+    filtered_reviews = all_reviews
+
+    # Search filter - search in comment and user info
+    if search_query:
+        filtered_reviews = filtered_reviews.filter(
+            Q(comment__icontains=search_query) |
+            Q(user__username__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+
+    # Rating filter
+    if rating_filter:
+        try:
+            rating_filter = int(rating_filter)
+            filtered_reviews = filtered_reviews.filter(rating=rating_filter)
+        except (ValueError, TypeError):
+            pass
+
+    # Product filter
+    if product_filter:
+        try:
+            product_filter = int(product_filter)
+            filtered_reviews = filtered_reviews.filter(product_id=product_filter)
+        except (ValueError, TypeError):
+            pass
+
+    # Sorting
+    if sort_by == 'oldest':
+        filtered_reviews = filtered_reviews.order_by('created_at')
+    elif sort_by == 'highest':
+        filtered_reviews = filtered_reviews.order_by('-rating')
+    elif sort_by == 'lowest':
+        filtered_reviews = filtered_reviews.order_by('rating')
+    else:  # newest (default)
+        filtered_reviews = filtered_reviews.order_by('-created_at')
+
+    # ==================== PAGINATION ====================
+    paginator = Paginator(filtered_reviews, 10)  # 10 reviews per page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # ==================== CALCULATE STATISTICS ====================
+
+    # Overall statistics
+    total_reviews = all_reviews.count()
+    average_rating = all_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    unique_reviewers = all_reviews.values('user').distinct().count()
+    products_reviewed = all_reviews.values('product').distinct().count()
+
+    # Star distribution
+    star_distribution = {}
+    for star in range(1, 6):
+        count = all_reviews.filter(rating=star).count()
+        percentage = (count / total_reviews * 100) if total_reviews > 0 else 0
+        star_distribution[star] = {
+            'count': count,
+            'percentage': round(percentage, 1)
+        }
+
+    # ==================== TOP INSIGHTS ====================
+
+    # Top 5 highest-rated products
+    top_highest_rated = seller_products.annotate(
+        avg_rating=Avg('review__rating'),
+        review_count=Count('review')
+    ).filter(review_count__gt=0).order_by('-avg_rating')[:5]
+
+    top_highest_rated = [
+        {
+            'name': product.name,
+            'rating': round(product.avg_rating, 1) if product.avg_rating else 0
+        }
+        for product in top_highest_rated
+    ]
+
+    # Top 5 most reviewed products
+    top_most_reviewed = seller_products.annotate(
+        review_count=Count('review')
+    ).filter(review_count__gt=0).order_by('-review_count')[:5]
+
+    top_most_reviewed = [
+        {
+            'name': product.name,
+            'count': product.review_count
+        }
+        for product in top_most_reviewed
+    ]
+
+    # Products with lowest ratings (needs improvement)
+    lowest_rated = seller_products.annotate(
+        avg_rating=Avg('review__rating'),
+        review_count=Count('review')
+    ).filter(review_count__gt=0).order_by('avg_rating')[:5]
+
+    lowest_rated = [
+        {
+            'name': product.name,
+            'rating': round(product.avg_rating, 1) if product.avg_rating else 0
+        }
+        for product in lowest_rated
+    ]
+
+    # ==================== SENTIMENT ANALYSIS ====================
+
+    positive_reviews = all_reviews.filter(rating__gte=4).count()
+    negative_reviews = all_reviews.filter(rating__lte=2).count()
+    neutral_reviews = all_reviews.filter(rating=3).count()
+
+    positive_sentiment = int((positive_reviews / total_reviews * 100)) if total_reviews > 0 else 0
+    negative_sentiment = int((negative_reviews / total_reviews * 100)) if total_reviews > 0 else 0
+
+    positive_impact = round((positive_reviews / total_reviews * 100)) if total_reviews > 0 else 0
+
+    # ==================== REVIEW IMPACT ====================
+
+    # Customers who reviewed also ordered (repeat customers)
+    repeat_customers = all_reviews.values('user').annotate(
+        review_count=Count('id')
+    ).filter(review_count__gt=1).count()
+
+    also_ordered_count = repeat_customers
+
+    # Average response time (placeholder)
+    response_time = "2-3 hours"
+
+    influenced_sales = int((positive_reviews / total_reviews * 100)) if total_reviews > 0 else 0
+
+    # ==================== PREPARE REVIEWS FOR TEMPLATE ====================
+
+    reviews_for_template = []
+    for review in page_obj:
+        # Check if user is repeat buyer
+        customer_review_count = all_reviews.filter(user=review.user).count()
+        is_repeat = customer_review_count > 1
+
+        reviews_for_template.append({
+            'id': review.id,
+            'customer_name': review.user.get_full_name() or review.user.username,
+            'customer_username': review.user.username,
+            'rating': review.rating,
+            'comment': review.comment[:100] + '...' if len(review.comment) > 100 else review.comment,
+            'comment_full': review.comment,
+            'product_name': review.product.name,
+            'product_id': review.product.id,
+            'date': review.created_at,
+            'is_repeat_customer': is_repeat,
+            'times_range': range(review.rating),
+            'empty_stars_range': range(5 - review.rating),
+        })
+
+    # ==================== CHART DATA ====================
+
+    # Most reviewed products chart data
+    most_reviewed_products = seller_products.annotate(
+        review_count=Count('review')
+    ).filter(review_count__gt=0).order_by('-review_count')[:5]
+
+    most_reviewed_chart_labels = [p.name[:15] for p in most_reviewed_products]
+    most_reviewed_chart_data = [p.review_count for p in most_reviewed_products]
+
+    # Monthly trend chart data (last 12 months)
+    monthly_data = {}
+    today = datetime.now()
+
+    for i in range(11, -1, -1):
+        month_date = today - timedelta(days=30 * i)
+        month_key = month_date.strftime('%Y-%m')
+        monthly_data[month_key] = 0
+
+    for review in all_reviews:
+        month_key = review.created_at.strftime('%Y-%m')
+        if month_key in monthly_data:
+            monthly_data[month_key] += 1
+
+    monthly_labels = list(monthly_data.keys())
+    monthly_values = list(monthly_data.values())
+
+    # Rating distribution for pie chart
+    rating_dist_labels = ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star']
+    rating_dist_data = [
+        all_reviews.filter(rating=5).count(),
+        all_reviews.filter(rating=4).count(),
+        all_reviews.filter(rating=3).count(),
+        all_reviews.filter(rating=2).count(),
+        all_reviews.filter(rating=1).count(),
+    ]
+    repeat_reviewer_names = list(
+        Review.objects
+        .values(username=F("user__username"))
+        .annotate(total=Count("id"))
+        .filter(total__gt=1)
+        .values_list("username", flat=True)
+    )
+
+    positive_customers = list(
+        Review.objects
+        .filter(rating__gte=4)
+        .values_list("user__username", flat=True)
+        .distinct()
+    )
+
+    negative_customers = list(
+        Review.objects
+        .filter(rating__lte=2)
+        .values_list("user__username", flat=True)
+        .distinct()
+    )
+    # ==================== CONTEXT ====================
+
+    context = {
+        'seller': seller,
+        'reviews': reviews_for_template,
+        'page_obj': page_obj,
+        'paginator': paginator,
+
+        # Summary stats
+        'rating_avg': round(average_rating, 1),
+        'total_reviews': total_reviews,
+        'unique_reviewers': unique_reviewers,
+        'products_reviewed': products_reviewed,
+
+        # Star distribution
+        'star_distribution': star_distribution,
+
+        # Insights
+        'top_highest_rated': top_highest_rated,
+        'top_most_reviewed': top_most_reviewed,
+        'lowest_rated': lowest_rated,
+
+        # Sentiment
+        'positive_sentiment': positive_sentiment,
+        'negative_sentiment': negative_sentiment,
+        'positive_impact': positive_impact,
+        'influenced_sales': influenced_sales,
+        'response_time': response_time,
+        'also_ordered_count': also_ordered_count,
+
+        # Products for filter dropdown
+        'products': seller_products.values('id', 'name')[:20],
+
+        # Chart data (JSON for frontend)
+        'most_reviewed_chart_labels': json.dumps(most_reviewed_chart_labels),
+        'most_reviewed_chart_data': json.dumps(most_reviewed_chart_data),
+        'monthly_labels': json.dumps(monthly_labels),
+        'monthly_values': json.dumps(monthly_values),
+        'rating_dist_labels': json.dumps(rating_dist_labels),
+        'rating_dist_data': json.dumps(rating_dist_data),
+
+        # Filter values
+        'search_query': search_query,
+        'rating_filter': rating_filter,
+        'product_filter': product_filter,
+        'sort_by': sort_by,
+        "repeat_reviewer_names": repeat_reviewer_names,
+        "positive_customers": positive_customers,
+        "negative_customers": negative_customers,
+    }
+
+    return render(request, 'seller/seller_review.html', context)
+
+
+@login_required
+@seller_required
+def delete_review(request, review_id):
+    """
+    Delete a review (seller can only delete reviews for their products)
+    """
+    try:
+        seller = SellerDetails.objects.get(user=request.user)
+    except SellerDetails.DoesNotExist:
+        return JsonResponse({'error': 'Seller not found'}, status=403)
+
+    try:
+        review = Review.objects.get(id=review_id, product__seller=seller)
+    except Review.DoesNotExist:
+        return JsonResponse({'error': 'Review not found or unauthorized'}, status=404)
+
+    if request.method == 'POST':
+        review.delete()
+        return JsonResponse({'success': True, 'message': 'Review deleted successfully'})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+@seller_required
+def download_reviews_csv(request):
+    """
+    Download all reviews as CSV file
+    """
+    try:
+        seller = SellerDetails.objects.get(user=request.user)
+    except SellerDetails.DoesNotExist:
+        return redirect('seller_login')
+
+    seller_products = Product.objects.filter(seller=seller)
+    all_reviews = Review.objects.filter(
+        product__in=seller_products
+    ).select_related('product', 'user').order_by('-created_at')
+
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="reviews_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Customer', 'Rating', 'Review', 'Product', 'Date'])
+
+    for review in all_reviews:
+        writer.writerow([
+            review.user.get_full_name() or review.user.username,
+            review.rating,
+            review.comment,
+            review.product.name,
+            review.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+
+    return response
+
+
+@login_required
+@seller_required
+def review_analytics_api(request):
+    """
+    API endpoint for AJAX requests to get updated review statistics
+    """
+    try:
+        seller = SellerDetails.objects.get(user=request.user)
+    except SellerDetails.DoesNotExist:
+        return JsonResponse({'error': 'Seller not found'}, status=403)
+
+    seller_products = Product.objects.filter(seller=seller)
+    all_reviews = Review.objects.filter(product__in=seller_products)
+
+    total_reviews = all_reviews.count()
+    average_rating = all_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+
+    star_data = {}
+    for star in range(1, 6):
+        count = all_reviews.filter(rating=star).count()
+        star_data[star] = count
+
+    return JsonResponse({
+        'total_reviews': total_reviews,
+        'average_rating': round(average_rating, 1),
+        'star_distribution': star_data,
+    })
+
+

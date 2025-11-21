@@ -24,4 +24,21 @@ urlpatterns = [
     path("product/<slug:slug>/", views.product_details, name='product_details'),
 
     path("not-seller/", views.not_seller, name="not_seller"),
+    path('seller_dashboard/reviews/', views.review_dashboard, name='review'),
+
+    # Alternative: Simple reviews list view
+
+
+    # Delete a specific review
+
+
+    # Flag/unflag a review as suspicious
+
+
+    # Download all reviews as CSV
+    path('reviews/download/csv/', views.download_reviews_csv, name='download_reviews_csv'),
+
+    # API endpoint for review statistics (AJAX)
+    path('reviews/analytics/api/', views.review_analytics_api, name='review_analytics_api'),
+
 ]
