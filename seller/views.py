@@ -548,17 +548,54 @@ def home(request):
     return render(request,"seller/seller_home.html")
 
 
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password, ValidationError
+from django.shortcuts import render, redirect
+from .models import SellerDetails  # Assuming the model import
 
-@login_required()
+
+@login_required
 @seller_required
 def seller_profile_view(request):
     # Get or create seller details for the user
     seller, created = SellerDetails.objects.get_or_create(user=request.user)
-
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
+        if form_type == 'profile_info':
+            # Handle profile information form
+            email = request.POST.get('email', '')
+            phone_number = request.POST.get('phone_number', '')
+            profile_image = request.FILES.get('profile_image')
 
-        if form_type == 'business_info':
+            updated = False
+            if email and email != request.user.email:
+                try:
+                    # Basic email validation can be added here if needed
+                    request.user.email = email
+                    request.user.save()
+                    updated = True
+                except Exception as e:
+                    messages.error(request, f'Error updating email: {str(e)}')
+                    return redirect('profile')
+
+            if phone_number and phone_number != seller.phone_number:
+                seller.phone_number = phone_number
+                seller.save()
+                updated = True
+
+            if profile_image:
+                seller.profile_image = profile_image
+                seller.save()
+                updated = True
+
+            if updated:
+                messages.success(request, 'Profile information updated successfully!')
+            else:
+                messages.info(request, 'No changes were made.')
+            return redirect('profile')
+
+        elif form_type == 'business_info':
             # Handle business information form
             seller.shop_name = request.POST.get('shop_name', '')
             seller.shop_address = request.POST.get('shop_address', '')
@@ -566,13 +603,11 @@ def seller_profile_view(request):
             seller.phone_number = request.POST.get('phone_number', '')
             seller.gst_number = request.POST.get('gst_number', '')
             seller.bank_account = request.POST.get('bank_account', '')
-
             try:
                 seller.save()
                 messages.success(request, 'Business information updated successfully!')
             except Exception as e:
                 messages.error(request, f'Error updating business information: {str(e)}')
-
             return redirect('profile')
 
         elif form_type == 'change_password':
@@ -609,10 +644,7 @@ def seller_profile_view(request):
     context = {
         'seller': seller,
     }
-
     return render(request, 'seller/profile.html', context)
-
-
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
