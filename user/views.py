@@ -306,28 +306,63 @@ def user_register(request):
     return render(request, "user/register.html")
 
 
-
 def category_products(request, slug):
-    try:
-        category = Category.objects.get(slug=slug)
+    category = Category.objects.get(slug=slug)
 
-        # All products of this category
-        products = Product.objects.filter(subcategory__category=category)
+    # Base queryset: only products inside this category
+    products = Product.objects.filter(subcategory__category=category)
 
-        # Featured/top products for slider (max 4)
-        slider_products = products.filter(is_featured=True)[:4]
-        if slider_products.count() < 4:
-            slider_products = products[:4]
+    search = request.GET.get("search")  # <-- NEW
 
-    except Category.DoesNotExist:
-        category = None
-        products = []
-        slider_products = []
+    # Search Filter
+    if search:
+        products = products.filter(name__icontains=search)
+
+    # Get filters from query params
+    selected_price = request.GET.get("price")
+    sort = request.GET.get("sort", "featured")
+    page_number = request.GET.get("page", 1)
+
+    # PRICE FILTERING
+    if selected_price == "under_1000":
+        products = products.filter(price__lt=1000)
+
+    elif selected_price == "1000_10000":
+        products = products.filter(price__gte=1000, price__lte=10000)
+
+    elif selected_price == "10000_50000":
+        products = products.filter(price__gte=10000, price__lte=50000)
+
+    elif selected_price == "over_50000":
+        products = products.filter(price__gt=50000)
+
+    # SORTING
+    if sort == "low_to_high":
+        products = products.order_by("price")
+
+    elif sort == "high_to_low":
+        products = products.order_by("-price")
+
+    elif sort == "newest":
+        products = products.order_by("-created_at")
+
+    else:
+        products = products.order_by("-is_featured")
+
+    # PAGINATION (4 per page)
+    paginator = Paginator(products, 4)
+    products = paginator.get_page(page_number)
+
+    # FEATURED SLIDER PRODUCTS
+    slider_products = Product.objects.filter(subcategory__category=category, is_featured=True)[:4]
 
     return render(request, "user/category_products.html", {
         "category": category,
         "products": products,
-        "slider_products": slider_products
+        "slider_products": slider_products,
+        "selected_price": selected_price,
+        "sort": sort,
+        "search":search
     })
 
 

@@ -532,6 +532,7 @@
 
         .products-section {
             background: white;
+             transition: opacity 0.4s ease;
             border-radius: 10px;
             padding: 25px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -805,6 +806,40 @@
     color: red;
     font-weight: bold;
 }
+.products-section {
+    transition: opacity 0.4s ease;
+}
+.products-section.loading {
+    opacity: 0.3;
+}
+        .pagination-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 8px;
+}
+
+.pagination-btn {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.pagination-btn:hover {
+    border-color: #ff8c00;
+    color: #ff8c00;
+}
+
+.pagination-btn.active {
+    background: #ff8c00;
+    color: white;
+    border-color: #ff8c00;
+}
+
 
 
     </style>
@@ -819,17 +854,18 @@
             </div>
 
             <nav class="nav-center">
-                <a href="#home">Home</a>
-                <a href="#products">Products</a>
-                <a href="#about">About</a>
-                <a href="#reviews">Reviews</a>
-                <a href="#contact">Contact</a>
+               <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'products_list' %}">Products</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'contact' %}">Contact</a>
             </nav>
 
-            <div class="search-box">
+          <form method="get" class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search products...">
-            </div>
+                <input type="text" name="search" placeholder="Search products..." value="{{ search|default:'' }}">
+          </form>
+
 
             <div class="header-right">
 
@@ -843,26 +879,41 @@
         <span class="badge">{{ cart_count }}</span>
     </a>
 
-    {% if user.is_authenticated %}
-        <div class="profile-menu-container">
-            <div class="profile-toggle" onclick="toggleProfileMenu()">
-                <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
-                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+      {% if user.is_authenticated %}
+    <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-toggle" onclick="toggleProfileMenu()">
+            <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+            <span class="dropdown-arrow">▼</span>
+        </div>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                <div class="dropdown-header-info">
+                    <h3>{{ user.username }}</h3>
+                    <p>{{ user.email }}</p>
+                </div>
             </div>
 
-            <div class="dropdown-menu" id="dropdownMenu">
-                <div class="dropdown-header">
-                    <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
-                    <div>
-                        <h4>{{ user.username }}</h4>
-                        <p>{{ user.email }}</p>
-                    </div>
-                </div>
-                <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i> My Profile</a>
-                <a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <div class="dropdown-divider"></div>
+
+            <a href="{% url 'profile' %}" class="dropdown-item">
+                <span class="dropdown-item-icon">👤</span>
+                <span class="dropdown-item-label">My Profile</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{% url 'logout' %}" class="dropdown-item logout">
+                <span class="dropdown-item-icon">🚪</span>
+                <span class="dropdown-item-label">Logout</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
             </div>
         </div>
-        {% endif %}
 
     </header>
 
@@ -929,82 +980,96 @@
         <aside class="sidebar">
             <h3 style="margin-bottom: 20px; font-size: 18px; color: #333;">Filters</h3>
 
-            <div class="filter-section">
-                <div class="filter-title">Price Range</div>
-                <div class="filter-option">
-                    <input type="radio" id="price1" name="price">
-                    <label for="price1">Under ₹1,000</label>
-                    <span class="filter-count">(24)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="radio" id="price2" name="price">
-                    <label for="price2">₹1,000 - ₹10,000</label>
-                    <span class="filter-count">(45)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="radio" id="price3" name="price">
-                    <label for="price3">₹10,000 - ₹50,000</label>
-                    <span class="filter-count">(67)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="radio" id="price4" name="price">
-                    <label for="price4">Over ₹50,000</label>
-                    <span class="filter-count">(32)</span>
-                </div>
-            </div>
+          <div class="filter-section">
+        <div class="filter-title">Price Range</div>
+        <form method="get" id="priceFilter">
+            <label class="filter-option">
+                <input type="radio" name="price" value="under_1000"
+                    onchange="document.getElementById('priceFilter').submit();"
+                    {% if selected_price == 'under_1000' %}checked{% endif %}>
+                <span>Under ₹1,000</span>
+            </label>
 
-            <div class="filter-section">
-                <div class="filter-title">Brand</div>
-                <div class="filter-option">
-                    <input type="checkbox" id="apple">
-                    <label for="apple">Apple</label>
-                    <span class="filter-count">(28)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="checkbox" id="samsung">
-                    <label for="samsung">Samsung</label>
-                    <span class="filter-count">(34)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="checkbox" id="dell">
-                    <label for="dell">Dell</label>
-                    <span class="filter-count">(18)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="checkbox" id="sony">
-                    <label for="sony">Sony</label>
-                    <span class="filter-count">(15)</span>
-                </div>
-            </div>
+            <label class="filter-option">
+                <input type="radio" name="price" value="1000_10000"
+                    onchange="document.getElementById('priceFilter').submit();"
+                    {% if selected_price == '1000_10000' %}checked{% endif %}>
+                <span>₹1,000 - ₹10,000</span>
+            </label>
 
-            <div class="filter-section">
-                <div class="filter-title">Rating</div>
-                <div class="filter-option">
-                    <input type="checkbox" id="rating5">
-                    <label for="rating5">★★★★★ (5.0)</label>
-                    <span class="filter-count">(42)</span>
-                </div>
-                <div class="filter-option">
-                    <input type="checkbox" id="rating4">
-                    <label for="rating4">★★★★☆ (4.0+)</label>
-                    <span class="filter-count">(68)</span>
-                </div>
-            </div>
+            <label class="filter-option">
+                <input type="radio" name="price" value="10000_50000"
+                    onchange="document.getElementById('priceFilter').submit();"
+                    {% if selected_price == '10000_50000' %}checked{% endif %}>
+                <span>₹10,000 - ₹50,000</span>
+            </label>
 
-            <button class="clear-filters">Clear Filters</button>
+            <label class="filter-option">
+                <input type="radio" name="price" value="over_50000"
+                    onchange="document.getElementById('priceFilter').submit();"
+                    {% if selected_price == 'over_50000' %}checked{% endif %}>
+                <span>Over ₹50,000</span>
+            </label>
+        </form>
+    </div>
+
+<!--            <div class="filter-section">-->
+<!--                <div class="filter-title">Brand</div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="apple">-->
+<!--                    <label for="apple">Apple</label>-->
+<!--                    <span class="filter-count">(28)</span>-->
+<!--                </div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="samsung">-->
+<!--                    <label for="samsung">Samsung</label>-->
+<!--                    <span class="filter-count">(34)</span>-->
+<!--                </div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="dell">-->
+<!--                    <label for="dell">Dell</label>-->
+<!--                    <span class="filter-count">(18)</span>-->
+<!--                </div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="sony">-->
+<!--                    <label for="sony">Sony</label>-->
+<!--                    <span class="filter-count">(15)</span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="filter-section">-->
+<!--                <div class="filter-title">Rating</div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="rating5">-->
+<!--                    <label for="rating5">★★★★★ (5.0)</label>-->
+<!--                    <span class="filter-count">(42)</span>-->
+<!--                </div>-->
+<!--                <div class="filter-option">-->
+<!--                    <input type="checkbox" id="rating4">-->
+<!--                    <label for="rating4">★★★★☆ (4.0+)</label>-->
+<!--                    <span class="filter-count">(68)</span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+          <button class="clear-filters" onclick="window.location.href='{{ request.path }}';">
+            Clear Filters
+        </button>
+
         </aside>
 
         <!-- Products Section -->
         <section class="products-section">
             <div class="products-header">
-                <div class="results-count">Showing 1-24 of 135 products</div>
-                <select class="sort-dropdown">
-                    <option>Sort by: Featured</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                    <option>Newest First</option>
-                    <option>Best Rating</option>
-                </select>
+                <div class="results-count">
+                    Showing {{ products.start_index }} - {{ products.end_index }} of {{ products.paginator.count }} products
+                </div>
+
+             <select class="sort-dropdown" onchange="sortProducts(this.value)">
+                <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+                <option value="low_to_high" {% if sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                <option value="high_to_low" {% if sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+            </select>
             </div>
 
           <div class="products-grid">
@@ -1043,9 +1108,32 @@
     {% empty %}
     <h2 style="color:red;">No products found</h2>
     {% endfor %}
+</div><!-- products-grid -->
+
+
+<div class="pagination mt-10">
+    <nav class="pagination-nav">
+        {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+               class="pagination-btn">Previous</a>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+            <a href="?page={{ num }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+               class="pagination-btn {% if products.number == num %}active{% endif %}">
+                {{ num }}
+            </a>
+        {% endfor %}
+
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+               class="pagination-btn">Next</a>
+        {% endif %}
+    </nav>
 </div>
 
-    <!-- Footer -->
+
+
    <!-- Footer -->
   <footer id="contact" class="bg-gray-900 text-white py-16 lg:py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1066,21 +1154,20 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6">Quick Links</h3>
                     <ul class="space-y-4">
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Products</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">FAQ</a></li>
+                       <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                    <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                    <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                    <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+<!--                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">FAQ</a></li>-->
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-xl font-bold mb-6">Customer Service</h3>
                     <ul class="space-y-4">
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Returns & Refunds</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">Track Your Order</a></li>
+                    <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                    <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                    <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                    <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
                 <div>
@@ -1099,13 +1186,13 @@
                             <span class="text-gray-400">support@shophub.com</span>
                         </li>
                     </ul>
-                    <div class="mt-6">
-                        <h4 class="font-bold mb-3">Subscribe to Newsletter</h4>
-                        <div class="flex">
-                            <input type="email" placeholder="Your email" class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg outline-none">
-                            <button class="bg-orange-500 px-4 py-2 rounded-r-lg hover:bg-orange-600 transition"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </div>
+<!--                    <div class="mt-6">-->
+<!--                        <h4 class="font-bold mb-3">Subscribe to Newsletter</h4>-->
+<!--                        <div class="flex">-->
+<!--                            <input type="email" placeholder="Your email" class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg outline-none">-->
+<!--                            <button class="bg-orange-500 px-4 py-2 rounded-r-lg hover:bg-orange-600 transition"><i class="fas fa-paper-plane"></i></button>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
@@ -1114,56 +1201,70 @@
         </div>
     </footer>
 
-    <script>
-        let currentSlide = 0;
-     const totalSlides = {{ slider_products|length }};
-        function showSlide(n) {
-            const slider = document.getElementById('sliderWrapper');
-            slider.style.transform = `translateX(-${n * 100}%)`;
+  <script>
+    let currentSlide = 0;
+    const totalSlides = {{ slider_products|length }};
 
-            const dots = document.querySelectorAll('.slider-dot');
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[n].classList.add('active');
+    function showSlide(n) {
+        const slider = document.getElementById('sliderWrapper');
+        slider.style.transform = `translateX(-${n * 100}%)`;
+
+        const dots = document.querySelectorAll('.slider-dot');
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[n].classList.add('active');
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(n) {
+        currentSlide = n;
+        showSlide(currentSlide);
+    }
+
+    // Auto Slide
+    setInterval(nextSlide, 5000);
+
+    // ===== PROFILE DROPDOWN =====
+    function toggleProfileMenu() {
+        const menu = document.getElementById("dropdownMenu");
+        const parent = document.getElementById("profileDropdown");
+        parent.classList.toggle("active");
+        menu.classList.toggle("show");
+    }
+
+    // Close dropdown on outside click
+    window.addEventListener("click", function(e) {
+        const menu = document.getElementById("dropdownMenu");
+        const parent = document.getElementById("profileDropdown");
+
+        if (menu && parent && !parent.contains(e.target)) {
+            menu.classList.remove("show");
+            parent.classList.remove("active");
         }
+    });
 
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            showSlide(currentSlide);
-        }
+    // ===== FILTER LOADING ANIMATION =====
+    document.querySelectorAll('input[name="price"]').forEach(input => {
+        input.addEventListener("change", () => {
+            document.querySelector(".products-section").classList.add("loading");
+            setTimeout(() => {
+                document.getElementById("priceFilter").submit();
+            }, 200);
+        });
+    });
 
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            showSlide(currentSlide);
-        }
-
-        function goToSlide(n) {
-            currentSlide = n;
-            showSlide(currentSlide);
-        }
-
-        function scrollToProduct() {
-            document.querySelector('.products-section').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Auto-slide every 5 seconds
-        setInterval(nextSlide, 5000);
-
-
-        function toggleProfileMenu() {
-    document.getElementById("dropdownMenu").classList.toggle("show");
-}
-
-window.addEventListener("click", function(e){
-    const menu = document.getElementById("dropdownMenu");
-    const profileBtn = document.querySelector(".profile-toggle");
-
-
-function toggleProfileMenu() {
-    document.getElementById("dropdownMenu").classList.toggle("show");
-}
-
-});
-
-    </script>
+    function sortProducts(value) {
+        document.querySelector(".products-section").classList.add("loading");
+        window.location.href = "?sort=" + value + "&price={{ selected_price }}";
+    }
+</script>
 </body>
 </html>
