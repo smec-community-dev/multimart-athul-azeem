@@ -30,6 +30,8 @@ class Wishlist(models.Model):
 
 
 # ------------------ ORDER ------------------
+from django.utils import timezone
+
 class Order(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -45,11 +47,19 @@ class Order(models.Model):
     shipping_address = models.TextField()
     payment_method = models.CharField(max_length=50)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+
+    # TIMELINE DATES
+    pending_date = models.DateTimeField(default=timezone.now)
+    processing_date = models.DateTimeField(null=True, blank=True)
+    shipped_date = models.DateTimeField(null=True, blank=True)
+    delivered_date = models.DateTimeField(null=True, blank=True)
+
     order_date = models.DateTimeField(auto_now_add=True)
-    delivery_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Order #{self.id} - {self.status}"
+
+
 
 
 class OrderItem(models.Model):

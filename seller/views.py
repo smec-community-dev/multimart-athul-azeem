@@ -12,8 +12,7 @@ from django.db.models import (
 )
 from django.http import HttpResponse
 from django.utils.text import slugify
-from django.core.paginator import Paginator
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Project models
 from core.models import User, SubCategory, Category  # Assuming Category is in core.models
@@ -346,9 +345,6 @@ def seller_registration(request):
 
     return render(request,"seller/seller_registration.html")
 
-
-
-
 @login_required()
 @seller_required
 def order_product(request):
@@ -363,9 +359,11 @@ def order_product(request):
         .prefetch_related("items", "items__product")
         .annotate(
             items_count=Count("items"),
-            total_price=Sum(F("items__unit_price") * F("items__quantity"))
+            total_price=Sum(F("items__unit_price") * F("items__quantity")),
+            total_qty=Sum("items__quantity")  # ADD THIS LINE
         )
     )
+
     if search:
         orders = orders.filter(
             Q(id__icontains=search) |
@@ -380,18 +378,47 @@ def order_product(request):
     if status and status != 'all':
         orders = orders.filter(status=status.capitalize())
 
+    # DEBUG: Print order count
+    print(f"DEBUG: Total orders for this seller: {orders.count()}")
+    print(f"DEBUG: Seller: {seller}")
+
+    # Pagination
+    paginator = Paginator(orders, 10)  # 10 orders per page
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # DEBUG: Print pagination info
+    print(f"DEBUG: Total pages: {page_obj.paginator.num_pages}")
+    print(f"DEBUG: Current page: {page_obj.number}")
+    print(f"DEBUG: Orders on this page: {len(page_obj.object_list)}")
+
     notification_count = Order.objects.filter(seller=seller, status='Pending').count()
 
     return render(
         request,
         "seller/seller_order.html",
         {
-            "orders": orders,
+            "orders": page_obj.object_list,
+            "page_obj": page_obj,
             "notification_count": notification_count,
+            "search_query": search,
             "current_status": status if status else 'all'
         }
     )
+from django.utils import timezone
+from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+# Assume @seller_required is custom decorator
 
+# ... (other imports/models)
 
 @seller_required
 @login_required
@@ -407,28 +434,42 @@ def order_detail(request, id):
             seller=seller
         )
 
-        # Get order items with calculated totals
-        items = order.items.all()
-        order.total_amount = sum(item.unit_price * item.quantity for item in items)
-        order.save()
+        # Fallbacks: Set null dates for past/completed steps to order_date (historical accuracy)
+        # Pending: Always fallback to order_date if null
+        if not order.pending_date:
+            order.pending_date = order.order_date
+            order.save(update_fields=['pending_date'])
 
-        # Calculate totals
+        # Processing: Set if status implies it happened (and null)
+        if not order.processing_date and order.status in ['Processing', 'Shipped', 'Delivered']:
+            order.processing_date = order.order_date  # Fallback to order_date for past step
+            order.save(update_fields=['processing_date'])
+
+        # Shipped: Set if status implies it happened (and null)
+        if not order.shipped_date and order.status in ['Shipped', 'Delivered']:
+            order.shipped_date = order.order_date  # Fallback to order_date for past step
+            order.save(update_fields=['shipped_date'])
+
+        # Delivered: Already handled in update, but ensure if viewing Delivered
+        if not order.delivered_date and order.status == 'Delivered':
+            order.delivered_date = order.order_date  # Rare, but fallback
+            order.save(update_fields=['delivered_date'])
+
+        # Get order items
+        items = order.items.all()
+
+        # Recalculate total amount
+        order.total_amount = sum(item.unit_price * item.quantity for item in items)
+        order.save(update_fields=['total_amount'])
+
+        # Total quantity
         total_quantity = items.aggregate(total_qty=Sum('quantity'))['total_qty'] or 0
 
-        # Calculate items total (sum of all item totals)
-        calculated_items_total = sum(
-            item.unit_price * item.quantity for item in items
-        )
+        # Items total price
+        calculated_items_total = sum(item.unit_price * item.quantity for item in items)
 
-        # Calculate the difference to understand the discrepancy
+        # Difference check
         amount_difference = order.total_amount - calculated_items_total
-
-        # Debug information (you can remove this in production)
-        print(f"Order ID: {order.id}")
-        print(f"Database Total: {order.total_amount}")
-        print(f"Calculated Items Total: {calculated_items_total}")
-        print(f"Difference: {amount_difference}")
-        print(f"Total Quantity: {total_quantity}")
 
         context = {
             "order": order,
@@ -436,15 +477,45 @@ def order_detail(request, id):
             "total_quantity": total_quantity,
             "calculated_items_total": calculated_items_total,
             "amount_difference": amount_difference,
-            "has_discrepancy": abs(amount_difference) > 0.01,  # More than 1 paisa difference
+            "has_discrepancy": abs(amount_difference) > 0.01,
         }
 
         return render(request, "seller/seller_order_product_detail.html", context)
 
     except Exception as e:
-        # Log the error for debugging
-        print(f"Error in order_detail view: {str(e)}")
-        return render(request, 'error.html', {'error': str(e)})
+        return HttpResponse(f"Error: {e}")
+
+
+@seller_required
+@login_required
+def update_order_status(request, id):
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=id, seller=request.user.seller_details)
+        new_status = request.POST.get("status")
+
+        # Update status
+        order.status = new_status
+
+        # Update timeline dates once (with current time for new steps)
+        if new_status == "Processing" and not order.processing_date:
+            order.processing_date = timezone.now()
+
+        if new_status == "Shipped" and not order.shipped_date:
+            order.shipped_date = timezone.now()
+
+        if new_status == "Delivered" and not order.delivered_date:
+            order.delivered_date = timezone.now()
+
+        order.save()
+
+        # Redirect back to the order detail page (re-triggers fallbacks for past)
+        return redirect("seller_order_view", id=id)
+
+    # If GET request, redirect to order detail page
+    return redirect("seller_order_view", id=id)
+
+
+
 
 def login_seller(request):
     if request.method =="POST":
@@ -544,17 +615,6 @@ def seller_profile_view(request):
 
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
-
-
-def update_order_status(request, id):
-    if request.method == "POST":
-        order = get_object_or_404(Order, id=id)
-        order.status = "Delivered"
-        order.save()
-    return redirect("seller_dashboard")
-
-
-
 
 @login_required()
 @seller_required
