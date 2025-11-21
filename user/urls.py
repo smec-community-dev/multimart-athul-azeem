@@ -25,5 +25,9 @@ urlpatterns = [
     path("register/",views.user_register,name="register"),
     path("login/",views.user_login,name="login"),
     path("logout/", views.user_logout, name="logout"),
+    path("help-center/",views.help_center, name="help_center"),
+    path("returns/",views.returns, name="returns"),
+    path("shipping-info/",views.shipping_info, name="shipping_info"),
+    path("privacy-policy/",views.privacy_policy, name="privacy_policy"),
 
 ]

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns & Refunds - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .returns-gradient {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shopping-bag text-orange-500 text-3xl"></i>
+                    <span class="text-3xl font-bold text-gray-800">ShopHub</span>
+                </div>
+
+                <div class="flex items-center justify-end space-x-8 flex-1">
+                    <nav class="hidden lg:flex space-x-8">
+                        <a href="index.html" class="text-gray-700 hover:text-orange-500 font-medium">Home</a>
+                        <a href="shop.html" class="text-gray-700 hover:text-orange-500 font-medium">Shop</a>
+                        <a href="new-arrivals.html" class="text-gray-700 hover:text-orange-500 font-medium">New Arrivals</a>
+                        <a href="deals.html" class="text-gray-700 hover:text-orange-500 font-medium">Deals & Offers</a>
+                        <a href="contact.html" class="text-gray-700 hover:text-orange-500 font-medium">Contact</a>
+                    </nav>
+
+                    <div class="flex items-center space-x-6">
+                        <button class="text-gray-700 hover:text-orange-500">
+                            <i class="fas fa-search text-xl"></i>
+                        </button>
+                        <button class="relative text-gray-700 hover:text-orange-500">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">3</span>
+                        </button>
+                        <button class="hidden md:block px-6 py-2 border-2 border-gray-800 text-gray-800 rounded-lg hover:bg-gray-800 hover:text-white transition-colors font-medium">
+                            Login
+                        </button>
+                        <button class="hidden md:block px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                            Register
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="returns-gradient py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">Returns & Refunds</h1>
+                <p class="text-xl text-gray-700">Hassle-free returns and quick refunds guaranteed</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Return Policy Overview -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-check text-green-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">30-Day Returns</h3>
+                        <p class="text-gray-600">Easy returns within 30 days of delivery</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shipping-fast text-blue-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Free Returns</h3>
+                        <p class="text-gray-600">Free return shipping for defective products</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-undo-alt text-purple-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Quick Refunds</h3>
+                        <p class="text-gray-600">Refunds processed within 5-7 business days</p>
+                    </div>
+                </div>
+
+                <div class="bg-orange-50 border border-orange-200 rounded-2xl p-8">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-orange-500 text-2xl mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Important Return Policy Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">What Can Be Returned</h4>
+                                    <ul class="text-gray-700 space-y-1 text-sm">
+                                        <li>• Products in original condition</li>
+                                        <li>• Items with all tags attached</li>
+                                        <li>• Products in original packaging</li>
+                                        <li>• Defective or damaged items</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">What Cannot Be Returned</h4>
+                                    <ul class="text-gray-700 space-y-1 text-sm">
+                                        <li>• Intimate apparel & swimwear</li>
+                                        <li>• Personalized products</li>
+                                        <li>• Perishable goods</li>
+                                        <li>• Software & digital products</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Return Process -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">How to Return an Item</h2>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8">
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">1</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Initiate Return</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Log into your ShopHub account, go to "My Orders" and select the item you want to return.
+                                    Click "Return Item" and select your reason for return.
+                                </p>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-600">
+                                        <strong>Available return reasons:</strong> Wrong item, Defective, Size issue,
+                                        Changed mind, Better price available
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">2</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Print Return Label</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Once your return request is approved, you'll receive a return shipping label via email.
+                                    Print this label and attach it securely to your package.
+                                </p>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-600">
+                                        <strong>Note:</strong> For defective products, return shipping is free.
+                                        For other returns, shipping costs may apply.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">3</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Pack & Ship</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Pack the item in its original packaging with all accessories and tags.
+                                    Include the original invoice and drop off the package at any authorized shipping location.
+                                </p>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-600">
+                                        <strong>Packaging tips:</strong> Use the original box if possible,
+                                        include all manuals and accessories, ensure the item is securely packed.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flex items-start space-x-6">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold text-lg">4</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Receive Refund</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Once we receive and inspect your return, we'll process your refund within 5-7 business days.
+                                    You'll receive a confirmation email when the refund is processed.
+                                </p>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-600">
+                                        <strong>Refund methods:</strong> Refunds are issued to the original payment method.
+                                        Processing times vary by payment provider.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Refund Timeline -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">Refund Timeline</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Standard Refund Process</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Return Received</span>
+                                <span class="font-semibold text-gray-900">Day 1</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Quality Check</span>
+                                <span class="font-semibold text-gray-900">1-2 days</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Refund Initiated</span>
+                                <span class="font-semibold text-gray-900">Day 3</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Refund Processed</span>
+                                <span class="font-semibold text-gray-900">5-7 days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Refund Methods & Timelines</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg">
+                                <span class="text-gray-700">Credit/Debit Cards</span>
+                                <span class="font-semibold text-green-600">7-10 days</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg">
+                                <span class="text-gray-700">UPI Payments</span>
+                                <span class="font-semibold text-green-600">2-3 days</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg">
+                                <span class="text-gray-700">Net Banking</span>
+                                <span class="font-semibold text-green-600">3-5 days</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-white rounded-lg">
+                                <span class="text-gray-700">Wallet Payments</span>
+                                <span class="font-semibold text-green-600">Instant - 24 hrs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exchange Policy -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">Exchange Policy</h2>
+
+                <div class="bg-white rounded-2xl shadow-sm p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Product Exchanges</h3>
+                            <p class="text-gray-700 mb-6">
+                                We offer easy exchanges for size, color, or style changes. Exchanges are processed
+                                within 2-3 business days after we receive your return.
+                            </p>
+                            <ul class="text-gray-700 space-y-3">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span>Free exchange shipping</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span>Same product, different variant</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span>Priority processing</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">How to Request an Exchange</h3>
+                            <ol class="text-gray-700 space-y-3">
+                                <li class="flex items-start">
+                                    <span class="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1 flex-shrink-0">1</span>
+                                    <span>Initiate return for the original item</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1 flex-shrink-0">2</span>
+                                    <span>Select "Exchange" as return reason</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1 flex-shrink-0">3</span>
+                                    <span>Choose your preferred variant</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-1 flex-shrink-0">4</span>
+                                    <span>We'll ship the new item once return is received</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">Ready to Start a Return?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="login.html" class="bg-orange-500 text-white rounded-2xl p-8 hover:bg-orange-600 transition-colors group">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-undo-alt text-orange-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Start Return Process</h3>
+                        <p class="text-orange-100">Log in to initiate your return request</p>
+                    </a>
+                    <a href="contact.html" class="bg-gray-800 text-white rounded-2xl p-8 hover:bg-gray-900 transition-colors group">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-headset text-gray-800 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Need Help?</h3>
+                        <p class="text-gray-300">Contact our support team for assistance</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-shopping-bag text-orange-500 text-2xl"></i>
+                        <span class="text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your one-stop destination for all your shopping needs.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-gray-400 hover:text-orange-500 transition-colors">Home</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-orange-500 transition-colors">Shop</a></li>
+                        <li><a href="new-arrivals.html" class="text-gray-400 hover:text-orange-500 transition-colors">New Arrivals</a></li>
+                        <li><a href="deals.html" class="text-gray-400 hover:text-orange-500 transition-colors">Deals & Offers</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="contact.html" class="text-gray-400 hover:text-orange-500 transition-colors">Contact Us</a></li>
+                        <li><a href="faq.html" class="text-gray-400 hover:text-orange-500 transition-colors">FAQs</a></li>
+                        <li><a href="shipping.html" class="text-gray-400 hover:text-orange-500 transition-colors">Shipping Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Info</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-orange-500 mt-1 mr-3"></i>
+                            <span>123 Shopping Street, Retail District</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-orange-500 mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-orange-500 mr-3"></i>
+                            <span>support@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

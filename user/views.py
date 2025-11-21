@@ -11,6 +11,7 @@ from user.models import Cart, Wishlist, Review
 from .models import Cart, Order, OrderItem
 from django.db.models import Q
 from difflib import get_close_matches
+from django.core.paginator import Paginator
 
 def products(request):
     bestseller_products = Product.objects.filter(is_featured=True)[:4]
@@ -43,11 +44,60 @@ def products(request):
         "bestseller_products": bestseller_products,
     })
 
-
+from django.core.paginator import Paginator
 
 def productslist(request):
     products = Product.objects.all()
-    return render(request, "user/products.html", {"products": products})
+
+    # Get filter values
+    price = request.GET.get("price")
+    category = request.GET.get("category")
+    rating = request.GET.get("rating")
+    sort = request.GET.get("sort")
+
+    # PRICE filter
+    if price == "under_1000":
+        products = products.filter(price__lt=1000)
+    elif price == "1000_10000":
+        products = products.filter(price__gte=1000, price__lte=10000)
+    elif price == "10000_50000":
+        products = products.filter(price__gte=10000, price__lte=50000)
+    elif price == "over_50000":
+        products = products.filter(price__gt=50000)
+
+    # CATEGORY filter
+    if category:
+        products = products.filter(subcategory__category__name__iexact=category)
+
+    # RATING filter
+    if rating:
+        products = products.filter(average_rating__gte=rating)
+
+    # SORTING
+    if sort == "featured":
+        products = products.filter(is_featured=True)
+    elif sort == "low_to_high":
+        products = products.order_by("price")
+    elif sort == "high_to_low":
+        products = products.order_by("-price")
+    elif sort == "newest":
+        products = products.order_by("-created_at")
+
+    # PAGINATION MUST COME LAST
+    paginator = Paginator(products, 4)  # 4 products each page
+    page_number = request.GET.get("page")
+    products_page = paginator.get_page(page_number)
+
+    return render(request, "user/products.html", {
+        "products": products_page,
+        "selected_price": price,
+        "selected_category": category,
+        "selected_rating": rating,
+        "sort": sort,
+        "paginator": paginator,
+        "page_obj": products_page,
+    })
+
 
 
 def profile(request):
@@ -379,3 +429,17 @@ def contact(request):
 
 def about(request):
     return render(request,"user/about.html")
+
+
+
+def help_center(request):
+    return render(request, "user/help_center.html")
+
+def returns(request):
+    return render(request, "user/returns.html")
+
+def shipping_info(request):
+    return render(request, "user/shipping_info.html")
+
+def privacy_policy(request):
+    return render(request, "user/privacy_policy.html")
