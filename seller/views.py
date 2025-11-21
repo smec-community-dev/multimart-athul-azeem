@@ -648,18 +648,20 @@ def seller_profile_view(request):
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
+
+
+from django.db.models.functions import TruncDay, TruncWeek
+from django.db.models import Sum, Avg
+import json
+
 @login_required()
 @seller_required
 def product_details(request, slug):
-
     product = get_object_or_404(
         Product,
         slug=slug,
         seller=request.user.seller_details
     )
-
-    # Get all subcategories for the dropdown
-    subcategories = SubCategory.objects.all()
 
     # Fetch reviews
     reviews = (
@@ -669,7 +671,6 @@ def product_details(request, slug):
     )
 
     avg_rating = reviews.aggregate(avg=Avg("rating"))["avg"] or 0
-
     order_items = OrderItem.objects.filter(product=product)
 
     total_quantity_sold = (
@@ -679,18 +680,54 @@ def product_details(request, slug):
     order_count = order_items.values("order").distinct().count()
     images = product.images.all()
     main_image = product.images.first()
+    weekly_qs = (
+        OrderItem.objects
+        .filter(product=product)
+        .annotate(week=TruncWeek("order__order_date"))
+        .values("week")
+        .annotate(total=Sum("quantity"))
+        .order_by("week")
+    )
 
+    weekly_labels = [w["week"].strftime("%a") for w in weekly_qs]
+    weekly_sales = [w["total"] for w in weekly_qs]
+
+    # MONTHLY SALES
+    monthly_qs = (
+        OrderItem.objects
+        .filter(product=product)
+        .annotate(day=TruncDay("order__order_date"))
+        .values("day")
+        .annotate(total=Sum("quantity"))
+        .order_by("day")
+    )
+
+    monthly_labels = [m["day"].strftime("Day %d") for m in monthly_qs]
+    monthly_sales = [m["total"] for m in monthly_qs]
+
+    if not monthly_labels:
+        monthly_labels = [f"Day {i}" for i in range(1, 31)]
+        monthly_sales = [0] * 30
+
+    # ---------------------------------------------------------
+    # RENDER
+    # ---------------------------------------------------------
     return render(
         request,
         "seller/seller_product_details.html",
         {
             "product": product,
-            "subcategories": subcategories,
             "reviews": reviews,
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
-    "images": images,
-    "main_image": main_image,
+            "images": images,
+            "main_image": main_image,
+
+            # Chart Data
+            "weekly_labels": json.dumps(weekly_labels),
+            "weekly_sales": json.dumps(weekly_sales),
+            "monthly_labels": json.dumps(monthly_labels),
+            "monthly_sales": json.dumps(monthly_sales),
         }
     )
