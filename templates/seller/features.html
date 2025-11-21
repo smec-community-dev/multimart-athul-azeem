@@ -1743,7 +1743,8 @@
         // View Product
         document.querySelectorAll('.view').forEach(btn => {
             btn.addEventListener('click', () => {
-                window.open(btn.dataset.viewUrl, '_blank');
+                window.location.href = btn.dataset.viewUrl;
+
             });
         });
 

@@ -555,6 +555,7 @@ def update_order_status(request, id):
 
 
 
+
 @login_required()
 @seller_required
 def product_details(request, slug):
@@ -565,6 +566,10 @@ def product_details(request, slug):
         seller=request.user.seller_details
     )
 
+    # Get all subcategories for the dropdown
+    subcategories = SubCategory.objects.all()
+
+    # Fetch reviews
     reviews = (
         Review.objects.filter(product=product)
         .select_related("user")
@@ -580,15 +585,20 @@ def product_details(request, slug):
     )
 
     order_count = order_items.values("order").distinct().count()
+    images = product.images.all()
+    main_image = product.images.first()
 
     return render(
         request,
         "seller/seller_product_details.html",
         {
             "product": product,
+            "subcategories": subcategories,
             "reviews": reviews,
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
+    "images": images,
+    "main_image": main_image,
         }
     )
