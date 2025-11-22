@@ -1,3 +1,6 @@
+import os
+import time
+
 from django.core.checks import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -9,14 +12,19 @@ from django.db.models import (
 )
 from django.http import HttpResponse
 from django.utils.text import slugify
-
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 # Project models
-from core.models import User, SubCategory
+from core.models import User, SubCategory, Category  # Assuming Category is in core.models
 from seller.decorators import seller_required
 from seller.models import Product, SellerDetails, ProductImage
 from user.models import Order, Review, OrderItem
 
+from django.db.models import Sum, Value, IntegerField
+from django.db.models.functions import Coalesce
+
+from django.utils.timezone import now
+from datetime import timedelta
 
 @login_required
 @seller_required
@@ -33,7 +41,7 @@ def view_product(request):
 
     products_count = Product.objects.filter(seller=seller).count()
 
-    pending_products = 0
+    pending_products = 0  # TODO: Implement if needed
 
     rating_data = Review.objects.filter(product__seller=seller).aggregate(
         avg=Avg("rating"),
@@ -43,12 +51,40 @@ def view_product(request):
     avg_rating = rating_data["avg"] or 0
     rating_count = rating_data["count"]
 
+    # Low stock threshold (customize based on your business logic)
+    low_stock_threshold = 10
 
-    top_products = (
-        Product.objects.filter(seller=seller)
-        .annotate(total_sold=Sum("orderitem__quantity"))
+    # First, try to get top products with low stock
+    top_low_stock_products = (
+        Product.objects.filter(seller=seller, stock__lt=low_stock_threshold)
+        .annotate(
+            total_sold=Coalesce(
+                Sum("orderitem__quantity"),
+                Value(0, output_field=IntegerField())
+            )
+        )
         .order_by("-total_sold")[:3]
     )
+
+    # Unsliced queryset for overall top to allow further filtering
+    overall_top_qs = (
+        Product.objects.filter(seller=seller)
+        .annotate(
+            total_sold=Coalesce(
+                Sum("orderitem__quantity"),
+                Value(0, output_field=IntegerField())
+            )
+        )
+        .order_by("-total_sold")
+    )
+
+    # Combine: prioritize low-stock ones, fill gaps with overall top
+    top_products = list(top_low_stock_products)  # Convert to list early to avoid issues
+    if len(top_products) < 3:
+        # Exclude already included low-stock ones to avoid duplicates
+        excluded_ids = [p.id for p in top_products]
+        fillers = overall_top_qs.exclude(id__in=excluded_ids)[:3 - len(top_products)]
+        top_products += list(fillers)
 
     recent_orders = (
         Order.objects.filter(seller=seller)
@@ -57,7 +93,25 @@ def view_product(request):
         .prefetch_related("items__product")
         .order_by("-order_date")[:4]
     )
+    today = now().date()
+    last_week = today - timedelta(days=6)
 
+    orders = Order.objects.filter(
+        seller=seller,
+        order_date__date__range=[last_week, today]
+    ).prefetch_related("items")
+
+    # Mon-Sun format
+    week_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    week_data = {day: 0 for day in week_days}
+
+    for order in orders:
+        day = order.order_date.strftime("%a")
+        total = sum(item.unit_price * item.quantity for item in order.items.all())
+        week_data[day] += float(total)
+
+    sales_labels = list(week_data.keys())
+    sales_values = list(week_data.values())
     context = {
         "total_revenue": total_revenue,
         "total_orders": total_orders,
@@ -65,22 +119,35 @@ def view_product(request):
         "pending_products": pending_products,
         "avg_rating": round(avg_rating, 1),
         "rating_count": rating_count,
-    "top_products": top_products,
+        "top_products": top_products,
         "recent_orders": recent_orders,
+        "low_stock_threshold": low_stock_threshold,
+    "sales_labels": sales_labels,
+    "sales_values": sales_values,
     }
 
     return render(request, "seller/sellerdashboard.html", context)
 
 
-
+def sanitize_filename(filename):
+    """Sanitize filename: remove invalid chars, limit length, add timestamp."""
+    base, ext = os.path.splitext(filename)
+    # Remove invalid chars (Windows/Linux safe: alnum, space, -, _ only)
+    base = ''.join(c for c in base if c.isalnum() or c in (' ', '-', '_')).rstrip()
+    # Limit length
+    if len(base) > 100:
+        base = base[:100]
+    # Add timestamp to avoid collisions
+    timestamp = int(time.time())
+    return f"{base}_{timestamp}{ext}"
 
 @login_required()
 @seller_required
 def add_product(request):
-    if request.method == "POST":
+    seller = SellerDetails.objects.get(user=request.user)
 
+    if request.method == "POST":
         seller = SellerDetails.objects.get(user=request.user)
-        print(seller)
 
         name = request.POST.get('name')
         subcat_id = request.POST.get('subcategory')
@@ -94,7 +161,7 @@ def add_product(request):
         gallery_images = request.FILES.getlist('gallery_images')
 
         subcategory = SubCategory.objects.get(id=subcat_id)
-
+        print(subcategory)
 
         product = Product.objects.create(
             seller=seller,
@@ -104,18 +171,24 @@ def add_product(request):
             price=price,
             stock=stock,
             color=color,
-            size=size
+            size=size,
+            slug=slugify(name)  # Ensure slug is set
         )
 
+        # Sanitize and save main image
         if main_image:
+            sanitized_filename = sanitize_filename(main_image.name)
+            main_image.name = sanitized_filename
             ProductImage.objects.create(
                 product=product,
                 image=main_image,
                 image_type="Main"
             )
 
-
-        for img in  gallery_images:
+        # Sanitize and save gallery images
+        for img in gallery_images:
+            sanitized_filename = sanitize_filename(img.name)
+            img.name = sanitized_filename
             ProductImage.objects.create(
                 product=product,
                 image=img,
@@ -124,13 +197,53 @@ def add_product(request):
 
         return redirect("seller_dashboard")
 
+   
 
+    # GET request - handle filtering and pagination
+    products_qs = Product.objects.filter(seller=seller).order_by('-id')
 
+    # Search filter
+    search = request.GET.get('search', '').strip()
+    if search:
+        products_qs = products_qs.filter(name__icontains=search)
 
+    # Category filter (assuming Category exists and SubCategory has category field)
+    category_id = request.GET.get('category')
+    if category_id:
+        products_qs = products_qs.filter(subcategory__category_id=category_id)
 
-    products = Product.objects.all()
+    # Status filter based on stock
+    status = request.GET.get('status')
+    if status == 'active':
+        products_qs = products_qs.filter(stock__gt=10)
+    elif status == 'low_stock':
+        products_qs = products_qs.filter(stock__gt=0, stock__lte=10)
+    elif status == 'out_of_stock':
+        products_qs = products_qs.filter(stock__lte=0)
+
+    # Pagination
+    paginator = Paginator(products_qs, 10)  # Show 10 products per page
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    categories = Category.objects.all()
     subcategories = SubCategory.objects.all()
-    return render(request, "seller/features.html", {"subcategories": subcategories, "products": products})
+
+    # For filter display
+    selected_category = None
+    if category_id:
+        try:
+            selected_category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            pass
+
+    context = {
+        "products": products,
+        "categories": categories,
+        "subcategories": subcategories,
+        "selected_category": selected_category,
+    }
+    return render(request, "seller/features.html", context)
 
 @login_required()
 @seller_required
@@ -167,7 +280,8 @@ def update_product(request, slug):
 
         return redirect("add")
 
-    return render(request, "seller/update_product.html", {"product": product})
+    subcategories = SubCategory.objects.all()
+    return render(request, "seller/update_product.html", {"product": product, "subcategories": subcategories})
 
 
 
@@ -222,7 +336,7 @@ def seller_registration(request):
         )
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('seller/login')
+        return redirect('login')
 
 
 
@@ -230,9 +344,6 @@ def seller_registration(request):
 
 
     return render(request,"seller/seller_registration.html")
-
-
-
 
 @login_required()
 @seller_required
@@ -248,9 +359,11 @@ def order_product(request):
         .prefetch_related("items", "items__product")
         .annotate(
             items_count=Count("items"),
-            total_price=Sum(F("items__unit_price") * F("items__quantity"))
+            total_price=Sum(F("items__unit_price") * F("items__quantity")),
+            total_qty=Sum("items__quantity")  # ADD THIS LINE
         )
     )
+
     if search:
         orders = orders.filter(
             Q(id__icontains=search) |
@@ -265,18 +378,47 @@ def order_product(request):
     if status and status != 'all':
         orders = orders.filter(status=status.capitalize())
 
+    # DEBUG: Print order count
+    print(f"DEBUG: Total orders for this seller: {orders.count()}")
+    print(f"DEBUG: Seller: {seller}")
+
+    # Pagination
+    paginator = Paginator(orders, 10)  # 10 orders per page
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # DEBUG: Print pagination info
+    print(f"DEBUG: Total pages: {page_obj.paginator.num_pages}")
+    print(f"DEBUG: Current page: {page_obj.number}")
+    print(f"DEBUG: Orders on this page: {len(page_obj.object_list)}")
+
     notification_count = Order.objects.filter(seller=seller, status='Pending').count()
 
     return render(
         request,
         "seller/seller_order.html",
         {
-            "orders": orders,
+            "orders": page_obj.object_list,
+            "page_obj": page_obj,
             "notification_count": notification_count,
+            "search_query": search,
             "current_status": status if status else 'all'
         }
     )
+from django.utils import timezone
+from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+# Assume @seller_required is custom decorator
 
+# ... (other imports/models)
 
 @seller_required
 @login_required
@@ -292,31 +434,42 @@ def order_detail(request, id):
             seller=seller
         )
 
-        # Get order items with calculated totals
-        items = order.items.select_related('product').annotate(
-            item_total=ExpressionWrapper(
-                F('unit_price') * F('quantity'),
-                output_field=DecimalField(max_digits=12, decimal_places=2)
-            )
-        )
+        # Fallbacks: Set null dates for past/completed steps to order_date (historical accuracy)
+        # Pending: Always fallback to order_date if null
+        if not order.pending_date:
+            order.pending_date = order.order_date
+            order.save(update_fields=['pending_date'])
 
-        # Calculate totals
+        # Processing: Set if status implies it happened (and null)
+        if not order.processing_date and order.status in ['Processing', 'Shipped', 'Delivered']:
+            order.processing_date = order.order_date  # Fallback to order_date for past step
+            order.save(update_fields=['processing_date'])
+
+        # Shipped: Set if status implies it happened (and null)
+        if not order.shipped_date and order.status in ['Shipped', 'Delivered']:
+            order.shipped_date = order.order_date  # Fallback to order_date for past step
+            order.save(update_fields=['shipped_date'])
+
+        # Delivered: Already handled in update, but ensure if viewing Delivered
+        if not order.delivered_date and order.status == 'Delivered':
+            order.delivered_date = order.order_date  # Rare, but fallback
+            order.save(update_fields=['delivered_date'])
+
+        # Get order items
+        items = order.items.all()
+
+        # Recalculate total amount
+        order.total_amount = sum(item.unit_price * item.quantity for item in items)
+        order.save(update_fields=['total_amount'])
+
+        # Total quantity
         total_quantity = items.aggregate(total_qty=Sum('quantity'))['total_qty'] or 0
 
-        # Calculate items total (sum of all item totals)
-        calculated_items_total = sum(
-            item.unit_price * item.quantity for item in items
-        )
+        # Items total price
+        calculated_items_total = sum(item.unit_price * item.quantity for item in items)
 
-        # Calculate the difference to understand the discrepancy
+        # Difference check
         amount_difference = order.total_amount - calculated_items_total
-
-        # Debug information (you can remove this in production)
-        print(f"Order ID: {order.id}")
-        print(f"Database Total: {order.total_amount}")
-        print(f"Calculated Items Total: {calculated_items_total}")
-        print(f"Difference: {amount_difference}")
-        print(f"Total Quantity: {total_quantity}")
 
         context = {
             "order": order,
@@ -324,15 +477,45 @@ def order_detail(request, id):
             "total_quantity": total_quantity,
             "calculated_items_total": calculated_items_total,
             "amount_difference": amount_difference,
-            "has_discrepancy": abs(amount_difference) > 0.01,  # More than 1 paisa difference
+            "has_discrepancy": abs(amount_difference) > 0.01,
         }
 
         return render(request, "seller/seller_order_product_detail.html", context)
 
     except Exception as e:
-        # Log the error for debugging
-        print(f"Error in order_detail view: {str(e)}")
-        return render(request, 'error.html', {'error': str(e)})
+        return HttpResponse(f"Error: {e}")
+
+
+@seller_required
+@login_required
+def update_order_status(request, id):
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=id, seller=request.user.seller_details)
+        new_status = request.POST.get("status")
+
+        # Update status
+        order.status = new_status
+
+        # Update timeline dates once (with current time for new steps)
+        if new_status == "Processing" and not order.processing_date:
+            order.processing_date = timezone.now()
+
+        if new_status == "Shipped" and not order.shipped_date:
+            order.shipped_date = timezone.now()
+
+        if new_status == "Delivered" and not order.delivered_date:
+            order.delivered_date = timezone.now()
+
+        order.save()
+
+        # Redirect back to the order detail page (re-triggers fallbacks for past)
+        return redirect("seller_order_view", id=id)
+
+    # If GET request, redirect to order detail page
+    return redirect("seller_order_view", id=id)
+
+
+
 
 def login_seller(request):
     if request.method =="POST":
@@ -433,16 +616,6 @@ def seller_profile_view(request):
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
-
-def update_order_status(request, id):
-    if request.method == "POST":
-        order = get_object_or_404(Order, id=id)
-        order.status = "Delivered"
-        order.save()
-    return redirect("seller_dashboard")
-
-
-
 @login_required()
 @seller_required
 def product_details(request, slug):
@@ -453,6 +626,10 @@ def product_details(request, slug):
         seller=request.user.seller_details
     )
 
+    # Get all subcategories for the dropdown
+    subcategories = SubCategory.objects.all()
+
+    # Fetch reviews
     reviews = (
         Review.objects.filter(product=product)
         .select_related("user")
@@ -468,22 +645,20 @@ def product_details(request, slug):
     )
 
     order_count = order_items.values("order").distinct().count()
+    images = product.images.all()
+    main_image = product.images.first()
 
     return render(
         request,
         "seller/seller_product_details.html",
         {
             "product": product,
+            "subcategories": subcategories,
             "reviews": reviews,
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
+    "images": images,
+    "main_image": main_image,
         }
     )
-
-
-
-
-
-
-

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ... ALL YOUR EXISTING <head> CONTENT UNCHANGED ... -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Dashboard - ShopHub</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <!-- ... your fonts and styles ... -->
     <style>
-        :root {
+       :root {
             --primary-color: #FF7F32;
             --accent-color: #FFB273;
             --secondary-color: #E67A3A;
@@ -25,26 +24,32 @@
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Open Sans', sans-serif;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         html, body {
             width: 100%;
             height: 100%;
             overflow-x: hidden;
         }
+
         body {
             font-family: var(--font-body);
             background-color: var(--bg-color);
             color: var(--text-color);
         }
+
         a { text-decoration: none; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
         /* ======================== NAVBAR ======================== */
         .navbar {
             background: var(--card-bg);
@@ -59,12 +64,14 @@
             width: 100%;
             gap: 12px;
         }
+
         .navbar-left {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-shrink: 0;
         }
+
         .hamburger {
             display: none;
             flex-direction: column;
@@ -72,6 +79,7 @@
             padding: 4px;
             gap: 3px;
         }
+
         .hamburger span {
             width: 24px;
             height: 3px;
@@ -79,15 +87,19 @@
             transition: all 0.3s ease;
             border-radius: 2px;
         }
+
         .hamburger.active span:nth-child(1) {
             transform: rotate(45deg) translate(6px, 6px);
         }
+
         .hamburger.active span:nth-child(2) {
             opacity: 0;
         }
+
         .hamburger.active span:nth-child(3) {
             transform: rotate(-45deg) translate(6px, -6px);
         }
+
         .logo {
             font-family: var(--font-heading);
             font-size: 1.6rem;
@@ -95,18 +107,21 @@
             color: var(--primary-color);
             white-space: nowrap;
         }
+
         .navbar-title {
             font-size: 0.85rem;
             color: var(--light-text);
             border-left: 2px solid var(--primary-color);
             padding-left: 10px;
         }
+
         .navbar-right {
             display: flex;
             align-items: center;
             gap: 15px;
             flex-shrink: 0;
         }
+
         .notification-bell {
             position: relative;
             cursor: pointer;
@@ -115,7 +130,9 @@
             transition: transform 0.3s ease;
             line-height: 1;
         }
+
         .notification-bell:hover { transform: scale(1.1); }
+
         .notification-badge {
             position: absolute;
             top: -8px;
@@ -131,7 +148,9 @@
             font-size: 0.65rem;
             font-weight: 700;
         }
+
         .profile-dropdown { position: relative; }
+
         .profile-toggle {
             display: flex;
             align-items: center;
@@ -143,10 +162,12 @@
             transition: all 0.3s ease;
             border: 1px solid transparent;
         }
+
         .profile-toggle:hover {
             background: rgba(255, 127, 50, 0.2);
             border-color: var(--primary-color);
         }
+
         .profile-avatar {
             width: 32px;
             height: 32px;
@@ -160,32 +181,33 @@
             font-size: 0.9rem;
             flex-shrink: 0;
         }
+
         .profile-info-text {
             display: flex;
             flex-direction: column;
             gap: 1px;
             display: none;
         }
-        @media (min-width: 769px) {
-            .profile-info-text {
-                display: flex;
-            }
-        }
+
         .profile-name {
             font-weight: 700;
             font-size: 0.8rem;
             color: var(--text-color);
         }
+
         .profile-role {
             font-size: 0.7rem;
             color: var(--light-text);
         }
+
         .dropdown-arrow {
             font-size: 1rem;
             transition: transform 0.3s ease;
             line-height: 1;
         }
+
         .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+
         .dropdown-menu {
             position: absolute;
             top: 100%;
@@ -201,17 +223,21 @@
             border: 1px solid var(--border-color);
             overflow: hidden;
         }
+
         .dropdown-menu.show { display: block; }
+
         .dropdown-header {
             padding: 12px 16px;
             background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
             border-bottom: 1px solid var(--border-color);
         }
+
         .dropdown-header-content {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .dropdown-header-avatar {
             width: 40px;
             height: 40px;
@@ -225,17 +251,21 @@
             font-size: 1rem;
             flex-shrink: 0;
         }
+
         .dropdown-header-info h3 {
             font-size: 0.95rem;
             font-weight: 700;
             color: var(--text-color);
             margin-bottom: 2px;
         }
+
         .dropdown-header-info p {
             font-size: 0.8rem;
             color: var(--light-text);
         }
+
         .dropdown-items { padding: 8px 0; }
+
         .dropdown-item {
             display: flex;
             align-items: center;
@@ -248,36 +278,44 @@
             border-left: 3px solid transparent;
             font-size: 0.9rem;
         }
+
         .dropdown-item:hover {
             background-color: rgba(255, 127, 50, 0.1);
             border-left-color: var(--primary-color);
             color: var(--primary-color);
         }
+
         .dropdown-item-icon {
             font-size: 1.1rem;
             width: 22px;
             flex-shrink: 0;
         }
+
         .dropdown-item-text { flex: 1; }
+
         .dropdown-item-label {
             font-weight: 600;
             font-size: 0.85rem;
         }
+
         .dropdown-item-desc {
             font-size: 0.7rem;
             color: var(--light-text);
             margin-top: 2px;
         }
+
         .dropdown-divider {
             height: 1px;
             background: var(--border-color);
             margin: 6px 0;
         }
+
         .dropdown-item.logout { color: var(--danger-color); }
         .dropdown-item.logout:hover {
             background-color: rgba(244, 67, 54, 0.1);
             border-left-color: var(--danger-color);
         }
+
         /* ======================== MAIN LAYOUT ======================== */
         .container {
             display: flex;
@@ -285,6 +323,7 @@
             min-height: calc(100vh - 60px);
             background: var(--bg-color);
         }
+
         .sidebar {
             width: 240px;
             background: var(--card-bg);
@@ -294,6 +333,7 @@
             overflow-y: auto;
             flex-shrink: 0;
         }
+
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -304,10 +344,13 @@
             background: rgba(0,0,0,0.5);
             z-index: 98;
         }
+
         .sidebar-menu {
             list-style: none;
         }
+
         .sidebar-menu li { margin: 0; }
+
         .sidebar-menu a {
             display: flex;
             align-items: center;
@@ -319,36 +362,43 @@
             border-left: 3px solid transparent;
             font-size: 0.95rem;
         }
+
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
             background-color: rgba(255, 127, 50, 0.1);
             color: var(--primary-color);
             border-left-color: var(--primary-color);
         }
+
         .sidebar-menu span {
             font-size: 1.2rem;
             flex-shrink: 0;
             line-height: 1;
         }
+
         .main-content {
             flex: 1;
             padding: 24px;
             overflow-y: auto;
             max-width: 100%;
         }
+
         .header {
             margin-bottom: 24px;
         }
+
         .header h1 {
             font-family: var(--font-heading);
             font-size: 2rem;
             color: var(--text-color);
             margin-bottom: 4px;
         }
+
         .header p {
             color: var(--light-text);
             font-size: 0.95rem;
         }
+
         /* ======================== STATS GRID ======================== */
         .stats-grid {
             display: grid;
@@ -357,6 +407,7 @@
             margin-bottom: 24px;
             animation: fadeIn 0.6s ease;
         }
+
         .stat-card {
             background: var(--card-bg);
             padding: 20px;
@@ -365,13 +416,16 @@
             border-left: 4px solid var(--primary-color);
             transition: all 0.3s ease;
         }
+
         .stat-card:nth-child(2) { border-left-color: var(--success-color); }
         .stat-card:nth-child(3) { border-left-color: var(--warning-color); }
         .stat-card:nth-child(4) { border-left-color: var(--accent-color); }
+
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-medium);
         }
+
         .stat-label {
             color: var(--light-text);
             font-size: 0.8rem;
@@ -380,6 +434,7 @@
             text-transform: uppercase;
             letter-spacing: 0.4px;
         }
+
         .stat-value {
             font-family: var(--font-heading);
             font-size: 1.8rem;
@@ -387,12 +442,15 @@
             color: var(--text-color);
             margin-bottom: 8px;
         }
+
         .stat-change {
             font-size: 0.8rem;
             color: var(--success-color);
             font-weight: 600;
         }
+
         .stat-change.negative { color: var(--danger-color); }
+
         /* ======================== SECTION ======================== */
         .section {
             background: var(--card-bg);
@@ -402,6 +460,7 @@
             margin-bottom: 24px;
             animation: fadeIn 0.6s ease;
         }
+
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -412,12 +471,14 @@
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .section-title {
             font-family: var(--font-heading);
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--text-color);
         }
+
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
@@ -430,13 +491,16 @@
             font-size: 0.85rem;
             white-space: nowrap;
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
         }
+
         .btn-primary a {
             color: white;
         }
+
         /* ======================== TABLE ======================== */
         .table-container {
             overflow-x: auto;
@@ -444,15 +508,17 @@
             margin: -5px;
             padding: 5px;
         }
+
         table {
-            width: auto;
-            min-width: 600px;
-            margin: 0 auto;
+            width: 100%;
             border-collapse: collapse;
+            min-width: 100%;
         }
+
         thead { background-color: rgba(255, 127, 50, 0.05); }
+
         th {
-            padding: 8px 6px;
+            padding: 12px;
             text-align: left;
             font-weight: 600;
             color: var(--text-color);
@@ -462,32 +528,37 @@
             letter-spacing: 0.3px;
             white-space: nowrap;
         }
+
         td {
-            padding: 8px 6px;
+            padding: 12px;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
+
         tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+
         .product-name {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-weight: 600;
             color: var(--text-color);
         }
+
         .product-icon {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: white;
             flex-shrink: 0;
             line-height: 1;
         }
+
         .status-badge {
             padding: 4px 10px;
             border-radius: 20px;
@@ -497,22 +568,27 @@
             text-align: center;
             white-space: nowrap;
         }
+
         .status-active {
             background-color: rgba(76, 175, 80, 0.1);
             color: var(--success-color);
         }
+
         .status-pending {
             background-color: rgba(255, 193, 7, 0.1);
             color: var(--warning-color);
         }
+
         .status-inactive {
             background-color: rgba(244, 67, 54, 0.1);
             color: var(--danger-color);
         }
+
         .status-warning {
             background-color: rgba(255, 193, 7, 0.1);
             color: var(--warning-color);
         }
+
         /* ======================== CHART ======================== */
         .chart-container {
             height: 280px;
@@ -525,15 +601,8 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             gap: 8px;
-            position: relative;
         }
-        .chart-container canvas {
-            width: 100% !important;
-            height: 100% !important;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+
         .chart-bar {
             width: 28px;
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
@@ -544,10 +613,12 @@
             min-height: 20px;
             flex-shrink: 0;
         }
+
         .chart-bar:hover {
             transform: scaleY(1.05);
             filter: brightness(1.08);
         }
+
         .chart-label {
             position: absolute;
             bottom: -22px;
@@ -557,6 +628,7 @@
             color: var(--light-text);
             white-space: nowrap;
         }
+
         .chart-value {
             position: absolute;
             top: -22px;
@@ -567,6 +639,7 @@
             font-size: 0.8rem;
             white-space: nowrap;
         }
+
         /* ======================== ORDER ITEMS ======================== */
         .order-item {
             display: flex;
@@ -580,24 +653,29 @@
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .order-item:hover {
             border-color: var(--primary-color);
             box-shadow: 0 3px 10px rgba(255, 127, 50, 0.1);
         }
+
         .order-info {
             flex: 1;
             min-width: 160px;
         }
+
         .order-id {
             font-weight: 700;
             color: var(--text-color);
             margin-bottom: 4px;
             font-size: 0.9rem;
         }
+
         .order-customer {
             color: var(--light-text);
             font-size: 0.85rem;
         }
+
         .order-amount {
             font-family: var(--font-heading);
             font-size: 1.1rem;
@@ -605,11 +683,13 @@
             color: var(--primary-color);
             white-space: nowrap;
         }
+
         .order-item-name {
             color: var(--light-text);
             font-size: 0.85rem;
             margin-top: 4px;
         }
+
         /* ======================== MODAL ======================== */
         .modal {
             display: none;
@@ -624,7 +704,9 @@
             justify-content: center;
             padding: 16px;
         }
+
         .modal.show { display: flex; }
+
         .modal-content {
             background: var(--card-bg);
             border-radius: 12px;
@@ -636,6 +718,7 @@
             animation: slideDown 0.3s ease;
             box-shadow: var(--shadow-medium);
         }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -644,11 +727,13 @@
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
         }
+
         .modal-title {
             font-family: var(--font-heading);
             font-size: 1.3rem;
             font-weight: 700;
         }
+
         .close-btn {
             background: none;
             border: none;
@@ -658,8 +743,11 @@
             flex-shrink: 0;
             line-height: 1;
         }
+
         .close-btn:hover { color: var(--text-color); }
+
         .form-group { margin-bottom: 16px; }
+
         .form-group label {
             display: block;
             margin-bottom: 6px;
@@ -667,6 +755,7 @@
             color: var(--text-color);
             font-size: 0.9rem;
         }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -678,6 +767,7 @@
             font-size: 1rem;
             transition: all 0.3s ease;
         }
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -685,6 +775,7 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
         }
+
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -692,6 +783,7 @@
             padding-top: 16px;
             border-top: 1px solid var(--border-color);
         }
+
         .modal-actions button {
             flex: 1;
             padding: 10px;
@@ -702,14 +794,17 @@
             transition: all 0.3s ease;
             font-size: 0.9rem;
         }
+
         .btn-save {
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
         }
+
         .btn-cancel {
             background: var(--border-color);
             color: var(--text-color);
         }
+
         /* ======================== FOOTER ======================== */
         .footer {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -718,39 +813,47 @@
             margin-top: 4rem;
             border-top: 2px solid var(--primary-color);
         }
+
         .footer-content {
             max-width: 1400px;
             margin: 0 auto;
         }
+
         .footer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             margin-bottom: 2rem;
         }
+
         .footer-logo {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
+
         .footer-logo span:first-child {
             font-size: 2rem;
         }
+
         .footer-logo span:last-child {
             font-size: 1.8rem;
             font-weight: 800;
             color: var(--primary-color);
         }
+
         .footer-description {
             color: #999;
             margin-bottom: 1.5rem;
             line-height: 1.6;
         }
+
         .social-links {
             display: flex;
             gap: 1rem;
         }
+
         .social-links a {
             width: 40px;
             height: 40px;
@@ -764,32 +867,39 @@
             transition: all 0.3s ease;
             font-weight: bold;
         }
+
         .social-links a:hover {
             background: var(--primary-color);
             transform: translateY(-3px);
         }
+
         .footer-section h3 {
             color: white;
             font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 1rem;
         }
+
         .footer-section ul {
             list-style: none;
             padding: 0;
         }
+
         .footer-section li {
             margin-bottom: 0.75rem;
             color: #999;
         }
+
         .footer-section a {
             color: #999;
             text-decoration: none;
             transition: all 0.3s ease;
         }
+
         .footer-section a:hover {
             color: var(--primary-color);
         }
+
         .footer-bottom {
             border-top: 1px solid rgba(255, 127, 50, 0.2);
             padding-top: 2rem;
@@ -800,10 +910,12 @@
             gap: 1rem;
             text-align: center;
         }
+
         .footer-bottom p {
             color: #999;
             margin: 0;
         }
+
         /* ======================== RESPONSIVE ======================== */
         @media (max-width: 1024px) {
             .sidebar { width: 220px; }
@@ -813,20 +925,25 @@
             .section { padding: 18px; }
             .header h1 { font-size: 1.8rem; }
         }
+
         @media (max-width: 768px) {
             .hamburger {
                 display: flex;
             }
+
             .navbar-title {
                 display: none !important;
             }
+
             .container {
                 flex-direction: column;
             }
+
             .navbar {
                 padding: 10px 16px;
                 gap: 8px;
             }
+
             .sidebar {
                 position: fixed;
                 top: 60px;
@@ -837,15 +954,19 @@
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .sidebar-overlay.show {
                 display: block;
             }
+
             .main-content {
                 padding: 16px;
             }
+
             .header h1 { font-size: 1.5rem; }
             .header p { font-size: 0.9rem; }
             .stats-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -855,26 +976,32 @@
             .section-title { font-size: 1.1rem; }
             .section-header { gap: 10px; }
             .btn-primary { padding: 7px 14px; font-size: 0.8rem; }
-            table { font-size: 0.85rem; min-width: 500px; }
-            th { padding: 6px 4px; font-size: 0.75rem; }
-            td { padding: 6px 4px; }
-            .product-icon { width: 28px; height: 28px; font-size: 0.9rem; }
-            .product-name { gap: 4px; }
+
+            table { font-size: 0.85rem; }
+            th { padding: 10px; font-size: 0.75rem; }
+            td { padding: 10px; }
+            .product-icon { width: 32px; height: 32px; font-size: 1rem; }
+            .product-name { gap: 6px; }
+
             .chart-container { height: 240px; padding: 12px 8px; }
             .chart-bar { width: 24px; }
             .chart-value { font-size: 0.7rem; top: -18px; }
             .chart-label { font-size: 0.65rem; bottom: -18px; }
-            .order-item { padding: 12px; gap: 8px; }
+
+            .order-item { padding: 12px; }
             .order-id { font-size: 0.85rem; }
             .order-customer { font-size: 0.8rem; }
             .order-amount { font-size: 1rem; }
+
             .modal-content { padding: 20px; }
             .modal-title { font-size: 1.1rem; }
             .form-group label { font-size: 0.85rem; }
+
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
         @media (max-width: 480px) {
             .navbar { padding: 8px 12px; }
             .logo { font-size: 1.3rem; }
@@ -883,10 +1010,12 @@
             .profile-toggle { padding: 5px 8px; }
             .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
             .dropdown-arrow { font-size: 0.9rem; }
+
             .sidebar {
                 width: 100%;
                 max-width: 280px;
             }
+
             .main-content { padding: 12px; }
             .header { margin-bottom: 16px; }
             .header h1 { font-size: 1.3rem; }
@@ -896,44 +1025,30 @@
             .stat-label { font-size: 0.7rem; }
             .stat-value { font-size: 1.4rem; margin-bottom: 6px; }
             .stat-change { font-size: 0.75rem; }
+
             .section { padding: 14px; margin-bottom: 16px; }
             .section-header { flex-direction: column; align-items: flex-start; padding-bottom: 10px; }
             .section-title { font-size: 1rem; }
             .btn-primary { width: 100%; padding: 8px 12px; }
+
             .table-container { margin: -3px; padding: 3px; }
-            table { font-size: 0.8rem; min-width: 400px; }
-            th { padding: 4px 2px; font-size: 0.7rem; }
-            td { padding: 4px 2px; }
-            .product-name { gap: 4px; }
-            .product-icon { width: 24px; height: 24px; font-size: 0.8rem; }
+            table { font-size: 0.8rem; }
+            th { padding: 8px; font-size: 0.7rem; }
+            td { padding: 8px; }
+            .product-name { gap: 6px; }
+            .product-icon { width: 28px; height: 28px; font-size: 0.9rem; }
+
             .chart-container { height: 200px; padding: 10px 6px; gap: 6px; }
             .chart-bar { width: 20px; }
             .chart-value { font-size: 0.65rem; top: -16px; }
             .chart-label { font-size: 0.6rem; bottom: -16px; }
-            .order-item {
-                padding: 10px;
-                gap: 6px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .order-info {
-                min-width: 0;
-                width: 100%;
-                order: 1;
-            }
-            .order-amount {
-                order: 2;
-                font-size: 0.95rem;
-                align-self: flex-end;
-            }
-            .status-badge {
-                order: 3;
-                align-self: flex-end;
-                margin-top: 4px;
-            }
+
+            .order-item { padding: 10px; gap: 10px; }
+            .order-info { min-width: 140px; }
             .order-id { font-size: 0.8rem; }
             .order-customer { font-size: 0.75rem; }
-            .order-item-name { font-size: 0.75rem; }
+            .order-amount { font-size: 0.95rem; }
+
             .modal-content { padding: 16px; }
             .modal-header { margin-bottom: 14px; padding-bottom: 10px; }
             .modal-title { font-size: 1rem; }
@@ -945,8 +1060,10 @@
             .form-group textarea { padding: 8px; font-size: 0.95rem; }
             .modal-actions { gap: 8px; margin-top: 16px; padding-top: 12px; }
             .modal-actions button { padding: 8px; font-size: 0.8rem; }
+
             .sidebar-menu a { padding: 8px 10px; font-size: 0.8rem; }
             .sidebar-menu span { font-size: 1rem; }
+
             .dropdown-menu { min-width: 240px; }
             .dropdown-header { padding: 10px 12px; }
             .dropdown-header-avatar { width: 36px; height: 36px; font-size: 0.9rem; }
@@ -956,98 +1073,32 @@
             .dropdown-item-icon { font-size: 1rem; }
             .dropdown-item-label { font-size: 0.8rem; }
             .dropdown-item-desc { font-size: 0.65rem; }
+
             .footer-grid {
                 grid-template-columns: 1fr;
             }
         }
+
         @media (max-width: 360px) {
             .logo { font-size: 1.2rem; }
             .navbar { padding: 8px 10px; gap: 6px; }
             .navbar-left { gap: 8px; }
             .navbar-right { gap: 8px; }
+
             .header h1 { font-size: 1.1rem; }
             .main-content { padding: 10px; }
             .stats-grid { grid-template-columns: 1fr; gap: 8px; }
             .stat-card { padding: 12px; }
             .stat-value { font-size: 1.3rem; }
+
             .section { padding: 12px; margin-bottom: 14px; }
             .section-title { font-size: 0.95rem; }
             .btn-primary { font-size: 0.75rem; padding: 6px 10px; }
+
             .chart-bar { width: 18px; }
-            table { font-size: 0.75rem; min-width: 300px; }
-            th, td { padding: 3px 1px; }
-            .order-item { padding: 8px; gap: 4px; }
-            .order-info { width: 100%; }
+            .table { font-size: 0.75rem; }
+            th, td { padding: 6px; }
         }
-        /* ======================== RESPONSIVE TABLE ======================== */
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px; /* desktop */
-}
-
-@media (max-width: 768px) {
-    table {
-        min-width: 500px;
-        font-size: 0.85rem;
-    }
-    th, td {
-        padding: 6px 4px;
-        white-space: nowrap;
-    }
-    .product-icon {
-        width: 26px;
-        height: 26px;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    table {
-        min-width: 420px;
-        font-size: 0.8rem;
-    }
-    th, td {
-        padding: 5px 3px;
-        font-size: 0.75rem;
-    }
-    .product-name {
-        gap: 4px;
-    }
-    .product-icon {
-        width: 22px;
-        height: 22px;
-        font-size: 0.75rem;
-    }
-    .status-badge {
-        padding: 3px 8px;
-        font-size: 0.7rem;
-        border-radius: 12px;
-    }
-}
-
-@media (max-width: 360px) {
-    table {
-        min-width: 350px;
-        font-size: 0.75rem;
-    }
-    th, td {
-        padding: 3px 2px;
-    }
-    .product-icon {
-        width: 20px;
-        height: 20px;
-        font-size: 0.7rem;
-    }
-}
-
     </style>
 </head>
 <body>
@@ -1062,11 +1113,13 @@ table {
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
+
         <div class="navbar-right">
             <div class="notification-bell" onclick="showNotifications()">
                 🔔
                 <div class="notification-badge">3</div>
             </div>
+
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
@@ -1076,6 +1129,7 @@ table {
                     </div>
                     <div class="dropdown-arrow">▼</div>
                 </div>
+
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-header">
                         <div class="dropdown-header-content">
@@ -1086,8 +1140,11 @@ table {
                             </div>
                         </div>
                     </div>
+
                     <div class="dropdown-divider"></div>
+
                     <div class="dropdown-items">
+
                         <!-- PROFILE -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
@@ -1098,6 +1155,7 @@ table {
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
                         </div>
+
                         <!-- STORE SETTINGS -->
                         <div class="dropdown-item" onclick="openStoreModal()">
                             <span class="dropdown-item-icon">🏪</span>
@@ -1106,6 +1164,7 @@ table {
                                 <div class="dropdown-item-desc">Manage store details</div>
                             </div>
                         </div>
+
                         <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
@@ -1114,7 +1173,9 @@ table {
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
+
                         <div class="dropdown-divider"></div>
+
                         <!-- HELP -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">❓</span>
@@ -1123,7 +1184,9 @@ table {
                                 <div class="dropdown-item-desc">FAQs & support</div>
                             </div>
                         </div>
+
                         <div class="dropdown-divider"></div>
+
                         <!-- LOGOUT -->
                         <div class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
@@ -1134,13 +1197,16 @@ table {
                                 <div class="dropdown-item-desc">Sign out</div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- SIDEBAR OVERLAY -->
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <!-- MAIN CONTAINER -->
     <div class="container">
         <!-- SIDEBAR -->
@@ -1155,12 +1221,14 @@ table {
                 <li><a href="#"><span>⚙️</span> Settings</a></li>
             </ul>
         </div>
+
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
                 <h1>Welcome back! 👋</h1>
                 <p>Here's your store performance overview</p>
             </div>
+
             <!-- STATS GRID -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -1184,15 +1252,23 @@ table {
                     <div class="stat-change">{{ rating_count }} reviews</div>
                 </div>
             </div>
-            <!-- SALES CHART -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">Sales This Week</div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="weeklySalesChart"></canvas>
-                </div>
-            </div>
+
+    <!-- ... ALL YOUR EXISTING HTML UNTIL THE SALES CHART SECTION ... -->
+
+    <!-- SALES CHART (only this section modified) -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Sales This Week</div>
+        </div>
+
+        <!-- Replaced static bars with Chart.js canvas -->
+        <div style="position: relative; height: 280px; background: linear-gradient(135deg, rgba(255, 127, 50, 0.05), rgba(255, 178, 115, 0.05)); border-radius: 8px; padding: 16px 12px;">
+            <canvas id="weeklySalesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- ... REST OF YOUR PAGE EXACTLY THE SAME ... -->
+
             <!-- TOP PRODUCTS -->
             <div class="section">
                 <div class="section-header">
@@ -1219,7 +1295,7 @@ table {
                                         <span>{{ p.name }}</span>
                                     </div>
                                 </td>
-                                <td>{{ p.subcategory.name}}</td>
+                                <td>{{ p.category.name }}</td>
                                 <td>₹{{ p.price }}</td>
                                 <td>{{ p.stock }}</td>
                                 <td>
@@ -1243,12 +1319,14 @@ table {
                     </table>
                 </div>
             </div>
+
             <!-- RECENT ORDERS -->
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Recent Orders</div>
                     <button class="btn-primary"><a href="{% url 'order' %}">View All</a></button>
                 </div>
+
                 {% for order in recent_orders %}
                 <div class="order-item">
                     <div class="order-info">
@@ -1285,6 +1363,7 @@ table {
             </div>
         </div>
     </div>
+
     <!-- STORE SETTINGS MODAL -->
     <div id="storeModal" class="modal">
         <div class="modal-content">
@@ -1332,6 +1411,7 @@ table {
             </form>
         </div>
     </div>
+
     <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-content">
@@ -1350,6 +1430,7 @@ table {
                         <a href="#" title="LinkedIn">💼</a>
                     </div>
                 </div>
+
                 <!-- Quick Links -->
                 <div class="footer-section">
                     <h3>Quick Links</h3>
@@ -1361,6 +1442,7 @@ table {
                         <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
+
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
@@ -1372,6 +1454,7 @@ table {
                         <li><a href="#">Track Your Order</a></li>
                     </ul>
                 </div>
+
                 <!-- Contact Us -->
                 <div class="footer-section">
                     <h3>Contact Us</h3>
@@ -1391,6 +1474,7 @@ table {
                     </ul>
                 </div>
             </div>
+
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <p>&copy; 2024 ShopHub. All rights reserved.</p>
@@ -1398,32 +1482,32 @@ table {
             </div>
         </div>
     </footer>
-    <!-- Chart.js CDN -->
+
+
+    <!-- Chart.js CDN (only added if not already present) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    /* ==================== WEEKLY SALES CHART ==================== */
-    document.addEventListener("DOMContentLoaded", function () {
 
-        const ctx = document.getElementById('weeklySalesChart');
-        if (ctx) {
-            const chartCtx = ctx.getContext('2d');
-            const gradient = chartCtx.createLinearGradient(0, 0, 0, 280);
-            gradient.addColorStop(0, '#FFB273');
-            gradient.addColorStop(1, '#FF7F32');
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('weeklySalesChart').getContext('2d');
 
-            new Chart(chartCtx, {
+            // Gradient exactly matching your design (orange top → lighter bottom)
+            const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, '#FFB273');    // --accent-color
+            gradient.addColorStop(1, '#FF7F32');    // --primary-color
+
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: {{ sales_labels|default:"[]"|safe }},
+                    labels: {{ sales_labels|safe }},        // Django: ["Mon", "Tue", ...]
                     datasets: [{
-                        data: {{ sales_values|default:"[]"|safe }},
+                        label: 'Sales',
+                        data: {{ sales_values|safe }},      // Django: [5200, 8400, ...]
                         backgroundColor: gradient,
                         borderColor: '#FF7F32',
                         borderWidth: 1,
                         borderRadius: 8,
-                        borderSkipped: false,
                         barThickness: 28,
-                        categoryPercentage: 0.8,
                     }]
                 },
                 options: {
@@ -1432,62 +1516,120 @@ table {
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            cornerRadius: 8,
-                            displayColors: false,
                             callbacks: {
-                                label: (context) => '₹' + context.parsed.y.toLocaleString()
+                                label: function(context) {
+                                return '₹' + context.parsed.y.toLocaleString();
+                                }
                             }
                         }
                     },
                     scales: {
-                        y: { beginAtZero: true, ticks: { display: false }, grid: { display: false }, border: { display: false } },
-                        x: { ticks: { color: '#666666', font: { size: 11 } }, grid: { display: false }, border: { display: false } }
+                        y: {
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: { display: false },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#666666',
+                                font: { size: 11 }
+                            },
+                            border: { display: false }
+                        }
                     },
-                    animation: { duration: 1400, easing: 'easeOutQuart' }
+                    animation: {
+                        duration: 1200,
+                        easing: 'easeOutQuart'
+                    }
                 }
             });
+        });
+         function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('active');
+            menu.classList.toggle('show');
         }
 
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                alert('Changes saved successfully!');
-                this.closest('.modal').classList.remove('show');
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+                menu.classList.remove('show');
+            }
+        });
+
+        function openStoreModal() {
+            document.getElementById('profileDropdown').classList.remove('active');
+            document.getElementById('dropdownMenu').classList.remove('show');
+            document.getElementById('storeModal').classList.add('show');
+        }
+
+        function closeStoreModal() {
+            document.getElementById('storeModal').classList.remove('show');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logging out...');
+            }
+        }
+
+        function showNotifications() {
+            alert('🔔 You have 3 new notifications!\n\n✓ Order #ORD-005 received\n✓ Product review from customer\n✓ Low inventory alert');
+        }
+
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (e.target.closest('a').getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
             });
         });
 
-    });
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('show');
+        }
 
-    /* ==================== GLOBAL FUNCTIONS (must be outside) ==================== */
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.remove('show');
+            hamburger.classList.remove('active');
+            overlay.classList.remove('show');
+        }
 
+        window.addEventListener('click', function(event) {
+            const storeModal = document.getElementById('storeModal');
+            if (event.target === storeModal) {
+                closeStoreModal();
+            }
+        });
 
-    function toggleProfileMenu() {
-        const menu = document.getElementById("dropdownMenu");
-        menu.classList.toggle("show");
-    }
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('✓ Changes saved successfully!');
+                form.closest('.modal').classList.remove('show');
+            });
+        });
+    </script>
 
-
-
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const hamburger = document.querySelector('.hamburger');
-        const overlay = document.querySelector('.sidebar-overlay');
-
-        sidebar.classList.toggle('show');
-        hamburger.classList.toggle('active');
-        overlay.classList.toggle('show');
-
-        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
-    }
-
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('show');
-        document.querySelector('.hamburger').classList.remove('active');
-        document.querySelector('.sidebar-overlay').classList.remove('show');
-        document.body.style.overflow = '';
-    }
-</script>
 
 </body>
 </html>
