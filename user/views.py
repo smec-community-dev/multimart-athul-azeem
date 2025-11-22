@@ -107,25 +107,32 @@ def product_detail(request, slug):
     product = Product.objects.filter(slug=slug).first()
 
     if product is None:
-        return redirect("home")
+        return redirect("user_home")
 
+    # Main & Gallery Images
     main_image = product.images.filter(image_type='Main').first()
     gallery_images = product.images.all()
 
-
+    # Wishlist count
     wishlist_count = Wishlist.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
 
-
+    # Wishlist check for this product
     in_wishlist = False
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+
+    # ==== RELATED PRODUCTS (using same SubCategory) ====
+    related_products = Product.objects.filter(
+        subcategory=product.subcategory
+    ).exclude(id=product.id)[:4]
 
     return render(request, "user/product_detail.html", {
         "product": product,
         "main_image": main_image,
         "gallery": gallery_images,
         "wishlist_count": wishlist_count,
-        "in_wishlist": in_wishlist
+        "in_wishlist": in_wishlist,
+        "related_products": related_products,
     })
 
 
@@ -154,8 +161,31 @@ def add_to_cart(request, slug):
 
         cart_item.save()
 
-    messages.success(request, f"{product.name} added to cart")
+    # messages.success(request, f"{product.name} added to cart")
     return redirect("cart_page")
+
+
+@login_required(login_url="login")
+def buy_now(request, slug):
+    try:
+        product = Product.objects.get(slug=slug)
+    except Product.DoesNotExist:
+        messages.error(request, "Product not found")
+        return redirect("user_home")
+
+    quantity = int(request.GET.get("quantity", 1))
+
+    cart_item, created = Cart.objects.get_or_create(
+        user=request.user,
+        product=product,
+        defaults={"quantity": quantity}
+    )
+
+    if not created:
+        cart_item.quantity = quantity
+        cart_item.save()
+
+    return redirect("checkout")
 
 
 
@@ -378,10 +408,10 @@ def add_to_wishlist(request, slug):
 
     if wishlist_item.exists():
         wishlist_item.delete()
-        messages.info(request, f"{product.name} removed from wishlist")
+        # messages.info(request, f"{product.name} removed from wishlist")
     else:
         Wishlist.objects.create(user=request.user, product=product)
-        messages.success(request, f"{product.name} added to wishlist")
+        # messages.success(request, f"{product.name} added to wishlist")
 
     return redirect(request.META.get("HTTP_REFERER", "user_home"))
 
@@ -391,49 +421,104 @@ def wishlist_page(request):
     return render(request, "user/wishlist.html", {"wishlist_items": wishlist_items})
 
 
-
+@login_required
 def checkout(request):
+    buy_slug = request.GET.get("buy")
+    quantity = request.GET.get("quantity", 1)
+
+    addresses = []  # always define addresses to avoid NameError
+
+    # BUY NOW MODE
+    if buy_slug:
+        product = Product.objects.get(slug=buy_slug)
+
+        item = {
+            "product": product,
+            "quantity": int(quantity),
+            "subtotal": product.price * int(quantity)
+        }
+
+        total = item["subtotal"]
+
+        return render(request, "user/checkout.html", {
+            "items": [item],
+            "total": total,
+            "addresses": addresses,
+            "buy_now": True
+        })
+
+    # NORMAL CART CHECKOUT
     items = Cart.objects.filter(user=request.user)
-    total = 0
-    for item in items:
-        item.subtotal = item.product.price * item.quantity
-        total += item.subtotal
+    total = sum(item.product.price * item.quantity for item in items)
 
     return render(request, "user/checkout.html", {
         "items": items,
         "total": total,
-        "addresses": [],
+        "addresses": addresses,
+        "buy_now": False
     })
 
 
-
+@login_required
 @login_required
 def place_order(request):
     if request.method == "POST":
-        items = Cart.objects.filter(user=request.user)
 
+        # BUY NOW hidden values from checkout.html
+        buy_now_slug = request.POST.get("buy_now_slug")
+        buy_now_qty = request.POST.get("buy_now_qty")
+
+        # BUY-NOW MODE
+        if buy_now_slug:
+            product = Product.objects.get(slug=buy_now_slug)
+            quantity = int(buy_now_qty)
+            total = product.price * quantity
+
+            order = Order.objects.create(
+                user=request.user,
+                seller=product.seller,
+                total_amount=total,
+                shipping_address=f"{request.POST.get('address_line1')}, "
+                                 f"{request.POST.get('address_line2')}, "
+                                 f"{request.POST.get('city')}, "
+                                 f"{request.POST.get('state')}, "
+                                 f"{request.POST.get('pincode')}, "
+                                 f"{request.POST.get('country')}",
+                payment_method=request.POST.get("payment_method"),
+                status="Pending"
+            )
+
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity,
+                unit_price=product.price
+            )
+
+            return redirect("order_success", order_id=order.id)
+
+        # NORMAL CART MODE
+        items = Cart.objects.filter(user=request.user)
         if not items.exists():
-            messages.error(request, "No items in your cart.")
+            messages.error(request, "No items in cart.")
             return redirect("cart_page")
 
         total = sum(item.product.price * item.quantity for item in items)
 
-
-        address = f"{request.POST.get('address_line1')}, {request.POST.get('address_line2')}, " \
-                  f"{request.POST.get('city')}, {request.POST.get('state')}, {request.POST.get('pincode')}, {request.POST.get('country')}"
-
-        seller = items.first().product.seller
-
         order = Order.objects.create(
             user=request.user,
-            seller=seller,
+            seller=items.first().product.seller,
             total_amount=total,
-            shipping_address=address,
+            shipping_address=f"{request.POST.get('address_line1')}, "
+                             f"{request.POST.get('address_line2')}, "
+                             f"{request.POST.get('city')}, "
+                             f"{request.POST.get('state')}, "
+                             f"{request.POST.get('pincode')}, "
+                             f"{request.POST.get('country')}",
             payment_method=request.POST.get("payment_method"),
             status="Pending"
         )
 
-        # Add order items
         for item in items:
             OrderItem.objects.create(
                 order=order,
@@ -443,17 +528,18 @@ def place_order(request):
             )
 
         items.delete()
-
-        messages.success(request, "Order placed successfully!")
-        return redirect("order_success")
+        return redirect("order_success", order_id=order.id)
 
     return redirect("cart_page")
 
+def order_success(request, order_id):
+    order = Order.objects.get(id=order_id)
+    items = OrderItem.objects.filter(order=order)
 
-def order_success(request):
-    return render(request, "user/order_success.html")
-
-
+    return render(request, "user/order_success.html", {
+        "order": order,
+        "items": items,
+    })
 def deals_and_offers(request):
     return render(request,"user/deals_and_offers.html")
 

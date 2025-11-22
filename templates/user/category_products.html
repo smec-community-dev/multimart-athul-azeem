@@ -1,12 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electronics - ShopHub</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>{{ category.name }} - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -442,19 +440,20 @@
         }
 
         /* ========== FILTERS & PRODUCTS ========== */
-        .main-wrapper {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            gap: 30px;
-            margin-bottom: 50px;
-        }
+.main-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 240px 1fr !important;
+    gap: 20px !important;
+}
+
+
 
         .sidebar {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 25px;
             height: fit-content;
             box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -530,14 +529,10 @@
             transform: translateY(-2px);
         }
 
-        .products-section {
-            background: white;
-             transition: opacity 0.4s ease;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        }
-
+     .products-section {
+    width: 100% !important;
+    flex: 1 !important;
+}
         .products-header {
             display: flex;
             justify-content: space-between;
@@ -569,14 +564,14 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
         }
 
         .product-card {
             background: white;
             border: 1px solid #e8e8e8;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             transition: all 0.3s;
             cursor: pointer;
@@ -590,7 +585,7 @@
 
         .product-image {
             width: 100%;
-            height: 200px;
+            height: 220px;
             background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
             overflow: hidden;
             display: flex;
@@ -619,7 +614,7 @@
         }
 
         .product-info {
-            padding: 16px;
+            padding: 20px;
         }
 
         .product-category {
@@ -627,15 +622,15 @@
             color: #999;
             text-transform: uppercase;
             letter-spacing: 0.6px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .product-name {
             font-weight: 600;
             color: #333;
-            margin-bottom: 9px;
-            font-size: 14px;
-            height: 36px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            height: 40px;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -645,7 +640,7 @@
         .product-rating {
             display: flex;
             align-items: center;
-            margin-bottom: 11px;
+            margin-bottom: 12px;
             font-size: 12px;
         }
 
@@ -663,17 +658,17 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 13px;
+            margin-bottom: 15px;
         }
 
         .price-current {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #ff8c00;
         }
 
         .price-original {
-            font-size: 13px;
+            font-size: 14px;
             color: #999;
             text-decoration: line-through;
         }
@@ -681,20 +676,20 @@
         .product-stock {
             font-size: 12px;
             color: #28a745;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             font-weight: 600;
         }
 
         .add-to-cart-btn {
             width: 100%;
-            padding: 11px;
+            padding: 12px;
             background: linear-gradient(135deg, #ff8c00, #ff7700);
             color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             transition: all 0.3s;
         }
 
@@ -711,7 +706,7 @@
                 display: none;
             }
             .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 15px;
             }
             .slide {
@@ -727,124 +722,154 @@
                 margin-top: 20px;
             }
         }
-.profile-dropdown {
-    position: relative;
-    display: inline-block;
-}
 
-.profile-toggle {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 8px;
-}
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-.profile-avatar {
-    background: #ff9900;
-    color: white;
-    font-weight: bold;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 8px;
+        }
 
-.dropdown-menu {
-    position: absolute;
-    top: 45px;
-    right: 0;
-    width: 260px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    padding: 15px 0;
-    display: none;
-    z-index: 999;
-}
+        .profile-avatar {
+            background: #ff9900;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.dropdown-menu.show {
-    display: block;
-}
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 260px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            padding: 15px 0;
+            display: none;
+            z-index: 999;
+        }
 
-.dropdown-header {
-    padding: 12px 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #fff4ec;
-}
+        .dropdown-menu.show {
+            display: block;
+        }
 
-.dropdown-header-avatar {
-    background: #ff9900;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-}
+        .dropdown-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff4ec;
+        }
 
-.dropdown-item {
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        .dropdown-header-avatar {
+            background: #ff9900;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-.dropdown-item a {
-    text-decoration: none;
-    color: #333;
-}
+        .dropdown-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.dropdown-item.logout a {
-    color: red;
-    font-weight: bold;
-}
-.products-section {
-    transition: opacity 0.4s ease;
-}
-.products-section.loading {
-    opacity: 0.3;
-}
+        .dropdown-item a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .dropdown-item.logout a {
+            color: red;
+            font-weight: bold;
+        }
+
+        .products-section {
+            transition: opacity 0.4s ease;
+        }
+
+        .products-section.loading {
+            opacity: 0.3;
+        }
+
         .pagination-nav {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 8px;
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover {
+            border-color: #ff8c00;
+            color: #ff8c00;
+        }
+
+        .pagination-btn.active {
+            background: #ff8c00;
+            color: white;
+            border-color: #ff8c00;
+        }
+
+        /* ========== FOOTER STYLES ========== */
+        footer {
+            background: #1f2937 !important;
+            color: white;
+            margin-top: auto;
+        }
+
+        footer a {
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #ff8c00;
+        }
+        .products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    gap: 25px !important;
+    align-items: stretch;
 }
 
-.pagination-btn {
-    padding: 8px 14px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-
-.pagination-btn:hover {
-    border-color: #ff8c00;
-    color: #ff8c00;
-}
-
-.pagination-btn.active {
-    background: #ff8c00;
-    color: white;
-    border-color: #ff8c00;
+        .products-section {
+    width: 100% !important;
+    flex: 1 !important;
 }
 
 
 
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     <!-- Header -->
     <header>
         <div class="header-container">
@@ -866,113 +891,106 @@
                 <input type="text" name="search" placeholder="Search products..." value="{{ search|default:'' }}">
           </form>
 
-
             <div class="header-right">
+                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
 
-    <a href="{% url 'wishlist_page' %}" class="icon-btn">
-        <i class="fas fa-heart"></i>
-        <span class="badge">{{ wishlist_count }}</span>
-    </a>
+                <a href="{% url 'cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
 
-    <a href="{% url 'cart_page' %}" class="icon-btn">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="badge">{{ cart_count }}</span>
-    </a>
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
 
-      {% if user.is_authenticated %}
-    <div class="profile-dropdown" id="profileDropdown">
-        <div class="profile-toggle" onclick="toggleProfileMenu()">
-            <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
-            <span class="dropdown-arrow">▼</span>
-        </div>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.username }}</h3>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
 
-        <div class="dropdown-menu" id="dropdownMenu">
-            <div class="dropdown-header">
-                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
-                <div class="dropdown-header-info">
-                    <h3>{{ user.username }}</h3>
-                    <p>{{ user.email }}</p>
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="dropdown-divider"></div>
-
-            <a href="{% url 'profile' %}" class="dropdown-item">
-                <span class="dropdown-item-icon">👤</span>
-                <span class="dropdown-item-label">My Profile</span>
-            </a>
-
-            <div class="dropdown-divider"></div>
-
-            <a href="{% url 'logout' %}" class="dropdown-item logout">
-                <span class="dropdown-item-icon">🚪</span>
-                <span class="dropdown-item-label">Logout</span>
-            </a>
-        </div>
-    </div>
-    {% endif %}
-
+                {% endif %}
             </div>
         </div>
-
     </header>
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
         <div class="breadcrumb-container">
-            <a href="#home">Home</a> / <span>Electronics</span>
+            <a href="{% url 'user_home' %}">Home</a> / <span>{{ category.name }}</span>
         </div>
     </div>
 
- <section class="spotlight-section">
-    <h2 class="spotlight-title">Featured {{ category.name }}</h2>
-    <div class="slider-container">
-        <div class="slider-wrapper" id="sliderWrapper">
+    <section class="spotlight-section">
+        <h2 class="spotlight-title">Featured {{ category.name }}</h2>
+        <div class="slider-container">
+            <div class="slider-wrapper" id="sliderWrapper">
+                {% for product in slider_products %}
+                <div class="slide">
+                    <div class="slide-content">
+                        <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                            {{ product.name }}
+                        </h1>
 
-        {% for product in slider_products %}
-        <div class="slide">
-        <div class="slide-content">
-        <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-        {{ product.name }}
-        </h1>
+                        <p class="text-lg text-white/80 mb-8 font-medium">
+                            Latest trending deal from {{ category.name }}
+                        </p>
 
-        <p class="text-lg text-white/80 mb-8 font-medium">
-        Latest trending deal from {{ category.name }}
-        </p>
+                        <a href="{% url 'product_detail' product.slug %}">
+                            <button class="px-8 py-3 bg-white text-purple-700 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105">
+                                {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' as button_text silent %}
+                                {{ button_text }}
+                            </button>
+                        </a>
+                    </div>
 
-        <a href="{% url 'product_detail' product.slug %}">
-        <button class="px-8 py-3 bg-white text-purple-700 font-bold rounded-lg
-        hover:bg-gray-100 transition transform hover:scale-105">
-        {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' as button_text silent %}
-        {{ button_text }}
-        </button>
-        </a>
+                    <div class="slide-image">
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button class="slider-arrow prev" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-arrow next" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+
+            <div class="slider-controls">
+                {% for p in slider_products %}
+                <div class="slider-dot {% if forloop.first %}active{% endif %}" onclick="goToSlide({{ forloop.counter0 }})"></div>
+                {% endfor %}
+            </div>
         </div>
-
-
-        <div class="slide-image">
-        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
-        </div>
-        </div>
-        {% endfor %}
-        </div>
-
-<button class="slider-arrow prev" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
-<button class="slider-arrow next" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
-
-<div class="slider-controls">
-{% for p in slider_products %}
-<div class="slider-dot {% if forloop.first %}active{% endif %}" onclick="goToSlide({{ forloop.counter0 }})"></div>
-{% endfor %}
-</div>
-</div>
-</section>
+    </section>
 
     <!-- Category Header -->
-   <div class="category-header">
-    <h1>{{ category.name }} Collection</h1>
-    <p>Discover our exclusive range of premium {{ category.name }} products</p>
-</div>
+    <div class="category-header">
+        <h1>{{ category.name }} Collection</h1>
+        <p>Discover our exclusive range of premium {{ category.name }} products</p>
+    </div>
 
     <!-- Main Content -->
     <div class="main-wrapper">
@@ -980,81 +998,34 @@
         <aside class="sidebar">
             <h3 style="margin-bottom: 20px; font-size: 18px; color: #333;">Filters</h3>
 
-          <div class="filter-section">
-        <div class="filter-title">Price Range</div>
-        <form method="get" id="priceFilter">
-            <label class="filter-option">
-                <input type="radio" name="price" value="under_1000"
-                    onchange="document.getElementById('priceFilter').submit();"
-                    {% if selected_price == 'under_1000' %}checked{% endif %}>
-                <span>Under ₹1,000</span>
-            </label>
+            <div class="filter-section">
+                <div class="filter-title">Price Range</div>
+                <form method="get" id="priceFilter">
+                    <label class="filter-option">
+                        <input type="radio" name="price" value="under_1000" onchange="document.getElementById('priceFilter').submit();" {% if selected_price == 'under_1000' %}checked{% endif %}>
+                        <span>Under ₹1,000</span>
+                    </label>
 
-            <label class="filter-option">
-                <input type="radio" name="price" value="1000_10000"
-                    onchange="document.getElementById('priceFilter').submit();"
-                    {% if selected_price == '1000_10000' %}checked{% endif %}>
-                <span>₹1,000 - ₹10,000</span>
-            </label>
+                    <label class="filter-option">
+                        <input type="radio" name="price" value="1000_10000" onchange="document.getElementById('priceFilter').submit();" {% if selected_price == '1000_10000' %}checked{% endif %}>
+                        <span>₹1,000 - ₹10,000</span>
+                    </label>
 
-            <label class="filter-option">
-                <input type="radio" name="price" value="10000_50000"
-                    onchange="document.getElementById('priceFilter').submit();"
-                    {% if selected_price == '10000_50000' %}checked{% endif %}>
-                <span>₹10,000 - ₹50,000</span>
-            </label>
+                    <label class="filter-option">
+                        <input type="radio" name="price" value="10000_50000" onchange="document.getElementById('priceFilter').submit();" {% if selected_price == '10000_50000' %}checked{% endif %}>
+                        <span>₹10,000 - ₹50,000</span>
+                    </label>
 
-            <label class="filter-option">
-                <input type="radio" name="price" value="over_50000"
-                    onchange="document.getElementById('priceFilter').submit();"
-                    {% if selected_price == 'over_50000' %}checked{% endif %}>
-                <span>Over ₹50,000</span>
-            </label>
-        </form>
-    </div>
+                    <label class="filter-option">
+                        <input type="radio" name="price" value="over_50000" onchange="document.getElementById('priceFilter').submit();" {% if selected_price == 'over_50000' %}checked{% endif %}>
+                        <span>Over ₹50,000</span>
+                    </label>
+                </form>
+            </div>
 
-<!--            <div class="filter-section">-->
-<!--                <div class="filter-title">Brand</div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="apple">-->
-<!--                    <label for="apple">Apple</label>-->
-<!--                    <span class="filter-count">(28)</span>-->
-<!--                </div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="samsung">-->
-<!--                    <label for="samsung">Samsung</label>-->
-<!--                    <span class="filter-count">(34)</span>-->
-<!--                </div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="dell">-->
-<!--                    <label for="dell">Dell</label>-->
-<!--                    <span class="filter-count">(18)</span>-->
-<!--                </div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="sony">-->
-<!--                    <label for="sony">Sony</label>-->
-<!--                    <span class="filter-count">(15)</span>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div class="filter-section">-->
-<!--                <div class="filter-title">Rating</div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="rating5">-->
-<!--                    <label for="rating5">★★★★★ (5.0)</label>-->
-<!--                    <span class="filter-count">(42)</span>-->
-<!--                </div>-->
-<!--                <div class="filter-option">-->
-<!--                    <input type="checkbox" id="rating4">-->
-<!--                    <label for="rating4">★★★★☆ (4.0+)</label>-->
-<!--                    <span class="filter-count">(68)</span>-->
-<!--                </div>-->
-<!--            </div>-->
-
-          <button class="clear-filters" onclick="window.location.href='{{ request.path }}';">
-            Clear Filters
-        </button>
-
+            <button class="clear-filters" onclick="window.location.href='{{ request.path }}';">
+                Clear Filters
+            </button>
         </aside>
 
         <!-- Products Section -->
@@ -1064,207 +1035,198 @@
                     Showing {{ products.start_index }} - {{ products.end_index }} of {{ products.paginator.count }} products
                 </div>
 
-             <select class="sort-dropdown" onchange="sortProducts(this.value)">
-                <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
-                <option value="low_to_high" {% if sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
-                <option value="high_to_low" {% if sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
-                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
-            </select>
+                <select class="sort-dropdown" onchange="sortProducts(this.value)">
+                    <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+                    <option value="low_to_high" {% if sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="high_to_low" {% if sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                </select>
             </div>
 
-          <div class="products-grid">
-    {% for product in products %}
-    <div class="product-card">
-        <div class="product-image">
-                  {% if product.images.first %}
-        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
-        {% else %}
-        <img src="/static/default_product.jpg" alt="No Image">
-        {% endif %}
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                        <img src="/static/default_product.jpg" alt="No Image">
+                        {% endif %}
+                    </div>
 
-        </div>
+                    <div class="product-info">
+                        <div class="product-category">{{ product.subcategory.name }}</div>
+                        <div class="product-name">{{ product.name }}</div>
 
-        <div class="product-info">
-            <div class="product-category">{{ product.subcategory.name }}</div>
-            <div class="product-name">{{ product.name }}</div>
+                        <div class="product-price">
+                            <span class="price-current">₹{{ product.price }}</span>
+                        </div>
 
-            <div class="product-price">
-                <span class="price-current">₹{{ product.price }}</span>
+                        <div class="product-stock">
+                            {% if product.stock > 0 %}
+                            In Stock
+                            {% else %}
+                            Out of Stock
+                            {% endif %}
+                        </div>
+
+                        <a href="{% url 'product_detail' product.slug %}">
+                            <button class="add-to-cart-btn">View Details</button>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <h2 style="color:red; text-align: center; grid-column: 1 / -1;">No products found</h2>
+                {% endfor %}
             </div>
 
-            <div class="product-stock">
-                {% if product.stock > 0 %}
-                In Stock
-                {% else %}
-                Out of Stock
-                {% endif %}
-            </div>
+            <div class="pagination mt-10">
+                <nav class="pagination-nav">
+                    {% if products.has_previous %}
+                        <a href="?page={{ products.previous_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-btn">Previous</a>
+                    {% endif %}
 
-            <a href="{% url 'product_detail' product.slug %}">
-                <button class="add-to-cart-btn">View Details</button>
-            </a>
-        </div>
+                    {% for num in products.paginator.page_range %}
+                        <a href="?page={{ num }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-btn {% if products.number == num %}active{% endif %}">
+                            {{ num }}
+                        </a>
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-btn">Next</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </section>
     </div>
-    {% empty %}
-    <h2 style="color:red;">No products found</h2>
-    {% endfor %}
-</div><!-- products-grid -->
 
-
-<div class="pagination mt-10">
-    <nav class="pagination-nav">
-        {% if products.has_previous %}
-            <a href="?page={{ products.previous_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-               class="pagination-btn">Previous</a>
-        {% endif %}
-
-        {% for num in products.paginator.page_range %}
-            <a href="?page={{ num }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-               class="pagination-btn {% if products.number == num %}active{% endif %}">
-                {{ num }}
-            </a>
-        {% endfor %}
-
-        {% if products.has_next %}
-            <a href="?page={{ products.next_page_number }}{% if selected_price %}&price={{ selected_price }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-               class="pagination-btn">Next</a>
-        {% endif %}
-    </nav>
-</div>
-
-
-
-   <!-- Footer -->
-  <footer id="contact" class="bg-gray-900 text-white py-16 lg:py-20">
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 flex-shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center space-x-3 mb-6">
-                        <i class="fas fa-shopping-bag text-orange-500 text-3xl"></i>
-                        <span class="text-3xl font-bold">ShopHub</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
                     </div>
-                    <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-linkedin-in"></i></a>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
-                    <ul class="space-y-4">
-                       <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
-                    <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
-                    <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
-                    <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
-<!--                        <li><a href="#" class="text-gray-400 hover:text-orange-500 transition">FAQ</a></li>-->
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Customer Service</h3>
-                    <ul class="space-y-4">
-                    <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
-                    <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
-                    <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
-                    <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-6">Contact Us</h3>
-                    <ul class="space-y-4">
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-orange-500 mt-1 mr-3"></i>
-                            <span class="text-gray-400">123 Shopping Street, Mumbai, India</span>
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-phone text-orange-500 mr-3"></i>
-                            <span class="text-gray-400">+91 98765 43210</span>
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-envelope text-orange-500 mr-3"></i>
-                            <span class="text-gray-400">support@shophub.com</span>
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
                         </li>
                     </ul>
-<!--                    <div class="mt-6">-->
-<!--                        <h4 class="font-bold mb-3">Subscribe to Newsletter</h4>-->
-<!--                        <div class="flex">-->
-<!--                            <input type="email" placeholder="Your email" class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg outline-none">-->
-<!--                            <button class="bg-orange-500 px-4 py-2 rounded-r-lg hover:bg-orange-600 transition"><i class="fas fa-paper-plane"></i></button>-->
-<!--                        </div>-->
-<!--                    </div>-->
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
                 <p>&copy; 2023 ShopHub. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-  <script>
-    let currentSlide = 0;
-    const totalSlides = {{ slider_products|length }};
+    <script>
+        let currentSlide = 0;
+        const totalSlides = {{ slider_products|length }};
 
-    function showSlide(n) {
-        const slider = document.getElementById('sliderWrapper');
-        slider.style.transform = `translateX(-${n * 100}%)`;
+        function showSlide(n) {
+            const slider = document.getElementById('sliderWrapper');
+            slider.style.transform = `translateX(-${n * 100}%)`;
 
-        const dots = document.querySelectorAll('.slider-dot');
-        dots.forEach(dot => dot.classList.remove('active'));
-        dots[n].classList.add('active');
-    }
-
-    function nextSlide() {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        showSlide(currentSlide);
-    }
-
-    function prevSlide() {
-        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-        showSlide(currentSlide);
-    }
-
-    function goToSlide(n) {
-        currentSlide = n;
-        showSlide(currentSlide);
-    }
-
-    // Auto Slide
-    setInterval(nextSlide, 5000);
-
-    // ===== PROFILE DROPDOWN =====
-    function toggleProfileMenu() {
-        const menu = document.getElementById("dropdownMenu");
-        const parent = document.getElementById("profileDropdown");
-        parent.classList.toggle("active");
-        menu.classList.toggle("show");
-    }
-
-    // Close dropdown on outside click
-    window.addEventListener("click", function(e) {
-        const menu = document.getElementById("dropdownMenu");
-        const parent = document.getElementById("profileDropdown");
-
-        if (menu && parent && !parent.contains(e.target)) {
-            menu.classList.remove("show");
-            parent.classList.remove("active");
+            const dots = document.querySelectorAll('.slider-dot');
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[n].classList.add('active');
         }
-    });
 
-    // ===== FILTER LOADING ANIMATION =====
-    document.querySelectorAll('input[name="price"]').forEach(input => {
-        input.addEventListener("change", () => {
-            document.querySelector(".products-section").classList.add("loading");
-            setTimeout(() => {
-                document.getElementById("priceFilter").submit();
-            }, 200);
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            showSlide(currentSlide);
+        }
+
+        // Auto Slide
+        setInterval(nextSlide, 5000);
+
+        // ===== PROFILE DROPDOWN =====
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+
+        // Close dropdown on outside click
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
         });
-    });
 
-    function sortProducts(value) {
-        document.querySelector(".products-section").classList.add("loading");
-        window.location.href = "?sort=" + value + "&price={{ selected_price }}";
-    }
-</script>
+        // ===== FILTER LOADING ANIMATION =====
+        document.querySelectorAll('input[name="price"]').forEach(input => {
+            input.addEventListener("change", () => {
+                document.querySelector(".products-section").classList.add("loading");
+                setTimeout(() => {
+                    document.getElementById("priceFilter").submit();
+                }, 200);
+            });
+        });
+
+        function sortProducts(value) {
+            document.querySelector(".products-section").classList.add("loading");
+            window.location.href = "?sort=" + value + "&price={{ selected_price }}";
+        }
+    </script>
 </body>
 </html>

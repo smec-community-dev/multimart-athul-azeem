@@ -317,8 +317,8 @@
             box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
-        .profile-dropdown { 
-            position: relative; 
+        .profile-dropdown {
+            position: relative;
         }
 
         .profile-toggle {
@@ -375,8 +375,8 @@
             line-height: 1;
         }
 
-        .profile-dropdown.active .dropdown-arrow { 
-            transform: rotate(180deg); 
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
         }
 
         .dropdown-menu {
@@ -395,8 +395,8 @@
             overflow: hidden;
         }
 
-        .dropdown-menu.show { 
-            display: block; 
+        .dropdown-menu.show {
+            display: block;
         }
 
         .dropdown-header {
@@ -473,10 +473,10 @@
             margin: 6px 0;
         }
 
-        .dropdown-item.logout { 
-            color: #f44336; 
+        .dropdown-item.logout {
+            color: #f44336;
         }
-        
+
         .dropdown-item.logout:hover {
             background-color: rgba(244, 67, 54, 0.1);
             border-left-color: #f44336;
@@ -519,29 +519,29 @@
                 padding: 0 12px;
                 height: 60px;
             }
-            
+
             .logo {
                 font-size: 20px;
             }
-            
+
             .logo i {
                 font-size: 24px;
             }
-            
+
             .nav-center {
                 display: none;
             }
-            
+
             .search-box {
                 width: 180px;
                 margin-right: 10px;
                 padding: 6px 10px;
             }
-            
+
             .mobile-menu-btn {
                 display: block;
             }
-            
+
             .profile-info-text {
                 display: none;
             }
@@ -551,7 +551,7 @@
             .search-box {
                 display: none;
             }
-            
+
             .header-right {
                 gap: 15px;
             }
@@ -570,24 +570,31 @@
     </style>
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen overflow-x-hidden">
+
     {% include "user/header.html" %}
 
-    {% if messages %}
-        <div class="max-w-4xl mx-auto mt-6 px-4">
-            {% for message in messages %}
-                <div class="p-3 mb-3 rounded text-white
-                {% if message.tags == 'success' %} bg-green-500
-                {% elif message.tags == 'error' %} bg-red-500
-                {% else %} bg-blue-500 {% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+<!--    {% if messages %}-->
+<!--        <div class="max-w-4xl mx-auto mt-6 px-4">-->
+<!--            {% for message in messages %}-->
+<!--                <div class="p-3 mb-3 rounded text-white-->
+<!--                {% if message.tags == 'success' %} bg-green-500-->
+<!--                {% elif message.tags == 'error' %} bg-red-500-->
+<!--                {% else %} bg-blue-500 {% endif %}">-->
+<!--                    {{ message }}-->
+<!--                </div>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--    {% endif %}-->
 
-    {% block content %}{% endblock %}
-    {% include "user/footer.html" %}
+  <main class="flex-1">
+    {% block content %}
+    {% endblock %}
+</main>
+
+      <footer class="mt-auto">
+        {% include "user/footer.html" %}
+    </footer>
 
 {% block scripts %}
 <script>
@@ -657,6 +664,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 5000);
     }
 });
+
 
 
 </script>

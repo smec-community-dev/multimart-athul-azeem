@@ -2,10 +2,710 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 32px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-left: 60px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px 16px;
+            width: 280px;
+            margin-right: 30px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 12px;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff8c00;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .auth-buttons button {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 8px;
+        }
+
+        .profile-avatar {
+            background: #ff9900;
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            width: 260px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            padding: 15px 0;
+            display: none;
+            z-index: 999;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff4ec;
+        }
+
+        .dropdown-header-avatar {
+            background: #ff9900;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: #ff7f32;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .nav-center {
+                display: none;
+            }
+            .search-box {
+                width: 200px;
+                margin-right: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                height: auto;
+                flex-wrap: wrap;
+                padding: 12px 15px;
+            }
+            .logo {
+                font-size: 22px;
+            }
+            .search-box {
+                width: 100%;
+                margin: 10px 0;
+                order: 3;
+            }
+            .auth-buttons {
+                display: none;
+            }
+            .header-right {
+                gap: 15px;
+            }
+        }
+
+        /* ========== ORDER SUCCESS STYLES ========== */
+        .success-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .success-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* ========== FOOTER STYLES ========== */
+        footer {
+            background: #1f2937 !important;
+            color: white;
+            margin-top: auto;
+        }
+
+        footer a {
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #ff8c00;
+        }
+    </style>
 </head>
-<body>
-<h1>order Successfully.....</h1>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <nav class="nav-center">
+                <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'products_list' %}">Products</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </nav>
+
+<!--            <form method="get" class="search-box">-->
+<!--                <i class="fas fa-search"></i>-->
+<!--                <input type="text" name="search" placeholder="Search products..." value="{{ search|default:'' }}">-->
+<!--            </form>-->
+
+            <div class="header-right">
+                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.username }}</h3>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Order Success Section -->
+    <section class="container mx-auto px-4 py-8 animate-fade-in flex-1">
+        <div class="max-w-4xl mx-auto">
+            <!-- Success Header -->
+            <div class="success-card bg-white rounded-2xl shadow-lg p-8 mb-6 text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-green-500 text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-3">Order Placed Successfully 🎉</h1>
+                <p class="text-gray-600 text-lg">Thank you for your purchase. Your order has been confirmed and will be processed soon.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - Order Details & Shipping -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Order Details -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-receipt mr-2 text-orange-500"></i> Order Details
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-600 text-sm">Order ID</p>
+                                <p class="font-semibold text-gray-900">#ORD-{{ order.id }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Date & Time</p>
+                                <p class="font-semibold text-gray-900">{{ order.order_date|date:"M d, Y" }} at {{ order.order_date|time:"g:i A" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Payment Method</p>
+                                <p class="font-semibold text-gray-900">{{ order.payment_method }}</p>
+                            </div>
+                            <div>
+<!--                                <p class="text-gray-600 text-sm">Order Status</p>-->
+<!--                                <p class="font-semibold-->
+<!--                                    {% if order.status == 'Delivered' %}text-green-500-->
+<!--                                    {% elif order.status == 'Cancelled' %}text-red-500-->
+<!--                                    {% else %}text-orange-500{% endif %}">-->
+<!--                                    {{ order.status }}-->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Ordered -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-box mr-2 text-orange-500"></i> Items Ordered
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="py-3 px-4 text-left">Product</th>
+                                        <th class="py-3 px-4 text-center">Quantity</th>
+                                        <th class="py-3 px-4 text-right">Unit Price</th>
+                                        <th class="py-3 px-4 text-right">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                    <tr class="border-b">
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                                                    {% with item.product.images.all|first as main_image %}
+                                                        {% if main_image %}
+                                                        <img src="{{ main_image.image.url }}"
+                                                             alt="{{ item.product.name }}"
+                                                             class="max-w-full max-h-full object-cover rounded-lg">
+                                                        {% else %}
+                                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900">{{ item.product.name }}</h3>
+                                                    {% if item.product.color %}
+                                                    <p class="text-sm text-gray-500">{{ item.product.color }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4 text-center">
+                                            <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-medium">{{ item.quantity }}</span>
+                                        </td>
+                                        <td class="py-4 px-4 text-right font-semibold text-gray-900">₹{{ item.unit_price }}</td>
+                                        <td class="py-4 px-4 text-right font-semibold text-orange-500">₹{% widthratio item.unit_price 1 item.quantity %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-map-marker-alt mr-2 text-orange-500"></i> Shipping Address
+                        </h2>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="font-semibold text-gray-900 mb-2">{{ user.first_name }} {{ user.last_name }}</p>
+                            <p class="text-gray-600">{{ order.shipping_address }}</p>
+                            {% if user.phone_number %}
+                            <p class="text-gray-600 mt-2">{{ user.phone_number }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Price Summary & Actions -->
+                <div class="space-y-6">
+                    <!-- Price Summary -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900">Price Summary</h3>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span class="font-medium text-gray-900">₹{{ order.total_amount }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping Fee</span>
+                                <span class="font-medium text-gray-900">₹0</span>
+                            </div>
+                            <div class="flex justify-between">
+<!--                                <span class="text-gray-600">Tax (18%)</span>-->
+<!--                                <span class="font-medium text-gray-900">₹{% widthratio order.total_amount 100 18 %}</span>-->
+                            </div>
+                        </div>
+                        <div class="border-t pt-3">
+                            <div class="flex justify-between font-bold text-lg">
+                                <span class="text-gray-900">Total Paid</span>
+                                <span class="text-orange-500">₹{{ order.total_amount }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+<!--                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">-->
+<!--                        <div class="flex flex-col space-y-3">-->
+<!--                            <button class="w-full border-2 border-orange-500 text-orange-500 py-3 rounded-lg font-semibold transition-all flex items-center justify-center btn-animate">-->
+<!--                                <i class="fas fa-download mr-2"></i> Download Invoice-->
+<!--                            </button>-->
+<!--                            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-all flex items-center justify-center btn-animate">-->
+<!--                                <i class="fas fa-shipping-fast mr-2"></i> Track Order-->
+<!--                            </button>-->
+<!--                            <a href="{% url 'user_home' %}" class="w-full text-center text-orange-500 hover:text-orange-600 py-3 font-semibold transition-all btn-animate">-->
+<!--                                Continue Shopping-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <!-- Support Info -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-900">Need Help?</h3>
+                        <p class="text-gray-600 mb-4">If you have any questions about your order, our customer service team is here to help.</p>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-phone-alt mr-2 text-orange-500"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 mt-2">
+                            <i class="fas fa-envelope mr-2 text-orange-500"></i>
+                            <span>support@shophub.com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+    // ===== Make function global so onclick works =====
+    function toggleProfileMenu() {
+        const menu = document.getElementById("dropdownMenu");
+        const parent = document.getElementById("profileDropdown");
+        if (menu && parent) {
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Close dropdown on outside click
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // Add animation to success elements
+        const successElements = document.querySelectorAll('.success-card');
+        successElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 0.1}s`;
+        });
+
+    });
+</script>
 
 </body>
 </html>
