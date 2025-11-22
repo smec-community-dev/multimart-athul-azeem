@@ -24,4 +24,10 @@ urlpatterns = [
     path("product/<slug:slug>/", views.product_details, name='product_details'),
 
     path("not-seller/", views.not_seller, name="not_seller"),
+    path("choose-role/", views.choose_role, name="choose_role"),
+    path("complete-customer/", views.complete_customer, name="complete_customer"),
+    path("complete-seller/", views.complete_seller, name="complete_seller"),
+path("social/error/", views.social_signup_error, name="social_error"),
+
+
 ]
