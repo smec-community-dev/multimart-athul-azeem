@@ -43,9 +43,10 @@
             50% { opacity: 0.6; }
         }
 
+        /* ======================== NAVBAR ======================== */
         .navbar {
             background: var(--card-bg);
-            padding: 1rem 2rem;
+            padding: 12px 20px;
             box-shadow: var(--shadow-light);
             display: flex;
             justify-content: space-between;
@@ -54,33 +55,63 @@
             top: 0;
             z-index: 100;
             width: 100%;
+            gap: 12px;
         }
 
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: var(--primary-color);
             white-space: nowrap;
         }
 
         .navbar-title {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: var(--light-text);
             border-left: 2px solid var(--primary-color);
-            padding-left: 1rem;
-            white-space: nowrap;
+            padding-left: 10px;
         }
 
         .navbar-right {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 15px;
+            flex-shrink: 0;
         }
 
         .notification-bell {
@@ -88,6 +119,7 @@
             cursor: pointer;
             font-size: 1.3rem;
             transition: transform 0.3s ease;
+            line-height: 1;
         }
 
         .notification-bell:hover {
@@ -101,8 +133,8 @@
             background: var(--danger-color);
             color: white;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -117,8 +149,8 @@
         .profile-toggle {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
+            gap: 8px;
+            padding: 6px 10px;
             background: rgba(255, 127, 50, 0.1);
             border-radius: 20px;
             cursor: pointer;
@@ -132,8 +164,8 @@
         }
 
         .profile-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             display: flex;
@@ -141,29 +173,38 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            flex-shrink: 0;
         }
 
         .profile-info-text {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
         }
 
         .profile-name {
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-color);
         }
 
         .profile-role {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--light-text);
         }
 
         .dropdown-arrow {
-            font-size: 1.2rem;
+            font-size: 1rem;
             transition: transform 0.3s ease;
+            line-height: 1;
         }
 
         .profile-dropdown.active .dropdown-arrow {
@@ -176,11 +217,12 @@
             right: 0;
             background: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            min-width: 280px;
-            margin-top: 10px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            margin-top: 8px;
             display: none;
             z-index: 1000;
+            animation: slideDown 0.3s ease;
             border: 1px solid var(--border-color);
             overflow: hidden;
         }
@@ -190,7 +232,7 @@
         }
 
         .dropdown-header {
-            padding: 16px 20px;
+            padding: 12px 16px;
             background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
             border-bottom: 1px solid var(--border-color);
         }
@@ -198,12 +240,12 @@
         .dropdown-header-content {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .dropdown-header-avatar {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             display: flex;
@@ -211,35 +253,37 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .dropdown-header-info h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--text-color);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .dropdown-header-info p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--light-text);
         }
 
         .dropdown-items {
-            padding: 12px 0;
+            padding: 8px 0;
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
+            gap: 10px;
+            padding: 10px 16px;
             color: var(--text-color);
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
             border-left: 3px solid transparent;
+            font-size: 0.9rem;
         }
 
         .dropdown-item:hover {
@@ -249,8 +293,9 @@
         }
 
         .dropdown-item-icon {
-            font-size: 1.2rem;
-            width: 24px;
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
         }
 
         .dropdown-item-text {
@@ -259,11 +304,11 @@
 
         .dropdown-item-label {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .dropdown-item-desc {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--light-text);
             margin-top: 2px;
         }
@@ -271,7 +316,7 @@
         .dropdown-divider {
             height: 1px;
             background: var(--border-color);
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .dropdown-item.logout {
@@ -288,118 +333,99 @@
             text-decoration: none;
         }
 
+        /* ======================== SIDEBAR ======================== */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 70px;
-            width: 250px;
-            height: calc(100vh - 70px);
-            background: #FAFAFA;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            animation: slideInLeft 0.5s ease;
             overflow-y: auto;
-            padding: 1rem 0;
-            z-index: 99;
-            border-right: 1px solid #E8E8E8;
-            transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .sidebar.hidden {
-            transform: translateX(-100%);
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
         }
 
         .sidebar-menu {
             list-style: none;
-            padding: 0;
+        }
+
+        .sidebar-menu li {
             margin: 0;
         }
 
-        .sidebar-menu-item {
-            margin: 0;
-        }
-
-        .sidebar-menu-link {
+        .sidebar-menu a {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            color: var(--text-color);
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: pointer;
-            border-left: 4px solid transparent;
-            font-weight: 500;
+            border-left: 3px solid transparent;
             font-size: 0.95rem;
         }
 
-        .sidebar-menu-link:hover {
-            background: rgba(255, 127, 50, 0.06);
-            color: var(--text-color);
-        }
-
-        .sidebar-menu-link.active {
-            background: rgba(255, 127, 50, 0.1);
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
             color: var(--primary-color);
             border-left-color: var(--primary-color);
-            font-weight: 600;
         }
 
-        .sidebar-menu-link span:first-child {
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 28px;
+        .sidebar-menu span {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1;
         }
 
-        .sidebar-toggle {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 1.5rem;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-toggle:hover {
-            color: var(--primary-color);
-        }
-
-        .main-layout {
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-layout.sidebar-collapsed {
-            margin-left: 0;
-        }
-
+        /* ======================== MAIN LAYOUT ======================== */
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
+            display: flex;
             width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
         }
 
         .page-header {
-            margin-bottom: 2rem;
+            margin-bottom: 24px;
         }
 
         .page-header h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
         }
 
         .order-card {
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: var(--shadow-light);
-            padding: 2rem;
-            margin-bottom: 3rem;
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
         }
 
         .order-top-info {
@@ -421,7 +447,7 @@
         }
 
         .top-info-label {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--light-text);
             font-weight: 700;
             text-transform: uppercase;
@@ -459,6 +485,7 @@
             gap: 1.5rem;
             overflow-x: auto;
             padding: 0.5rem 0;
+            -webkit-overflow-scrolling: touch;
         }
 
         .timeline-step {
@@ -468,6 +495,7 @@
             min-width: 100px;
             text-align: center;
             position: relative;
+            width: 100px;
         }
 
         .timeline-circle {
@@ -482,6 +510,7 @@
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
             transition: all 0.5s ease;
+            flex-shrink: 0;
         }
 
         .timeline-step.active .timeline-circle {
@@ -504,6 +533,16 @@
             animation: slideIn 0.5s ease infinite alternate;
         }
 
+        .timeline-step.delivered-active .timeline-circle {
+            background: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-step.delivered-active .timeline-circle::after {
+            display: none;
+        }
+
         .timeline-label {
             font-size: 0.8rem;
             font-weight: 600;
@@ -518,6 +557,21 @@
         .timeline-step.active .timeline-label {
             color: var(--primary-color);
             font-weight: 700;
+        }
+
+        .timeline-date {
+            margin-top: 4px;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--light-text);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .timeline-date-unset {
+            font-style: italic;
+            color: #999;
+            font-size: 0.7rem;
         }
 
         .section-title {
@@ -637,6 +691,7 @@
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.3px;
+            white-space: nowrap;
         }
 
         .items-table td {
@@ -667,6 +722,7 @@
         .price {
             font-weight: 700;
             color: var(--primary-color);
+            text-align: right;
         }
 
         .order-summary {
@@ -743,6 +799,7 @@
             background: var(--card-bg);
             color: var(--text-color);
             transition: all 0.3s ease;
+            min-width: 140px;
         }
 
         .status-select:hover {
@@ -769,14 +826,13 @@
             background: var(--accent-color);
         }
 
+        /* ======================== FOOTER ======================== */
         .footer {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #e0e0e0;
             padding: 3rem 2rem 1.5rem;
             margin-top: 4rem;
             border-top: 2px solid var(--primary-color);
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
         }
 
         .footer-content {
@@ -786,7 +842,7 @@
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             margin-bottom: 2rem;
         }
@@ -803,7 +859,7 @@
         }
 
         .footer-logo span:last-child {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 800;
             color: var(--primary-color);
         }
@@ -812,7 +868,6 @@
             color: #999;
             margin-bottom: 1.5rem;
             line-height: 1.6;
-            font-size: 0.95rem;
         }
 
         .social-links {
@@ -841,7 +896,7 @@
 
         .footer-section h3 {
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 1rem;
         }
@@ -852,9 +907,8 @@
         }
 
         .footer-section li {
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.75rem;
             color: #999;
-            font-size: 0.9rem;
         }
 
         .footer-section a {
@@ -881,37 +935,72 @@
         .footer-bottom p {
             color: #999;
             margin: 0;
-            font-size: 0.9rem;
         }
 
+        /* ======================== RESPONSIVE ======================== */
         @media (max-width: 1024px) {
-            .main-layout {
-                margin-left: 0;
-            }
-
-            .footer {
-                margin-left: 0;
-            }
-
             .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                top: 0;
-                padding: 1rem 0;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                transform: translateX(0) !important;
+                width: 220px;
+            }
+
+            .sidebar-menu a {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .order-top-info {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.8rem 0.6rem;
             }
         }
 
         @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-                gap: 1rem;
+            .hamburger {
+                display: flex;
             }
 
             .navbar-title {
-                display: none;
+                display: none !important;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .main-content {
+                padding: 16px;
             }
 
             .page-header h1 {
@@ -920,68 +1009,268 @@
 
             .order-top-info {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
             }
 
             .timeline {
                 overflow-x: auto;
+                gap: 1rem;
+            }
+
+            .timeline-step {
+                min-width: 80px;
+            }
+
+            .timeline-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .timeline-label {
+                font-size: 0.75rem;
+            }
+
+            .timeline-date {
+                font-size: 0.7rem;
             }
 
             .action-section {
                 flex-direction: column;
+                gap: 0.75rem;
             }
 
             .back-btn, .update-btn {
                 width: 100%;
                 justify-content: center;
             }
-        }
 
-        @media (max-width: 480px) {
-            .navbar-left {
-                gap: 0.5rem;
-            }
-
-            .logo {
-                font-size: 1.4rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .order-card {
-                padding: 1.2rem;
-            }
-
-            .page-header h1 {
-                font-size: 1.25rem;
-            }
-
-            .order-top-info {
-                grid-template-columns: 1fr;
-            }
-
-            .timeline {
-                flex-wrap: wrap;
-            }
-
-            .timeline-step.active .timeline-circle::after {
-                display: none;
+            .status-select {
+                min-width: auto;
             }
 
             .items-table th,
             .items-table td {
-                padding: 0.8rem;
+                padding: 0.75rem 0.5rem;
                 font-size: 0.85rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 8px 12px;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            .navbar-right {
+                gap: 10px;
+            }
+
+            .notification-badge {
+                width: 16px;
+                height: 16px;
+                font-size: 0.6rem;
+            }
+
+            .profile-toggle {
+                padding: 5px 8px;
+            }
+
+            .profile-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+
+            .dropdown-arrow {
+                font-size: 0.9rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+
+            .page-header {
+                margin-bottom: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .order-top-info {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .timeline-step {
+                min-width: 70px;
+            }
+
+            .timeline-circle {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .timeline-label {
+                font-size: 0.7rem;
+            }
+
+            .timeline-date {
+                font-size: 0.65rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.8rem;
             }
 
             .action-section {
                 flex-direction: column;
+                gap: 0.5rem;
             }
 
             .back-btn, .update-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .status-select {
+                width: 100%;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .navbar {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+
+            .navbar-left {
+                gap: 8px;
+            }
+
+            .navbar-right {
+                gap: 8px;
+            }
+
+            .page-header h1 {
+                font-size: 1.1rem;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .order-top-info {
+                gap: 0.5rem;
+            }
+
+            .timeline-step {
+                min-width: 60px;
+            }
+
+            .timeline-circle {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+
+            .timeline-label {
+                font-size: 0.65rem;
+            }
+
+            .timeline-date {
+                font-size: 0.6rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.5rem 0.3rem;
+                font-size: 0.75rem;
+            }
+
+            .back-btn, .update-btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Table Responsive */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .items-table {
+            min-width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .items-table {
+                min-width: 400px;
+                font-size: 0.85rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.75rem 0.5rem;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .items-table {
+                min-width: 350px;
+                font-size: 0.8rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.75rem;
+            }
+
+            .price {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .items-table {
+                min-width: 300px;
+                font-size: 0.75rem;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 0.5rem 0.2rem;
             }
         }
     </style>
@@ -990,9 +1279,13 @@
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="navbar-left">
-            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <div class="logo">ShopHub</div>
-            <div class="navbar-title">Orders</div>
+            <div class="navbar-title">Order Details</div>
         </div>
         <div class="navbar-right">
             <div class="notification-bell" onclick="showNotifications()">
@@ -1073,60 +1366,30 @@
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-menu">
-            <li class="sidebar-menu-item">
-                <a href="{% url 'seller_dashboard' %}" class="sidebar-menu-link {% if request.path == '/seller_dashboard/' %}active{% endif %}">
-                    <span>📊</span>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{% url 'add' %}" class="sidebar-menu-link {% if 'add' in request.path %}active{% endif %}">
-                    <span>📦</span>
-                    <span>Products</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="{% url 'order' %}" class="sidebar-menu-link {% if 'order' in request.path %}active{% endif %}">
-                    <span>🛒</span>
-                    <span>Orders</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="#" class="sidebar-menu-link">
-                    <span>💰</span>
-                    <span>Earnings</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="#" class="sidebar-menu-link">
-                    <span>⭐</span>
-                    <span>Reviews</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="#" class="sidebar-menu-link">
-                    <span>📈</span>
-                    <span>Analytics</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-item">
-                <a href="#" class="sidebar-menu-link">
-                    <span>⚙️</span>
-                    <span>Settings</span>
-                </a>
-            </li>
-        </ul>
-    </aside>
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-layout" id="mainLayout">
-        <div class="container">
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.path == '/seller_dashboard/' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}" class="{% if 'add' in request.path %}active{% endif %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}" class="{% if 'order' in request.path %}active{% endif %}"><span>🛒</span> Orders</a></li>
+                <li><a href="#"><span>💰</span> Earnings</a></li>
+                <li><a href="#"><span>⭐</span> Reviews</a></li>
+                <li><a href="#"><span>📈</span> Analytics</a></li>
+                <li><a href="#"><span>⚙️</span> Settings</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
             <!-- PAGE HEADER -->
             <div class="page-header">
                 <h1>📋 Order #{{ order.id }}</h1>
+                <p>Order details and status updates</p>
             </div>
 
             <!-- ORDER CARD -->
@@ -1162,71 +1425,76 @@
 
                 <!-- ORDER STATUS TIMELINE -->
                 <div class="order-status-timeline">
-                    <h3 class="timeline-title">📍 Order Progress</h3>
+                    <div class="timeline-title">Order Progress</div>
                     <div class="timeline">
-                        <div class="timeline-step {% if order.status == 'Pending' %}active{% elif order.status in 'Processing,Shipped,Delivered' %}completed{% endif %}">
+                        <!-- PENDING -->
+                        <div class="timeline-step
+                            {% if order.status == 'Pending' %}
+                                active
+                            {% elif order.status == 'Processing' or order.status == 'Shipped' or order.status == 'Delivered' %}
+                                completed
+                            {% endif %}">
                             <div class="timeline-circle">⏳</div>
                             <div class="timeline-label">Pending</div>
+                            <div class="timeline-date">
+                                {% if order.pending_date %}
+                                    {{ order.pending_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="timeline-date-unset">Not Set</span>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="timeline-step {% if order.status == 'Processing' %}active{% elif order.status in 'Shipped,Delivered' %}completed{% endif %}">
+                        <!-- PROCESSING -->
+                        <div class="timeline-step
+                            {% if order.status == 'Processing' %}
+                                active
+                            {% elif order.status == 'Shipped' or order.status == 'Delivered' %}
+                                completed
+                            {% endif %}">
                             <div class="timeline-circle">⚙️</div>
                             <div class="timeline-label">Processing</div>
+                            <div class="timeline-date">
+                                {% if order.processing_date %}
+                                    {{ order.processing_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="timeline-date-unset">Not Set</span>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="timeline-step {% if order.status == 'Shipped' %}active{% elif order.status == 'Delivered' %}completed{% endif %}">
+                        <!-- SHIPPED -->
+                        <div class="timeline-step
+                            {% if order.status == 'Shipped' %}
+                                active
+                            {% elif order.status == 'Delivered' %}
+                                completed
+                            {% endif %}">
                             <div class="timeline-circle">📦</div>
                             <div class="timeline-label">Shipped</div>
+                            <div class="timeline-date">
+                                {% if order.shipped_date %}
+                                    {{ order.shipped_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="timeline-date-unset">Not Set</span>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div class="timeline-step {% if order.status == 'Delivered' %}active completed{% endif %}">
+                        <!-- DELIVERED -->
+                        <div class="timeline-step
+                            {% if order.status == 'Delivered' %}
+                                active completed delivered-active
+                            {% endif %}">
                             <div class="timeline-circle">✅</div>
                             <div class="timeline-label">Delivered</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ORDER DETAILS SECTION -->
-                <h2 class="section-title">Order Details</h2>
-
-                <div class="info-grid">
-                    <div class="detail-box">
-                        <div class="detail-label">Order Status</div>
-                        <div class="detail-value">
-                            <span class="status-badge status-{{ order.status|lower }}">
-                                {% if order.status == 'Pending' %}⏳ Pending
-                                {% elif order.status == 'Processing' %}⚙️ Processing
-                                {% elif order.status == 'Shipped' %}📦 Shipped
-                                {% elif order.status == 'Delivered' %}✅ Delivered
-                                {% elif order.status == 'Cancelled' %}❌ Cancelled
-                                {% else %}{{ order.status }}
+                            <div class="timeline-date">
+                                {% if order.delivered_date %}
+                                    {{ order.delivered_date|date:"M d, Y" }}
+                                {% else %}
+                                    <span class="timeline-date-unset">Not Set</span>
                                 {% endif %}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <div class="detail-label">Payment Method</div>
-                        <div class="detail-value">
-                            {{ order.payment_method|default:"Not specified" }}
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <div class="detail-label">Delivery Date</div>
-                        <div class="detail-value">
-                            {% if order.delivery_date %}
-                                {{ order.delivery_date|date:"M d, Y" }}
-                            {% else %}
-                                Not yet delivered
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="detail-box">
-                        <div class="detail-label">Shipping Address</div>
-                        <div class="detail-value">
-                            {{ order.shipping_address|linebreaksbr }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1234,41 +1502,43 @@
                 <!-- ORDER ITEMS SECTION -->
                 <h2 class="section-title">Order Items</h2>
 
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Unit Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in items %}
-                        <tr>
-                            <td>
-                                <div class="product-name">{{ item.product.name }}</div>
-                                <div class="product-sku">
-                                    {% if item.product.slug %}
-                                        SKU: {{ item.product.slug|upper }}
-                                    {% else %}
-                                        Product #{{ item.product.id }}
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td class="price">₹{{ item.unit_price|floatformat:2 }}</td>
-                            <td style="text-align: center; font-weight: 600;">{{ item.quantity }}</td>
-                            <td class="price">₹{% widthratio item.unit_price 1 item.quantity %}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--light-text); padding: 2rem;">
-                                No items found in this order
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <div class="product-name">{{ item.product.name }}</div>
+                                    <div class="product-sku">
+                                        {% if item.product.slug %}
+                                            SKU: {{ item.product.slug|upper }}
+                                        {% else %}
+                                            Product #{{ item.product.id }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="price">₹{{ item.unit_price|floatformat:2 }}</td>
+                                <td style="text-align: center; font-weight: 600;">{{ item.quantity }}</td>
+                                <td class="price">₹{% widthratio item.unit_price 1 item.quantity %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--light-text); padding: 2rem;">
+                                    No items found in this order
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
                 <!-- ORDER SUMMARY -->
                 <div class="order-summary">
@@ -1297,7 +1567,7 @@
                     <a href="{% url 'order' %}" class="back-btn">← Back to Orders</a>
 
                     {% if order.status != 'Delivered' and order.status != 'Cancelled' %}
-                    <form method="POST" action="{% url 'update_order_status' order.id %}" style="display: flex; gap: 1rem; align-items: center;">
+                    <form method="POST" action="{% url 'update_order_status' order.id %}" style="display: flex; gap: 1rem; align-items: center; flex: 1;">
                         {% csrf_token %}
                         <select name="status" class="status-select" required>
                             <option value="">Update Status</option>
@@ -1309,7 +1579,7 @@
                         <button type="submit" class="update-btn">Update Status</button>
                     </form>
                     {% else %}
-                    <div style="padding: 0.7rem 1.5rem; background: #f5f5f5; border-radius: 6px; color: var(--light-text);">
+                    <div style="padding: 0.7rem 1.5rem; background: #f5f5f5; border-radius: 6px; color: var(--light-text); flex: 1; text-align: center;">
                         Order is {{ order.status }} - Cannot update status
                     </div>
                     {% endif %}
@@ -1378,11 +1648,19 @@
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const mainLayout = document.getElementById('mainLayout');
-            if (sidebar && mainLayout) {
-                sidebar.classList.toggle('hidden');
-                mainLayout.classList.toggle('sidebar-collapsed');
-            }
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('show');
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('show');
+            document.querySelector('.hamburger').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('show');
+            document.body.style.overflow = '';
         }
 
         function toggleProfileMenu() {

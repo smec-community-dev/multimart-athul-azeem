@@ -3,7 +3,7 @@ from seller import views
 
 urlpatterns = [
     path("view/", views.view_product, name='view_products'),
-    path("home/", views.home, name='home'),
+    path("", views.home, name='home'),
     path("registration/", views.seller_registration, name='registration'),
     path("profile/", views.seller_profile_view, name='profile'),
     path("login/", views.login_seller, name='login'),
