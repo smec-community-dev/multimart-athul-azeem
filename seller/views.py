@@ -344,7 +344,6 @@ def seller_registration(request):
         gst_number = request.POST.get("gst_number")
         bank_account = request.POST.get("bank_account")
 
-
         if User.objects.filter(username=username).exists():
             messages.error(request, f" username {username} already exists")
             return render(request, "seller/seller_registration.html")
