@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Category,SubCategory
 User = get_user_model()
 from seller.models import Product
@@ -12,6 +12,8 @@ from .models import Cart, Order, OrderItem
 from django.db.models import Q
 from difflib import get_close_matches
 from django.core.paginator import Paginator
+from .models import Address
+from django.contrib.auth import update_session_auth_hash
 
 def products(request):
     bestseller_products = Product.objects.filter(is_featured=True)[:4]
@@ -44,18 +46,36 @@ def products(request):
         "bestseller_products": bestseller_products,
     })
 
-from django.core.paginator import Paginator
 
 def productslist(request):
     products = Product.objects.all()
 
-    # Get filter values
+    # SEARCH FEATURE
+    query = request.GET.get("q", "")
+    if query:
+        # Normal contains search first
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subcategory__name__icontains=query) |
+            Q(subcategory__category__name__icontains=query)
+        )
+
+        # If nothing found => fuzzy match
+        if not products.exists():
+            product_names = list(Product.objects.values_list("name", flat=True))
+            close_matches = get_close_matches(query, product_names, n=5, cutoff=0.3)
+
+            if close_matches:
+                products = Product.objects.filter(name__in=close_matches)
+
+    # FILTER VALUES
     price = request.GET.get("price")
     category = request.GET.get("category")
     rating = request.GET.get("rating")
     sort = request.GET.get("sort")
 
-    # PRICE filter
+    # PRICE FILTER
     if price == "under_1000":
         products = products.filter(price__lt=1000)
     elif price == "1000_10000":
@@ -65,11 +85,11 @@ def productslist(request):
     elif price == "over_50000":
         products = products.filter(price__gt=50000)
 
-    # CATEGORY filter
+    # CATEGORY FILTER
     if category:
         products = products.filter(subcategory__category__name__iexact=category)
 
-    # RATING filter
+    # RATING FILTER
     if rating:
         products = products.filter(average_rating__gte=rating)
 
@@ -83,13 +103,14 @@ def productslist(request):
     elif sort == "newest":
         products = products.order_by("-created_at")
 
-    # PAGINATION MUST COME LAST
-    paginator = Paginator(products, 4)  # 4 products each page
+    # PAGINATION
+    paginator = Paginator(products, 4)  # 4 per page
     page_number = request.GET.get("page")
     products_page = paginator.get_page(page_number)
 
     return render(request, "user/products.html", {
         "products": products_page,
+        "query": query,
         "selected_price": price,
         "selected_category": category,
         "selected_rating": rating,
@@ -99,9 +120,56 @@ def productslist(request):
     })
 
 
-
+@login_required(login_url="login")
 def profile(request):
-    return render(request, "user/profile.html")
+    address, created = Address.objects.get_or_create(user=request.user)
+
+    # Check which section to show (profile or address)
+    section = request.GET.get('section', 'profile')
+
+    # Handle PROFILE form submission
+    if request.method == "POST" and 'username' in request.POST:
+        full_name = request.POST.get("full_name")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone_number")
+
+        # Split full name into first & last
+        first, *last = full_name.split(" ", 1)
+
+        user = request.user
+        user.first_name = first
+        user.last_name = last[0] if last else ""
+        user.username = username
+        user.email = email
+        user.phone_number = phone
+        user.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect("/user/profile/?section=profile")
+
+
+    # Handle ADDRESS form submission
+    if request.method == "POST" and 'street' in request.POST:
+        address.full_name = request.POST.get("full_name")
+        address.phone = request.POST.get("phone")
+        address.street = request.POST.get("street")
+        address.city = request.POST.get("city")
+        address.state = request.POST.get("state")
+        address.pincode = request.POST.get("pincode")
+        address.landmark = request.POST.get("landmark")
+        address.save()
+
+        messages.success(request, "Address updated successfully!")
+        return redirect("/user/profile/?section=address")
+
+
+    return render(request, "user/profile.html", {
+        "address": address,
+        "active_section": section,
+    })
+
+
 
 def product_detail(request, slug):
     product = Product.objects.filter(slug=slug).first()
@@ -114,17 +182,30 @@ def product_detail(request, slug):
     gallery_images = product.images.all()
 
     # Wishlist count
-    wishlist_count = Wishlist.objects.filter(user=request.user).count() if request.user.is_authenticated else 0
+    wishlist_count = Wishlist.objects.filter(
+        user=request.user
+    ).count() if request.user.is_authenticated else 0
 
     # Wishlist check for this product
     in_wishlist = False
     if request.user.is_authenticated:
-        in_wishlist = Wishlist.objects.filter(user=request.user, product=product).exists()
+        in_wishlist = Wishlist.objects.filter(
+            user=request.user, product=product
+        ).exists()
 
-    # ==== RELATED PRODUCTS (using same SubCategory) ====
+    # ==== RELATED PRODUCTS (same SubCategory) ====
     related_products = Product.objects.filter(
         subcategory=product.subcategory
     ).exclude(id=product.id)[:4]
+
+    # ==== Check if user bought AND delivered this product ====
+    has_delivered_order = False
+    if request.user.is_authenticated:
+        has_delivered_order = OrderItem.objects.filter(
+            order__user=request.user,
+            order__status="Delivered",
+            product=product
+        ).exists()
 
     return render(request, "user/product_detail.html", {
         "product": product,
@@ -133,8 +214,8 @@ def product_detail(request, slug):
         "wishlist_count": wishlist_count,
         "in_wishlist": in_wishlist,
         "related_products": related_products,
+        "has_delivered_order": has_delivered_order,
     })
-
 
 @login_required(login_url="login")
 def add_to_cart(request, slug):
@@ -188,11 +269,17 @@ def buy_now(request, slug):
     return redirect("checkout")
 
 
-
 @login_required(login_url="login")
 def cart_page(request):
+    search_query = request.GET.get("search", "")  # search text from input box
+
     cart_items = Cart.objects.filter(user=request.user)
 
+    # Simple filtering by product name only
+    if search_query:
+        cart_items = cart_items.filter(product__name__icontains=search_query)
+
+    # Calculate total
     total_amount = 0
     for item in cart_items:
         item.subtotal = item.product.price * item.quantity
@@ -200,10 +287,9 @@ def cart_page(request):
 
     return render(request, "user/cart.html", {
         "cart_items": cart_items,
-        "total": total_amount
+        "total": total_amount,
+        "search": search_query,
     })
-
-
 
 def update_cart(request, item_id):
     item = Cart.objects.filter(id=item_id, user=request.user).first()
@@ -231,35 +317,43 @@ def remove_cart_item(request, item_id):
     Cart.objects.filter(id=item_id, user=request.user).delete()
     return redirect("cart_page")
 
-
+from .models import OrderItem  # already imported at top
 @login_required
 def add_review(request, slug):
-    product = Product.objects.filter(slug=slug).first()
+    product = get_object_or_404(Product, slug=slug)
 
-    if not product:
-        messages.error(request, "Product not found!")
-        return redirect("home_page")
+    # Check if user purchased product and order is delivered
+    has_bought = OrderItem.objects.filter(
+        order__user=request.user,
+        order__status='Delivered',
+        product=product
+    ).exists()
 
+    if not has_bought:
+        messages.error(request, "You can review only products you have purchased and are delivered.")
+        return redirect('product_detail', slug=slug)
+
+    # Check if user already reviewed
+    if Review.objects.filter(user=request.user, product=product).exists():
+        messages.error(request, "You already reviewed this product.")
+        return redirect('product_detail', slug=slug)
+
+    # Submit review
     if request.method == "POST":
         rating = request.POST.get("rating")
         comment = request.POST.get("comment")
-
-        if Review.objects.filter(user=request.user, product=product).exists():
-            messages.error(request, "You already reviewed this product.")
-            return redirect('product_detail', slug=slug)
 
         Review.objects.create(
             user=request.user,
             product=product,
             rating=rating,
-            comment=comment
+            comment=comment,
         )
+
         messages.success(request, "Review submitted successfully!")
         return redirect('product_detail', slug=slug)
 
     return redirect('product_detail', slug=slug)
-
-
 
 def user_login(request):
     if request.user.is_authenticated:
@@ -417,11 +511,21 @@ def add_to_wishlist(request, slug):
 
 @login_required(login_url="login")
 def wishlist_page(request):
+    search = request.GET.get("search", "")
+
     wishlist_items = Wishlist.objects.filter(user=request.user)
-    return render(request, "user/wishlist.html", {"wishlist_items": wishlist_items})
 
+    if search:
+        wishlist_items = wishlist_items.filter(
+            product__name__icontains=search
+        )
 
-@login_required
+    return render(request, "user/wishlist.html", {
+        "wishlist_items": wishlist_items,
+        "search": search,
+    })
+
+@login_required(login_url="login")
 def checkout(request):
     buy_slug = request.GET.get("buy")
     quantity = request.GET.get("quantity", 1)
@@ -449,7 +553,11 @@ def checkout(request):
 
     # NORMAL CART CHECKOUT
     items = Cart.objects.filter(user=request.user)
-    total = sum(item.product.price * item.quantity for item in items)
+
+    total = 0
+    for item in items:
+        item.subtotal = item.product.price * item.quantity   # <-- ADD THIS
+        total += item.subtotal
 
     return render(request, "user/checkout.html", {
         "items": items,
@@ -458,17 +566,32 @@ def checkout(request):
         "buy_now": False
     })
 
+@login_required(login_url="login")
+def clear_wishlist(request):
+    Wishlist.objects.filter(user=request.user).delete()
+    return redirect('wishlist_page')   # change to your wishlist page URL name
 
-@login_required
-@login_required
+@login_required(login_url="login")
 def place_order(request):
     if request.method == "POST":
 
-        # BUY NOW hidden values from checkout.html
+        # Get values safely (None -> "" prevents 'None' printing)
+        full_name = request.POST.get("full_name", "") or ""
+        phone = request.POST.get("phone_number", "") or ""
+        address_line1 = request.POST.get("address_line1", "") or ""
+        address_line2 = request.POST.get("address_line2", "") or ""
+        city = request.POST.get("city", "") or ""
+        state = request.POST.get("state", "") or ""
+        pincode = request.POST.get("pincode", "") or ""
+        country = request.POST.get("country", "") or ""
+
+        # Final formatted shipping address string
+        shipping_address = f"{full_name}, {phone}, {address_line1}, {address_line2}, {city}, {state}, {pincode}, {country}"
+
+        # BUY NOW MODE
         buy_now_slug = request.POST.get("buy_now_slug")
         buy_now_qty = request.POST.get("buy_now_qty")
 
-        # BUY-NOW MODE
         if buy_now_slug:
             product = Product.objects.get(slug=buy_now_slug)
             quantity = int(buy_now_qty)
@@ -478,12 +601,7 @@ def place_order(request):
                 user=request.user,
                 seller=product.seller,
                 total_amount=total,
-                shipping_address=f"{request.POST.get('address_line1')}, "
-                                 f"{request.POST.get('address_line2')}, "
-                                 f"{request.POST.get('city')}, "
-                                 f"{request.POST.get('state')}, "
-                                 f"{request.POST.get('pincode')}, "
-                                 f"{request.POST.get('country')}",
+                shipping_address=shipping_address,
                 payment_method=request.POST.get("payment_method"),
                 status="Pending"
             )
@@ -509,12 +627,7 @@ def place_order(request):
             user=request.user,
             seller=items.first().product.seller,
             total_amount=total,
-            shipping_address=f"{request.POST.get('address_line1')}, "
-                             f"{request.POST.get('address_line2')}, "
-                             f"{request.POST.get('city')}, "
-                             f"{request.POST.get('state')}, "
-                             f"{request.POST.get('pincode')}, "
-                             f"{request.POST.get('country')}",
+            shipping_address=shipping_address,
             payment_method=request.POST.get("payment_method"),
             status="Pending"
         )
@@ -532,26 +645,32 @@ def place_order(request):
 
     return redirect("cart_page")
 
+
 def order_success(request, order_id):
     order = Order.objects.get(id=order_id)
     items = OrderItem.objects.filter(order=order)
 
+    # Split the shipping address into list parts
+    address_parts = order.shipping_address.split(",")
+
     return render(request, "user/order_success.html", {
         "order": order,
         "items": items,
+        "address_parts": address_parts,  # send to template
     })
+
 def deals_and_offers(request):
     return render(request,"user/deals_and_offers.html")
 
+from django.contrib import messages
 
 def contact(request):
     return render(request,"user/contact.html")
 
 
+
 def about(request):
     return render(request,"user/about.html")
-
-
 
 def help_center(request):
     return render(request, "user/help_center.html")
@@ -564,3 +683,104 @@ def shipping_info(request):
 
 def privacy_policy(request):
     return render(request, "user/privacy_policy.html")
+
+
+@login_required(login_url="login")
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by('-order_date')
+
+    # Add pagination if needed
+    paginator = Paginator(orders, 4)  # 10 orders per page
+    page_number = request.GET.get('page')
+    orders_page = paginator.get_page(page_number)
+
+    return render(request, "user/my_orders.html", {
+        "orders": orders_page,
+    })
+
+
+# user/views.py
+
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if order.status in ["Pending", "Processing"]:
+        order.status = "Cancelled"
+        order.save()
+        messages.success(request, "Your order has been cancelled.")
+    else:
+        messages.error(request, "Order cannot be cancelled now.")
+
+    return redirect("my_orders")
+
+
+
+
+@login_required(login_url="login")
+def manage_address(request):
+    address, created = Address.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        address.full_name = request.POST.get("name")
+        address.phone = request.POST.get("phone")
+        address.street = request.POST.get("street")
+        address.city = request.POST.get("city")
+        address.state = request.POST.get("state")
+        address.pincode = request.POST.get("pincode")
+        address.landmark = request.POST.get("landmark")
+        address.save()
+
+        messages.success(request, "Address updated successfully!")
+        return redirect("profile")
+
+    return render(request, "user/profile.html", {"address": address})
+
+@login_required(login_url="login")
+def update_profile(request):
+    if request.method == "POST":
+        full_name = request.POST.get("full_name")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone_number")  # <- CHANGE NAME here
+
+        # Split full name into first & last
+        first, *last = full_name.split(" ", 1)
+
+        user = request.user
+        user.first_name = first
+        user.last_name = last[0] if last else ""
+        user.username = username
+        user.email = email
+        user.phone_number = phone   # <- SAVE PHONE IN USER MODEL
+        user.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect("profile")
+
+    return redirect("profile")
+
+@login_required(login_url="login")
+def change_password(request):
+    if request.method == "POST":
+        old = request.POST.get("old_password")
+        new1 = request.POST.get("new_password1")
+        new2 = request.POST.get("new_password2")
+
+        if new1 != new2:
+            messages.error(request, "New password & confirm password do not match")
+            return redirect("/user/profile/?section=password")
+
+
+        if not request.user.check_password(old):
+            messages.error(request, "Old password is incorrect")
+            return redirect("/user/profile/?section=password")
+
+        request.user.set_password(new1)
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+
+        messages.success(request, "Password updated successfully!")
+        return redirect("/user/profile/?section=password")
+
+
+    return redirect("/user/profile/?section=password")

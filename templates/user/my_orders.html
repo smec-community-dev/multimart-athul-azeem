@@ -3,51 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - ShopHub</title>
+    <title>My Orders - ShopHub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         html {
             scroll-behavior: smooth;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .fade-in {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .slide-in {
-            animation: slideInLeft 0.6s ease-out;
         }
 
         /* Animation for elements on scroll */
@@ -62,12 +23,31 @@
             transform: translateY(0);
         }
 
-        /* About specific styles */
-        .about-gradient {
-            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        /* Animation for category icons */
+        .category-icon {
+            transition: transform 0.3s ease;
         }
-        .team-card:hover {
+
+        .category-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animation for product cards */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
             transform: translateY(-5px);
+        }
+
+        /* Animation for buttons */
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
         }
 
         /* Header Styles */
@@ -471,10 +451,51 @@
                 transform: translateY(0);
             }
         }
+
+        /* Order Card Styles - Updated */
+        .order-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #ff8c00;
+        }
+
+        .order-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left-color: #ff6b6b;
+        }
+
+        .status-badge {
+            transition: all 0.3s ease;
+        }
+
+        /* Animation classes */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="flex flex-col min-h-screen overflow-x-hidden bg-gray-50">
 
     <!-- Header -->
     <header>
@@ -493,26 +514,27 @@
             <nav class="nav-center">
                 <a href="{% url 'user_home' %}">Home</a>
                 <a href="{% url 'products_list' %}">Products</a>
-                <a href="{% url 'about' %}" style="color: #ff8c00;">About</a>
+                <a href="{% url 'about' %}">About</a>
                 <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
                 <a href="{% url 'contact' %}">Contact</a>
             </nav>
 
-<!--            &lt;!&ndash; Search box &ndash;&gt;-->
-<!--            <div class="search-box">-->
-<!--                <i class="fas fa-search"></i>-->
-<!--                <input type="text" placeholder="Search products...">-->
-<!--            </div>-->
+            <!-- Search box -->
+            <form method="GET" action="{% url 'user_home' %}" class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+            </form>
 
             <div class="header-right">
+
                 <a href="{% url 'wishlist_page' %}" class="icon-btn">
                     <i class="fas fa-heart"></i>
-                    <span class="badge">{{ wishlist_count|default:0 }}</span>
+                    <span class="badge">{{ wishlist_count }}</span>
                 </a>
 
                 <a href="{% url 'cart_page' %}" class="icon-btn">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">{{ cart_count|default:0 }}</span>
+                    <span class="badge">{{ cart_count }}</span>
                 </a>
 
                 {% if user.is_authenticated %}
@@ -540,6 +562,11 @@
                             <span class="dropdown-item-label">My Profile</span>
                         </a>
 
+<!--                        <a href="{% url 'my_orders' %}" class="dropdown-item">-->
+<!--                            <span class="dropdown-item-icon">📦</span>-->
+<!--                            <span class="dropdown-item-label">My Orders</span>-->
+<!--                        </a>-->
+
                         <div class="dropdown-divider"></div>
 
                         <a href="{% url 'logout' %}" class="dropdown-item logout">
@@ -550,11 +577,16 @@
                 </div>
                 {% else %}
                 <div class="auth-buttons">
-                    <button class="login-btn" onclick="window.location.href='{% url 'login' %}'">Login</button>
-                    <button class="register-btn" onclick="window.location.href='{% url 'register' %}'">Register</button>
+                    <a href="{% url 'login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
                 </div>
                 {% endif %}
-            </div>
+
+            </div> <!-- closes .header-right -->
         </div>
 
         <!-- Mobile menu - hidden by default -->
@@ -563,247 +595,204 @@
                 <nav class="flex flex-col space-y-4">
                     <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
                     <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
-                    <a href="{% url 'about' %}" class="text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
                     <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
                     <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                        <div class="flex">
+                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
                 </nav>
             </div>
         </div>
     </header>
 
-    <!-- Rest of your About page content remains exactly the same -->
-    <!-- Hero Section -->
-    <section class="about-gradient py-16">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center">
-                <h1 class="text-5xl font-bold text-gray-900 mb-6">About ShopHub</h1>
-                <p class="text-xl text-gray-700 mb-8">Your trusted partner in online shopping since 2018</p>
-            </div>
-        </div>
-    </section>
+    <!-- ORDERS SECTION - UPDATED DESIGN -->
+  <!-- ORDERS SECTION - UPDATED DESIGN -->
+<section class="container mx-auto px-4 py-8 animate-fade-in">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">My Orders</h1>
+        <p class="text-gray-600">Track and manage all your orders in one place</p>
+    </div>
 
-    <!-- Our Story -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <!-- Sample Orders - Updated Design -->
+    <div class="space-y-6">
+        {% if orders %}
+            {% for order in orders %}
+            <!-- ORDER CARD - One card per order -->
+            <div class="order-card bg-white rounded-2xl shadow-lg p-6 animate-slide-up">
+
+                <!-- Order Header -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">Order #{{ order.id }}</h2>
+
+                        <p class="text-gray-600 text-sm mb-2">
+                            <i class="far fa-calendar mr-1"></i>
+                            {{ order.order_date|date:"M d, Y" }}
+                        </p>
+
+                        <p class="text-gray-600 text-sm">
+                            <i class="fas fa-credit-card mr-1"></i>
+                            Payment: {{ order.payment_method|default:"Cash on Delivery" }}
+                        </p>
+                    </div>
+
+                    <!-- STATUS BADGE -->
+                    <div class="flex sm:flex-col sm:items-end gap-2">
+                        {% if order.status == "placed" %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-clock mr-2"></i>Placed
+                            </span>
+                        {% elif order.status == "Processing" %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-cog mr-2"></i>Processing
+                            </span>
+                        {% elif order.status == "Shipped" %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-shipping-fast mr-2"></i>Shipped
+                            </span>
+                        {% elif order.status == "Delivered" %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-check mr-2"></i>Delivered
+                            </span>
+                        {% elif order.status == "Cancelled" %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-times-circle mr-2"></i>Cancelled
+                            </span>
+                        {% else %}
+                            <span class="status-badge inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold">
+                                <i class="fas fa-circle mr-2 text-xs"></i>{{ order.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ORDER ITEMS - All items in this order -->
+                {% for item in order.items.all %}
+                <div class="flex flex-col md:flex-row gap-6 items-start md:items-center {% if not forloop.first %}border-t pt-4 mt-4{% endif %}">
+
+                    <!-- Image -->
+                    <div class="flex-shrink-0">
+                        {% with item.product.images.all|first as main_image %}
+                            {% if main_image %}
+                            <img src="{{ main_image.image.url }}"
+                                 class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl shadow"
+                                 alt="{{ item.product.name }}">
+                            {% else %}
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-box text-gray-400 text-xl"></i>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ item.product.name }}</h3>
+
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <p class="flex items-center">
+                                <i class="fas fa-layer-group mr-2 text-orange-500"></i>
+                                Quantity: {{ item.quantity }}
+                            </p>
+
+                            <p class="flex items-center">
+                                <i class="fas fa-tag mr-2 text-orange-500"></i>
+                                ₹{{ item.unit_price }} each
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- PRICE + ACTIONS -->
+                    <div class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-4 w-full md:w-auto">
+
+                        <div class="text-right">
+                            <p class="text-gray-600 text-sm mb-1">Subtotal</p>
+                            <p class="text-xl font-bold text-orange-500">
+                                ₹{% widthratio item.unit_price 1 item.quantity %}
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-2 w-full">
+                            <!-- Add Review (only delivered) -->
+                            {% if order.status == "Delivered" %}
+                            <a href="{% url 'add_review' item.product.slug %}"
+                               class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
+                                <i class="fas fa-star mr-2"></i> Add Review
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- ORDER TOTAL & ACTIONS -->
+                <div class="mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
-                        <p class="text-gray-700 leading-relaxed mb-6">
-                            ShopHub was founded in 2018 with a simple mission: to make online shopping accessible,
-                            reliable, and enjoyable for everyone in India. What started as a small startup with just
-                            three team members has grown into one of India's most trusted e-commerce platforms.
-                        </p>
-                        <p class="text-gray-700 leading-relaxed mb-6">
-                            We believe that shopping should be a delightful experience, not a chore. That's why we've
-                            built a platform that combines cutting-edge technology with personalized service to bring
-                            you the best products at the best prices.
-                        </p>
-                        <div class="grid grid-cols-2 gap-6 mt-8">
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-orange-500 mb-2">50K+</div>
-                                <div class="text-gray-600">Happy Customers</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-orange-500 mb-2">10K+</div>
-                                <div class="text-gray-600">Products</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-orange-500 mb-2">500+</div>
-                                <div class="text-gray-600">Brand Partners</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-orange-500 mb-2">5+</div>
-                                <div class="text-gray-600">Years of Service</div>
-                            </div>
-                        </div>
+                        <p class="text-gray-700 font-semibold">Total Paid: <span class="text-2xl font-bold text-orange-500">₹{{ order.total_amount }}</span></p>
                     </div>
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600"
-                             alt="Our Team"
-                             class="rounded-2xl shadow-2xl">
-                        <div class="absolute -bottom-6 -left-6 bg-orange-500 text-white p-6 rounded-2xl shadow-xl">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-white p-3 rounded-full">
-                                    <i class="fas fa-trophy text-orange-500 text-2xl"></i>
-                                </div>
-                                <div>
-                                    <p class="font-bold">Award Winning</p>
-                                    <p class="text-orange-100 text-sm">Best E-commerce Platform 2023</p>
-                                </div>
-                            </div>
-                        </div>
+
+                    <!-- Order-level actions (Cancel Order) -->
+                    <div class="flex gap-2">
+                        {% if order.status == "Pending" or order.status == "Processing" %}
+                        <a href="{% url 'cancel_order' order.id %}"
+                           class="btn bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all flex items-center justify-center">
+                            <i class="fas fa-times-circle mr-2"></i> Cancel Order
+                        </a>
+                        {% endif %}
+
+
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+            {% endfor %}
 
-    <!-- Our Values -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">The principles that guide everything we do</p>
-                </div>
+            <!-- Pagination (optional) -->
+            <div class="mt-6 flex justify-center space-x-2">
+                {% if orders.has_previous %}
+                    <a href="?page={{ orders.previous_page_number }}"
+                       class="px-3 py-1 border rounded-lg text-sm">Previous</a>
+                {% endif %}
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Value 1 -->
-                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
-                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-users text-orange-500 text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Customer First</h3>
-                        <p class="text-gray-700">
-                            Our customers are at the heart of everything we do. We listen, we learn, and we continuously
-                            improve to exceed your expectations.
-                        </p>
-                    </div>
+                <span class="px-3 py-1 text-sm">
+                    Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+                </span>
 
-                    <!-- Value 2 -->
-                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
-                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-shield-alt text-orange-500 text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Trust & Transparency</h3>
-                        <p class="text-gray-700">
-                            We believe in building trust through transparency. No hidden fees, no surprises - just honest
-                            pricing and clear communication.
-                        </p>
-                    </div>
-
-                    <!-- Value 3 -->
-                    <div class="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
-                        <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <i class="fas fa-rocket text-orange-500 text-2xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Innovation</h3>
-                        <p class="text-gray-700">
-                            We embrace change and constantly innovate to bring you the latest technology and the best
-                            shopping experience possible.
-                        </p>
-                    </div>
-                </div>
+                {% if orders.has_next %}
+                    <a href="?page={{ orders.next_page_number }}"
+                       class="px-3 py-1 border rounded-lg text-sm">Next</a>
+                {% endif %}
             </div>
-        </div>
-    </section>
 
-    <!-- Our Team -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">The passionate people behind ShopHub's success</p>
+        {% else %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl shadow-xl text-center py-16 px-6 max-w-2xl mx-auto">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mb-6">
+                    <i class="fas fa-box-open text-white text-2xl"></i>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Team Member 1 -->
-                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
-                        <div class="w-24 h-24 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-2xl font-bold text-orange-600">RD</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Rajesh Desai</h3>
-                        <p class="text-orange-500 font-semibold mb-3">Founder & CEO</p>
-                        <p class="text-gray-600 text-sm">
-                            With 15+ years in e-commerce, Rajesh leads ShopHub's vision and strategic direction.
-                        </p>
-                        <div class="flex justify-center space-x-3 mt-4">
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Team Member 2 -->
-                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
-                        <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-2xl font-bold text-blue-600">PS</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Priya Sharma</h3>
-                        <p class="text-orange-500 font-semibold mb-3">Chief Technology Officer</p>
-                        <p class="text-gray-600 text-sm">
-                            Priya oversees our technology stack and ensures seamless shopping experiences.
-                        </p>
-                        <div class="flex justify-center space-x-3 mt-4">
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Team Member 3 -->
-                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
-                        <div class="w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-2xl font-bold text-green-600">AK</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Amit Kumar</h3>
-                        <p class="text-orange-500 font-semibold mb-3">Head of Operations</p>
-                        <p class="text-gray-600 text-sm">
-                            Amit ensures our logistics and supply chain run smoothly across India.
-                        </p>
-                        <div class="flex justify-center space-x-3 mt-4">
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Team Member 4 -->
-                    <div class="bg-white rounded-2xl shadow-sm team-card transition-all duration-300 text-center p-6">
-                        <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-2xl font-bold text-purple-600">NM</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Neha Mehta</h3>
-                        <p class="text-orange-500 font-semibold mb-3">Customer Experience Director</p>
-                        <p class="text-gray-600 text-sm">
-                            Neha leads our customer support team to ensure every customer feels valued.
-                        </p>
-                        <div class="flex justify-center space-x-3 mt-4">
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                            <a href="#" class="text-gray-400 hover:text-orange-500">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Call to Action -->
-    <section class="py-16 bg-gradient-to-r from-orange-500 to-orange-600">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center text-white">
-                <h2 class="text-3xl font-bold mb-4">Join the ShopHub Family</h2>
-                <p class="text-orange-100 mb-8 text-lg">Experience the difference of shopping with a platform that truly cares about you.</p>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">No Orders Found</h3>
+                <p class="text-gray-600 text-lg mb-8">
+                    You haven't ordered anything yet. Start shopping to discover amazing products!
+                </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                     <a href="{% url 'products_list' %}">
-                            <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
-                                Start Shopping Now
-                            </button>
-                        </a>
-                    <a href="{% url 'contact' %}">
-                            <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
-                                Contact Us
-                            </button>
-                        </a>
+                    <a href="{% url 'products_list' %}"
+                       class="btn bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-shopping-bag"></i> Start Shopping
+                    </a>
                 </div>
             </div>
-        </div>
-    </section>
+        {% endif %}
+    </div>
+</section>
 
     <!-- Footer -->
     <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 mt-auto">
@@ -889,22 +878,27 @@
             }
         });
 
+        // ================= SEARCH ENTER SUBMIT =================
+        document.querySelector('.search-box input')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                this.form.submit();
+            }
+        });
+
+        // Clear search field on load if no query
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.querySelector('.search-box input');
+            if (input && !window.location.search.includes("q=")) {
+                input.value = "";
+            }
+        });
+
         // ================= MOBILE MENU =================
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById("mobileMenu");
             mobileMenu.classList.toggle("hidden");
         }
-
-        // Team card hover effects
-        document.querySelectorAll('.team-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.boxShadow = '';
-            });
-        });
 
         // Scroll animations
         document.addEventListener('DOMContentLoaded', function () {
@@ -933,6 +927,22 @@
 
             // Check on scroll
             window.addEventListener('scroll', handleScroll);
+        });
+
+        // Add interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to order cards
+            const orderCards = document.querySelectorAll('.order-card');
+
+            orderCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderLeftColor = '#ff6b6b';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderLeftColor = '#ff8c00';
+                });
+            });
         });
     </script>
 </body>

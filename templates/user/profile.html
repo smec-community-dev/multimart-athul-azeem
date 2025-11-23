@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -35,28 +37,407 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        /* ======================== NAVBAR ======================== */
-        .navbar { background: var(--card-bg); padding: 16px 30px; box-shadow: var(--shadow-light); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .navbar-left { display: flex; align-items: center; gap: 20px; }
-        .logo { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; color: var(--primary-color); }
-        .navbar-title { font-size: 1rem; color: var(--light-text); border-left: 2px solid var(--primary-color); padding-left: 15px; }
-        .navbar-right { display: flex; align-items: center; gap: 25px; }
+        /* ======================== HEADER STYLES ======================== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-        .notification-bell { position: relative; cursor: pointer; font-size: 1.3rem; animation: pulse 2s ease-in-out infinite; }
-        .notification-bell:hover { transform: scale(1.1); }
-        .notification-badge { position: absolute; top: -5px; right: -8px; background: var(--danger-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
 
-        /* Profile Dropdown (same as seller) */
-        .profile-dropdown { position: relative; }
-        .profile-toggle { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(255, 127, 50, 0.1); border-radius: 20px; cursor: pointer; transition: all 0.3s ease; }
-        .profile-toggle:hover { background: rgba(255, 127, 50, 0.2); }
-        .profile-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem; }
-        .dropdown-arrow { font-size: 1.2rem; transition: transform 0.3s ease; }
-        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
 
-        .dropdown-menu { position: absolute; top: 100%; right: 0; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-medium); min-width: 280px; margin-top: 10px; display: none; z-index: 1000; animation: slideDown 0.3s ease; border: 1px solid var(--border-color); overflow: hidden; }
-        .dropdown-menu.show { display: block; }
-        /* (rest of dropdown styles same as seller – omitted for brevity, just copy-paste from your original) */
+        .logo i {
+            color: #ff8c00;
+            font-size: 28px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 0 20px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 8px 14px;
+            width: 250px;
+            margin-right: 20px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 10px;
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff8c00;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons button {
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #333;
+        }
+
+        .profile-role {
+            font-size: 0.65rem;
+            color: #777;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 240px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 1rem;
+            width: 20px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 6px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 12px;
+                height: 60px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo i {
+                font-size: 24px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 180px;
+                margin-right: 10px;
+                padding: 6px 10px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .profile-info-text {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 15px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* ======================== CONTAINER & SIDEBAR ======================== */
         .container { display: flex; min-height: calc(100vh - 70px); }
@@ -66,7 +447,7 @@
 
         .main-content { flex: 1; padding: 30px; }
 
-        /* Sections & Forms – same styling */
+        /* Sections & Forms */
         .profile-section { background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-light); padding: 25px; margin-bottom: 30px; animation: fadeIn 0.6s ease; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border-color); }
         .section-title { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; }
@@ -83,174 +464,449 @@
         .btn-save { background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .btn-cancel { background: var(--border-color); color: var(--text-color); padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-        /* Responsive same as original */
-        @media (max-width: 900px) { .container { flex-direction: column; } .sidebar { width: 100%; border-bottom: 1px solid var(--border-color); display: flex; overflow-x: auto; } }
+        /* Footer Styles */
+        footer { background: #1f2937; color: white; padding: 40px 0; margin-top: auto; }
+        .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .footer-section h3 { font-size: 1.2rem; margin-bottom: 15px; color: #ff8c00; }
+        .footer-section p, .footer-section a { color: #d1d5db; margin-bottom: 8px; display: block; }
+        .footer-section a:hover { color: #ff8c00; }
+        .footer-bottom { text-align: center; padding-top: 20px; margin-top: 20px; border-top: 1px solid #374151; color: #9ca3af; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; border-bottom: 1px solid var(--border-color); display: flex; overflow-x: auto; }
+        }
+
+        /* Hidden class */
+        .hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen overflow-x-hidden bg-gray-50">
 
-    <!-- NAVBAR (almost identical, just title changed) -->
-    <div class="navbar">
-        <div class="navbar-left">
-            <div class="logo">ShopHub</div>
-            <div class="navbar-title">My Account</div>
-        </div>
-        <div class="navbar-right">
-            <div class="notification-bell" onclick="alert('You have 2 new notifications')">
-                🔔
-                <div class="notification-badge">2</div>
+    <!-- Header (same as user home) -->
+    <header>
+        <div class="header-container">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
             </div>
 
-            <div class="profile-dropdown" id="profileDropdown">
-                <div class="profile-toggle" onclick="toggleProfileMenu()">
-                    <div class="profile-avatar">{{ user.username|slice:":2"|upper|default:"US" }}</div>
-                    <div class="profile-info-text">
-                        <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
-                        <div class="profile-role">Shopper</div>
+            <nav class="nav-center">
+                <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'products_list' %}">Products</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </nav>
+
+            <form method="GET" action="{% url 'user_home' %}" class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+            </form>
+
+            <div class="header-right">
+                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
                     </div>
-                    <div class="dropdown-arrow">▼</div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
                 </div>
-                <!-- Dropdown menu same as seller – you can copy it entirely from your original code -->
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>
 
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                        <div class="flex">
+                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
     <div class="container">
-        <!-- USER SIDEBAR (buyer-focused) -->
+
+
+        <!-- USER SIDEBAR -->
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="#"><span>🏠</span> Dashboard</a></li>
-                <li><a href="#"><span>🛒</span> My Orders</a></li>
-                <li><a href="#"><span>❤️</span> Wishlist</a></li>
+                <li><a href="{% url 'user_home' %}"><span>🏠</span> Dashboard</a></li>
+                <li><a href="{% url 'my_orders' %}"><span>🛒</span> My Orders</a></li>
+                <li><a href="{% url 'wishlist_page' %}"><span>❤️</span> Wishlist</a></li>
                 <li><a href="#"><span>🔔</span> Notifications</a></li>
-                <li><a href="#" class="active"><span>👤</span> My Profile</a></li>
-                <li><a href="#"><span>📍</span> Addresses</a></li>
-                <li><a href="#"><span>🔒</span> Change Password</a></li>
-                <li><a href="#"><span>🚪</span> Logout</a></li>
+                <li><a href="{% url 'profile' %}?section=profile" class="{% if active_section == 'profile' %}active{% endif %}"><span>👤</span> My Profile</a></li>
+                <li><a href="{% url 'profile' %}?section=address" class="{% if active_section == 'address' %}active{% endif %}"><span>📍</span> Addresses</a></li>
+                <li><a href="{% url 'profile' %}?section=password" class="{% if active_section == 'password' %}active{% endif %}"><span>🔒</span> Change Password</a></li>
+                <li><a href="{% url 'logout' %}"><span>🚪</span> Logout</a></li>
             </ul>
         </div>
 
         <!-- MAIN CONTENT -->
         <div class="main-content">
-            <div class="header">
-                <h1>My Profile 👤</h1>
-                <p>Manage your personal information and preferences</p>
-            </div>
-
-            <!-- PERSONAL INFORMATION -->
-            <div class="profile-section">
-                <div class="section-header">
-                    <div class="section-title">Personal Information</div>
-                    <button class="btn-primary" onclick="alert('Edit mode would be implemented here')">Edit</button>
+            <!-- PROFILE SECTION -->
+            <div id="profileSection" class="{% if active_section != 'profile' %}hidden{% endif %}">
+                <div class="header" style="margin-bottom: 30px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">My Profile 👤</h1>
+                    <p style="color: var(--light-text); margin-top: 8px;">Manage your personal information and preferences</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: start;">
-                    <div style="text-align:center;">
-                        <div class="profile-avatar-large" style="width:120px;height:120px;font-size:2.5rem;margin:0 auto 15px;">
-                            {{ user.username|slice:":2"|upper|default:"US" }}
-                        </div>
-                        <button class="btn-secondary" style="width:100%;padding:8px;background:#eee;">Change Photo</button>
+                <!-- PERSONAL INFORMATION -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <div class="section-title">Personal Information</div>
+                        <button class="btn-primary" id="editBtn" onclick="enableEdit()">Edit</button>
                     </div>
 
-                    <div style="display:grid; gap:15px;">
-                        <div><strong style="color:var(--light-text);">Full Name</strong><div style="margin-top:4px;font-size:1.1rem;">{{ user.get_full_name|default:"Not set" }}</div></div>
-                        <div><strong style="color:var(--light-text);">Username</strong><div style="margin-top:4px;font-size:1.1rem;">{{ user.username }}</div></div>
-                        <div><strong style="color:var(--light-text);">Email</strong><div style="margin-top:4px;font-size:1.1rem;">{{ user.email }}</div></div>
-                        <div><strong style="color:var(--light-text);">Phone</strong><div style="margin-top:4px;font-size:1.1rem;">{{ profile.phone|default:"+91 98765 43210" }}</div></div>
-                        <div><strong style="color:var(--light-text);">Member Since</strong><div style="margin-top:4px;font-size:1.1rem;">{{ user.date_joined|date:"F Y" }}</div></div>
+                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: start;">
+                        <div style="text-align:center;">
+                            <div class="profile-avatar" style="width:120px;height:120px;font-size:2.5rem;margin:0 auto 15px;background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                                {{ user.username|slice:":2"|upper|default:"US" }}
+                            </div>
+                        </div>
+
+                       <form method="POST" action="{% url 'profile' %}?section=profile">
+                            {% csrf_token %}
+                            <div style="display:grid; gap:15px;">
+
+                                <!-- Full Name -->
+                                <div>
+                                    <strong style="color:var(--light-text);">Full Name</strong>
+                                    <div id="fullNameText" style="margin-top:4px;font-size:1.1rem;">{{ user.get_full_name|default:"Not Set" }}</div>
+                                    <input id="fullNameInput" type="text" name="full_name" value="{{ user.get_full_name }}" class="hidden border p-2 rounded w-full">
+                                </div>
+
+                                <!-- Username -->
+                                <div>
+                                    <strong style="color:var(--light-text);">Username</strong>
+                                    <div id="usernameText" style="margin-top:4px;font-size:1.1rem;">{{ user.username }}</div>
+                                    <input id="usernameInput" type="text" name="username" value="{{ user.username }}" class="hidden border p-2 rounded w-full">
+                                </div>
+
+                                <!-- Email -->
+                                <div>
+                                    <strong style="color:var(--light-text);">Email</strong>
+                                    <div id="emailText" style="margin-top:4px;font-size:1.1rem;">{{ user.email }}</div>
+                                    <input id="emailInput" type="email" name="email" value="{{ user.email }}" class="hidden border p-2 rounded w-full">
+                                </div>
+
+                                <!-- Phone -->
+                                <div>
+                                    <strong style="color:var(--light-text);">Phone</strong>
+                                    <div id="phoneText" style="margin-top:4px;font-size:1.1rem;">{{ user.phone_number|default:"Not Set" }}</div>
+                                    <input id="phoneInput" type="text" name="phone_number" value="{{ user.phone_number }}" class="hidden border p-2 rounded w-full">
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="form-actions hidden" id="saveButtons" style="margin-top:10px;">
+                                    <button type="button" class="btn-cancel" onclick="cancelEdit()">Cancel</button>
+                                    <button type="submit" class="btn-save">Save</button>
+                                </div>
+
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
 
-            <!-- SHIPPING ADDRESS FORM -->
-            <div class="profile-section">
-                <div class="section-header">
-                    <div class="section-title">Default Shipping Address</div>
+            <!-- ADDRESS SECTION -->
+            <div id="addressSection" class="{% if active_section != 'address' %}hidden{% endif %}">
+                <div class="header" style="margin-bottom: 30px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">My Addresses 📍</h1>
+                    <p style="color: var(--light-text); margin-top: 8px;">Manage your shipping addresses</p>
                 </div>
 
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" name="name" value="{{ address.name|default:user.get_full_name }}">
-                        </div>
-                        <div class="form-group">
-                            <label>Phone</label>
-                            <input type="text" name="phone" value="{{ address.phone }}">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Street Address</label>
-                            <input type="text" name="street" value="{{ address.street }}">
-                        </div>
-                        <div class="form-group">
-                            <label>City</label>
-                            <input type="text" name="city" value="{{ address.city }}">
-                        </div>
-                        <div class="form-group">
-                            <label>State</label>
-                            <input type="text" name="state" value="{{ address.state }}">
-                        </div>
-                        <div class="form-group">
-                            <label>PIN Code</label>
-                            <input type="text" name="pincode" value="{{ address.pincode }}">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Landmark (optional)</label>
-                            <input type="text" name="landmark" value="{{ address.landmark }}">
+                <div class="profile-section">
+                    <div class="section-header">
+                        <div class="section-title">Default Shipping Address</div>
+                    </div>
+
+                    <form method="POST" action="{% url 'profile' %}?section=address">
+                        {% csrf_token %}
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="full_name" value="{{ address.full_name|default:user.get_full_name }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="text" name="phone" value="{{ address.phone }}" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Street Address</label>
+                                <input type="text" name="street" value="{{ address.street }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" name="city" value="{{ address.city }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" name="state" value="{{ address.state }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>PIN Code</label>
+                                <input type="text" name="pincode" value="{{ address.pincode }}" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Landmark (optional)</label>
+                                <input type="text" name="landmark" value="{{ address.landmark }}">
+                            </div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" class="btn-cancel" onclick="this.closest('form').reset()">Cancel</button>
                             <button type="submit" class="btn-save">Save Address</button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
 
-            <!-- CHANGE PASSWORD (same as seller) -->
-            <div class="profile-section">
-                <div class="section-header">
-                    <div class="section-title">Change Password</div>
+            <!-- CHANGE PASSWORD SECTION -->
+            <div id="passwordSection" class="{% if active_section != 'password' %}hidden{% endif %}">
+                <div class="header" style="margin-bottom: 30px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">Change Password 🔒</h1>
+                    <p style="color: var(--light-text); margin-top: 8px;">Update your account password</p>
                 </div>
-
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Current Password</label>
-                            <input type="password" name="old_password" required>
-                        </div>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" name="new_password1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" name="new_password2" required>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn-cancel" onclick="this.closest('form').reset()">Cancel</button>
-                            <button type="submit" class="btn-save">Update Password</button>
-                        </div>
+                {% if messages %}
+            <div id="messages" style="margin-bottom: 20px;">
+                {% for message in messages %}
+                    <div class="alert-message p-3 rounded-lg text-white font-semibold"
+                         style="background-color: {% if message.tags == 'success' %}#4CAF50{% elif message.tags == 'error' %}#F44336{% else %}#ff8c00{% endif %};">
+                        {{ message }}
                     </div>
-                </form>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+                <div class="profile-section">
+                    <form method="POST" action="{% url 'change_password' %}">
+                        {% csrf_token %}
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" name="old_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="new_password1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" name="new_password2" required>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-save">Update Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        // ================= PROFILE DROPDOWN =================
         function toggleProfileMenu() {
-            document.getElementById('profileDropdown').classList.toggle('active');
-            document.querySelector('.dropdown-menu').classList.toggle('show');
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
         }
-        document.addEventListener('click', function(e) {
-            if (!document.getElementById('profileDropdown').contains(e.target)) {
-                document.getElementById('profileDropdown').classList.remove('active');
-                document.querySelector('.dropdown-menu').classList.remove('show');
+
+        // Close dropdown when clicking outside
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
             }
         });
+
+        // ================= MOBILE MENU =================
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
+        // ================= PROFILE EDIT FUNCTIONS =================
+        function enableEdit() {
+            const ids = ["fullName", "username", "email", "phone"];
+
+            ids.forEach((field) => {
+                document.getElementById(field + "Input").classList.remove("hidden");
+                document.getElementById(field + "Text").style.display = "none";
+            });
+
+            document.getElementById("saveButtons").classList.remove("hidden");
+            document.getElementById("editBtn").style.display = "none";
+        }
+
+        function cancelEdit() {
+            const ids = ["fullName", "username", "email", "phone"];
+
+            ids.forEach((field) => {
+                document.getElementById(field + "Input").classList.add("hidden");
+                document.getElementById(field + "Text").style.display = "block";
+            });
+
+            document.getElementById("saveButtons").classList.add("hidden");
+            document.getElementById("editBtn").style.display = "inline-block";
+        }
+
+        // Show active section based on URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const section = urlParams.get('section') || 'profile';
+
+            // Show the correct section
+            document.getElementById('profileSection').classList.toggle('hidden', section !== 'profile');
+            document.getElementById('addressSection').classList.toggle('hidden', section !== 'address');
+            document.getElementById('passwordSection').classList.toggle('hidden', section !== 'password');
+        });
+        setTimeout(() => {
+          let alerts = document.querySelectorAll('.alert-message');
+          alerts.forEach(a => a.style.display = 'none');
+        }, 3000);
     </script>
 </body>
 </html>

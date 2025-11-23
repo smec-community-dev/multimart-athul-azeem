@@ -542,11 +542,14 @@
                             <i class="fas fa-map-marker-alt mr-2 text-orange-500"></i> Shipping Address
                         </h2>
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <p class="font-semibold text-gray-900 mb-2">{{ user.first_name }} {{ user.last_name }}</p>
-                            <p class="text-gray-600">{{ order.shipping_address }}</p>
-                            {% if user.phone_number %}
-                            <p class="text-gray-600 mt-2">{{ user.phone_number }}</p>
-                            {% endif %}
+                      <p class="font-semibold text-gray-900 mb-2">{{ address_parts.0 }}</p>     <!-- Full name -->
+                        <p class="text-gray-600">{{ address_parts.1 }}</p>                        <!-- Phone -->
+                        <p class="text-gray-600">{{ address_parts.2 }}</p>                        <!-- Address Line 1 -->
+                        <p class="text-gray-600">{{ address_parts.3 }}</p>                        <!-- Address Line 2 -->
+                        <p class="text-gray-600">{{ address_parts.4 }}, {{ address_parts.5 }}</p> <!-- City + State -->
+                        <p class="text-gray-600">{{ address_parts.6 }}</p>                        <!-- Country -->
+
+
                         </div>
                     </div>
                 </div>

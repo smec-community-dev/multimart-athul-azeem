@@ -11,115 +11,6 @@
             scroll-behavior: smooth;
         }
 
-        .slider {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .slide {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        .slide.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .fade-in {
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .slide-in {
-            animation: slideInLeft 0.6s ease-out;
-        }
-
-        .slider-nav {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .dot.active {
-            background: white;
-            transform: scale(1.3);
-        }
-
-        .arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 18px;
-            z-index: 10;
-            transition: all 0.3s;
-        }
-
-        .arrow:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        .arrow-left {
-            left: 25px;
-        }
-
-        .arrow-right {
-            right: 25px;
-        }
-
         /* Animation for elements on scroll */
         .animate-on-scroll {
             opacity: 0;
@@ -159,7 +50,7 @@
             transform: translateY(-2px);
         }
 
-        /* ========== HEADER ========== */
+        /* Header Styles */
         header {
             background: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -171,7 +62,7 @@
         .header-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -182,7 +73,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
             flex-shrink: 0;
@@ -190,24 +81,25 @@
 
         .logo i {
             color: #ff8c00;
-            font-size: 32px;
+            font-size: 28px;
         }
 
         .nav-center {
             flex: 1;
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin-left: 60px;
+            gap: 30px;
+            margin: 0 20px;
         }
 
         .nav-center a {
             text-decoration: none;
             color: #666;
             font-weight: 500;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.3s;
             position: relative;
+            white-space: nowrap;
         }
 
         .nav-center a:hover {
@@ -229,23 +121,23 @@
             align-items: center;
             background: #f5f5f5;
             border-radius: 8px;
-            padding: 10px 16px;
-            width: 280px;
-            margin-right: 30px;
+            padding: 8px 14px;
+            width: 250px;
+            margin-right: 20px;
         }
 
         .search-box i {
             color: #999;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .search-box input {
             background: none;
             border: none;
             outline: none;
-            margin-left: 12px;
+            margin-left: 10px;
             flex: 1;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
         }
 
@@ -256,7 +148,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
             flex-shrink: 0;
         }
 
@@ -265,12 +157,13 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             color: #666;
             transition: color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
         }
 
         .icon-btn:hover {
@@ -279,30 +172,30 @@
 
         .badge {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             background: #ff8c00;
             color: white;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
         }
 
         .auth-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .auth-buttons button {
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s;
             border: none;
@@ -329,6 +222,236 @@
             box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #333;
+        }
+
+        .profile-role {
+            font-size: 0.65rem;
+            color: #777;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 240px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 1rem;
+            width: 20px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 6px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 12px;
+                height: 60px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo i {
+                font-size: 24px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 180px;
+                margin-right: 10px;
+                padding: 6px 10px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .profile-info-text {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 15px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Contact specific styles */
         .contact-gradient {
             background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
@@ -337,45 +460,125 @@
             border-color: #f97316;
             box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
         }
+
     </style>
 </head>
 
 <body class="bg-white text-gray-800">
 
-    <!-- Header / Navbar -->
+    <!-- Header -->
     <header>
         <div class="header-container">
+            <!-- Mobile menu button - visible only on small screens -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
             <div class="logo">
                 <i class="fas fa-shopping-bag"></i>
                 <span>ShopHub</span>
             </div>
 
+            <!-- Navigation for medium screens and up -->
             <nav class="nav-center">
-                <a href="userhome.html">Home</a>
-                <a href="productdetail.html">Products</a>
-                <a href="aboutus.html">About</a>
-                <a href="dealsandoffers.html">Deals & offers</a>
-                <a href="contact.html" style="color: #ff8c00;">Contact</a>
+                <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'products_list' %}">Products</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
+                <a href="{% url 'contact' %}" style="color: #ff8c00;">Contact</a>
             </nav>
 
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search products...">
-            </div>
+            <!-- Search box -->
+<!--            <form method="GET" action="{% url 'user_home' %}" class="search-box">-->
+<!--                <i class="fas fa-search"></i>-->
+<!--                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">-->
+<!--            </form>-->
 
             <div class="header-right">
-                <button class="icon-btn">
+
+                <a href="{% url 'wishlist_page' %}" class="icon-btn">
                     <i class="fas fa-heart"></i>
-                    <span class="badge">2</span>
-                </button>
-                <button class="icon-btn">
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'cart_page' %}" class="icon-btn">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">3</span>
-                </button>
-                <div class="auth-buttons">
-                  <a href="{% url 'login' %}"> <button class="login-btn">Login</button></a>
-                  <a href="{% url 'register' %}"> <button class="register-btn">Register</button></a>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+<!--                        <a href="{% url 'my_orders' %}" class="dropdown-item">-->
+<!--                            <span class="dropdown-item-icon">📦</span>-->
+<!--                            <span class="dropdown-item-label">My Orders</span>-->
+<!--                        </a>-->
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
                 </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+
+            </div> <!-- closes .header-right -->
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                        <div class="flex">
+                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </nav>
             </div>
         </div>
     </header>
@@ -391,56 +594,83 @@
     </section>
 
     <!-- Contact Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Contact Form -->
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-                    <form class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" id="firstName" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter your first name">
-                            </div>
-                            <div>
-                                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" id="lastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter your last name">
-                            </div>
+   <section class="py-16 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+            <!-- Contact Form -->
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+
+                <form id="contactForm" class="space-y-6" onsubmit="return sendMessage(event)">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                            <input type="text" id="firstName"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                   placeholder="Enter your first name">
                         </div>
 
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter your email">
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                            <input type="text" id="lastName"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                   placeholder="Enter your last name">
                         </div>
+                    </div>
 
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" id="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Enter your phone number">
-                        </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input type="email" id="email"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                               placeholder="Enter your email">
+                    </div>
 
-                        <div>
-                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                            <select id="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
-                                <option>General Inquiry</option>
-                                <option>Product Support</option>
-                                <option>Order Issue</option>
-                                <option>Return & Refund</option>
-                                <option>Partnership</option>
-                                <option>Other</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" id="phone"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                               placeholder="Enter your phone number">
+                    </div>
 
-                        <div>
-                            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                            <textarea id="message" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors" placeholder="Tell us how we can help you..."></textarea>
-                        </div>
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <select id="subject"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors">
+                            <option value="">Select Subject</option>
+                            <option>General Inquiry</option>
+                            <option>Product Support</option>
+                            <option>Order Issue</option>
+                            <option>Return & Refund</option>
+                            <option>Partnership</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
 
-                        <button type="submit" class="w-full px-8 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium text-lg">
-                            Send Message
-                        </button>
-                    </form>
-                </div>
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                        <textarea id="message" rows="6"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                  placeholder="Tell us how we can help you..."></textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full px-8 py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium text-lg">
+                        Send Message
+                    </button>
+
+                    <!-- SUCCESS message -->
+                    <p id="successMsg" class="text-green-600 font-semibold text-center mt-2 hidden text-lg">
+                         Thank you! We have received your message — we’ll contact you soon.
+                    </p>
+
+                    <!-- ERROR message -->
+                    <p id="errorMsg" class="text-red-600 font-semibold text-center mt-2 hidden text-lg">
+                        Please fill all fields before submitting.
+                    </p>
+                </form>
+            </div>
 
                 <!-- Contact Information -->
                 <div class="lg:pl-12">
@@ -569,75 +799,111 @@
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-gray-900 text-white py-12 lg:py-16">
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 <div class="animate-on-scroll">
-                    <div class="flex items-center space-x-3 mb-6">
-                        <i class="fas fa-shopping-bag text-orange-500 text-2xl"></i>
-                        <span class="text-2xl font-bold">ShopHub</span>
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
                     </div>
-                    <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and
-                        more.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i
-                                class="fab fa-linkedin-in"></i></a>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
 
                 <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="userhome.html" class="text-gray-400 hover:text-white transition">Home</a></li>
-                        <li><a href="productdetail.html" class="text-gray-400 hover:text-white transition">Products</a></li>
-                        <li><a href="aboutus.html" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Customer Service</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Returns</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Shipping Info</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Track Order</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
 
                 <div class="animate-on-scroll">
-                    <h3 class="text-lg font-bold mb-6">Contact Info</h3>
-                    <ul class="space-y-3 text-gray-400">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-orange-500"></i>
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
                             <span>123 Commerce Street, Mumbai, India</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-phone mr-3 text-orange-500"></i>
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
                             <span>+91 98765 43210</span>
                         </li>
                         <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3 text-orange-500"></i>
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
                             <span>info@shophub.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 animate-on-scroll">
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
                 <p>&copy; 2023 ShopHub. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // ================= PROFILE DROPDOWN =================
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // ================= SEARCH ENTER SUBMIT =================
+        document.querySelector('.search-box input')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                this.form.submit();
+            }
+        });
+
+        // Clear search field on load if no query
+        document.addEventListener("DOMContentLoaded", function () {
+            const input = document.querySelector('.search-box input');
+            if (input && !window.location.search.includes("q=")) {
+                input.value = "";
+            }
+        });
+
+        // ================= MOBILE MENU =================
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
         // Scroll animations
         document.addEventListener('DOMContentLoaded', function () {
             const animatedElements = document.querySelectorAll('.animate-on-scroll');
@@ -666,6 +932,32 @@
             // Check on scroll
             window.addEventListener('scroll', handleScroll);
         });
-    </script>
+
+function sendMessage(event) {
+    event.preventDefault();
+
+    const first = document.getElementById("firstName").value.trim();
+    const last = document.getElementById("lastName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    const successMsg = document.getElementById("successMsg");
+    const errorMsg = document.getElementById("errorMsg");
+
+    if (!first || !last || !email || !phone || !subject || !message) {
+        successMsg.classList.add("hidden");
+        errorMsg.classList.remove("hidden");
+        return false;
+    }
+
+    errorMsg.classList.add("hidden");
+    successMsg.classList.remove("hidden");
+
+    document.getElementById("contactForm").reset();
+}
+</script>
+
 </body>
 </html>

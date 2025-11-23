@@ -7,22 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Add the shipping info header styles */
+        html {
+            scroll-behavior: smooth;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+        /* Animation for elements on scroll */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
-        /* ========== HEADER ========== */
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Header Styles from shipping_info.html */
         header {
             background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -31,7 +36,7 @@
         .header-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -42,7 +47,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
             flex-shrink: 0;
@@ -50,24 +55,25 @@
 
         .logo i {
             color: #ff8c00;
-            font-size: 32px;
+            font-size: 28px;
         }
 
         .nav-center {
             flex: 1;
             display: flex;
             justify-content: center;
-            gap: 40px;
-            margin-left: 60px;
+            gap: 30px;
+            margin: 0 20px;
         }
 
         .nav-center a {
             text-decoration: none;
             color: #666;
             font-weight: 500;
-            font-size: 15px;
+            font-size: 14px;
             transition: color 0.3s;
             position: relative;
+            white-space: nowrap;
         }
 
         .nav-center a:hover {
@@ -89,23 +95,23 @@
             align-items: center;
             background: #f5f5f5;
             border-radius: 8px;
-            padding: 10px 16px;
-            width: 280px;
-            margin-right: 30px;
+            padding: 8px 14px;
+            width: 250px;
+            margin-right: 20px;
         }
 
         .search-box i {
             color: #999;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .search-box input {
             background: none;
             border: none;
             outline: none;
-            margin-left: 12px;
+            margin-left: 10px;
             flex: 1;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
         }
 
@@ -116,7 +122,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
             flex-shrink: 0;
         }
 
@@ -125,12 +131,13 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             color: #666;
             transition: color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-decoration: none;
         }
 
         .icon-btn:hover {
@@ -139,30 +146,30 @@
 
         .badge {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             background: #ff8c00;
             color: white;
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
         }
 
         .auth-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .auth-buttons button {
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s;
             border: none;
@@ -189,48 +196,82 @@
             box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
-        /* ========== UPDATED PROFILE SECTION ========== */
-        .profile-menu-container {
+        .profile-dropdown {
             position: relative;
         }
 
         .profile-toggle {
             display: flex;
             align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
             cursor: pointer;
-            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
         }
 
         .profile-avatar {
-            background: #ff9900;
-            color: white;
-            font-weight: bold;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 14px;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #333;
+        }
+
+        .profile-role {
+            font-size: 0.65rem;
+            color: #777;
         }
 
         .dropdown-arrow {
-            font-size: 12px;
-            color: #666;
-            transition: transform 0.3s;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
         }
 
         .dropdown-menu {
             position: absolute;
-            top: 45px;
+            top: 100%;
             right: 0;
-            width: 260px;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 240px;
+            margin-top: 8px;
             display: none;
-            z-index: 999;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
         }
 
         .dropdown-menu.show {
@@ -238,81 +279,164 @@
         }
 
         .dropdown-header {
-            padding: 12px 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #fff4ec;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
         }
 
-        .dropdown-header-avatar {
-            background: #ff9900;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .dropdown-item {
-            padding: 12px 20px;
+        .dropdown-header-content {
             display: flex;
             align-items: center;
             gap: 10px;
-            text-decoration: none;
+        }
+
+        .dropdown-header-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
             color: #333;
-            transition: background-color 0.3s;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
         }
 
         .dropdown-item:hover {
-            background: #f8f9fa;
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
         }
 
-        .dropdown-item i {
+        .dropdown-item-icon {
+            font-size: 1rem;
             width: 20px;
-            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 6px 0;
         }
 
         .dropdown-item.logout {
-            color: red;
-            font-weight: bold;
+            color: #f44336;
         }
 
-        @media (max-width: 1024px) {
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 12px;
+                height: 60px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo i {
+                font-size: 24px;
+            }
+
             .nav-center {
                 display: none;
             }
+
             .search-box {
-                width: 200px;
-                margin-right: 15px;
+                width: 180px;
+                margin-right: 10px;
+                padding: 6px 10px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .profile-info-text {
+                display: none;
             }
         }
 
-        @media (max-width: 768px) {
-            .header-container {
-                height: auto;
-                flex-wrap: wrap;
-                padding: 12px 15px;
-            }
-            .logo {
-                font-size: 22px;
-            }
+        @media (max-width: 640px) {
             .search-box {
-                width: 100%;
-                margin: 10px 0;
-                order: 3;
-            }
-            .auth-buttons {
                 display: none;
             }
+
             .header-right {
                 gap: 15px;
             }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Keep all your original products.html styles below */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         /* ========== BREADCRUMB ========== */
@@ -656,55 +780,6 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
-        /* ========== FOOTER ========== */
-        footer {
-            background: #1f2937;
-            color: white;
-            padding: 60px 0 30px;
-        }
-
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
-        }
-
-        .footer-column h3 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links a {
-            color: #d1d5db;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: #ff8c00;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            margin-top: 40px;
-            border-top: 1px solid #374151;
-            color: #9ca3af;
-        }
-
         @media (max-width: 768px) {
             .main-wrapper {
                 grid-template-columns: 1fr;
@@ -716,82 +791,129 @@
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 15px;
             }
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
         }
     </style>
 </head>
-<body>
-<!--    &lt;!&ndash; Header &ndash;&gt;-->
-<!--    <header>-->
-<!--        <div class="header-container">-->
-<!--            <div class="logo">-->
-<!--                <i class="fas fa-shopping-bag"></i>-->
-<!--                <span>ShopHub</span>-->
-<!--            </div>-->
+<body class="bg-gray-50">
+
+    <!-- Header from shipping_info.html -->
+    <header>
+        <div class="header-container">
+            <!-- Mobile menu button - visible only on small screens -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <!-- Navigation for medium screens and up -->
+            <nav class="nav-center">
+                <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'products_list' %}" style="color: #ff8c00;">Products</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </nav>
+
+            <!-- Search box -->
+          <form class="search-box" method="GET" action="{% url 'products_list' %}">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ query }}">
+            </form>
 
 
+            <div class="header-right">
 
-<!--            <nav class="nav-center">-->
-<!--                <a href="{% url 'user_home' %}">Home</a>-->
-<!--                <a href="{% url 'products_list' %}" class="text-orange-500">Products</a>-->
-<!--                <a href="{% url 'about' %}">About</a>-->
-<!--                <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>-->
-<!--                <a href="{% url 'contact' %}">Contact</a>-->
-<!--            </nav>-->
+                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count|default:0 }}</span>
+                </a>
 
-<!--            <div class="search-box">-->
-<!--                <i class="fas fa-search"></i>-->
-<!--                <input type="text" placeholder="Search products...">-->
-<!--            </div>-->
+                <a href="{% url 'cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count|default:0 }}</span>
+                </a>
 
-<!--            <div class="header-right">-->
-<!--                <a href="{% url 'wishlist_page' %}" class="icon-btn">-->
-<!--                    <i class="fas fa-heart"></i>-->
-<!--                    <span class="badge">{{ wishlist_count|default:0 }}</span>-->
-<!--                </a>-->
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <div class="profile-info-text">
+<!--                            <div class="profile-name">{{ user.username }}</div>-->
+<!--                            <div class="profile-role">Customer</div>-->
+                        </div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
 
-<!--                <a href="{% url 'cart_page' %}" class="icon-btn">-->
-<!--                    <i class="fas fa-shopping-cart"></i>-->
-<!--                    <span class="badge">{{ cart_count|default:0 }}</span>-->
-<!--                </a>-->
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
 
-<!--                {% if user.is_authenticated %}-->
-<!--                    <div class="profile-menu-container">-->
-<!--                        <div class="profile-toggle" onclick="toggleProfileMenu()">-->
-<!--                            <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>-->
-<!--                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>-->
-<!--                        </div>-->
+                        <div class="dropdown-divider"></div>
 
-<!--                        <div class="dropdown-menu" id="dropdownMenu">-->
-<!--                            <div class="dropdown-header">-->
-<!--                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>-->
-<!--                                <div>-->
-<!--                                    <h4>{{ user.username }}</h4>-->
-<!--                                    <p>{{ user.email }}</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <a href="{% url 'profile' %}" class="dropdown-item">-->
-<!--                                <i class="fa-solid fa-user"></i> My Profile-->
-<!--                            </a>-->
-<!--                            <a href="{% url 'logout' %}" class="dropdown-item logout">-->
-<!--                                <i class="fa-solid fa-right-from-bracket"></i> Logout-->
-<!--                            </a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                {% else %}-->
-<!--                    <div class="auth-buttons">-->
-<!--                        <button class="login-btn" onclick="window.location.href='{% url 'login' %}'">Login</button>-->
-<!--                        <button class="register-btn" onclick="window.location.href='{% url 'register' %}'">Register</button>-->
-<!--                    </div>-->
-<!--                {% endif %}-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </header>-->
-{% include "user/header.html" %}
+                        <a href="{% url 'profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
 
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+
+            </div> <!-- closes .header-right -->
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'products_list' %}" class="text-orange-500 hover:text-orange-600 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <div class="pt-4">
+                        <div class="flex">
+                            <input type="text" placeholder="Search products..."
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Rest of your products.html content remains exactly the same -->
     <!-- Breadcrumb -->
     <div class="breadcrumb">
         <div class="breadcrumb-container">
@@ -838,7 +960,6 @@
             </form>
         </div>
 
-
            <div class="filter-section">
             <div class="filter-title">Categories</div>
             <form method="get" id="categoryFilter">
@@ -872,32 +993,6 @@
             </form>
         </div>
 
-<!--        <div class="filter-section">-->
-<!--            <div class="filter-title">Rating</div>-->
-<!--            <form method="get" id="ratingFilter">-->
-<!--                <label class="filter-option">-->
-<!--                    <input type="radio" name="rating" value="5"-->
-<!--                           onchange="document.getElementById('ratingFilter').submit();"-->
-<!--                           {% if selected_rating == '5' %}checked{% endif %}>-->
-<!--                    <span>★★★★★ (5.0)</span>-->
-<!--                </label>-->
-
-<!--                <label class="filter-option">-->
-<!--                    <input type="radio" name="rating" value="4"-->
-<!--                           onchange="document.getElementById('ratingFilter').submit();"-->
-<!--                           {% if selected_rating == '4' %}checked{% endif %}>-->
-<!--                    <span>★★★★☆ (4.0+)</span>-->
-<!--                </label>-->
-
-<!--                <label class="filter-option">-->
-<!--                    <input type="radio" name="rating" value="3"-->
-<!--                           onchange="document.getElementById('ratingFilter').submit();"-->
-<!--                           {% if selected_rating == '3' %}checked{% endif %}>-->
-<!--                    <span>★★★☆☆ (3.0+)</span>-->
-<!--                </label>-->
-<!--            </form>-->
-<!--        </div>-->
-
             <button class="clear-filters">Clear Filters</button>
         </aside>
 
@@ -911,7 +1006,6 @@
                     <option value="high_to_low" {% if sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
                     <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
                 </select>
-
             </div>
 
             <div class="products-grid">
@@ -984,8 +1078,6 @@
                 {% endif %}
             </nav>
         </div>
-
-
         </section>
     </div>
 
@@ -998,92 +1090,95 @@
         </div>
     </section>
 
-    <!-- Footer -->
-<!--    <footer id="contact">-->
-<!--        <div class="footer-container">-->
-<!--            <div class="footer-column">-->
-<!--                <div class="flex items-center space-x-3 mb-6">-->
-<!--                    <i class="fas fa-shopping-bag text-orange-500 text-3xl"></i>-->
-<!--                    <span class="text-3xl font-bold">ShopHub</span>-->
-<!--                </div>-->
-<!--                <p class="text-gray-400 mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>-->
-<!--                <div class="flex space-x-4">-->
-<!--                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-facebook-f"></i></a>-->
-<!--                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-twitter"></i></a>-->
-<!--                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-instagram"></i></a>-->
-<!--                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-500 transition"><i class="fab fa-linkedin-in"></i></a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="footer-column">-->
-<!--                <h3>Quick Links</h3>-->
-<!--                <ul class="footer-links">-->
-<!--                    <li><a href="{% url 'user_home' %}">Home</a></li>-->
-<!--                    <li><a href="{% url 'products_list' %}">Products</a></li>-->
-<!--                    <li> <a href="{% url 'about' %}">About</a></li>-->
-<!--                    <li><a href="{% url 'contact' %}">Contact</a></li>-->
-<!--                    <li><a href="#faq">FAQ</a></li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--            <div class="footer-column">-->
-<!--                <h3>Customer Service</h3>-->
-<!--                <ul class="footer-links">-->
-<!--                    <li><a href="#shipping">Shipping Policy</a></li>-->
-<!--                    <li><a href="#returns">Returns & Refunds</a></li>-->
-<!--                    <li><a href="#privacy">Privacy Policy</a></li>-->
-<!--                    <li><a href="#terms">Terms & Conditions</a></li>-->
-<!--                    <li><a href="#track">Track Your Order</a></li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--            <div class="footer-column">-->
-<!--                <h3>Contact Us</h3>-->
-<!--                <ul class="footer-links">-->
-<!--                    <li class="flex items-start">-->
-<!--                        <i class="fas fa-map-marker-alt text-orange-500 mt-1 mr-3"></i>-->
-<!--                        <span>123 Shopping Street, Mumbai, India</span>-->
-<!--                    </li>-->
-<!--                    <li class="flex items-center">-->
-<!--                        <i class="fas fa-phone text-orange-500 mr-3"></i>-->
-<!--                        <span>+91 98765 43210</span>-->
-<!--                    </li>-->
-<!--                    <li class="flex items-center">-->
-<!--                        <i class="fas fa-envelope text-orange-500 mr-3"></i>-->
-<!--                        <span>support@shophub.com</span>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--&lt;!&ndash;                <div class="mt-6">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <h4 class="font-bold mb-3 text-white">Subscribe to Newsletter</h4>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <div class="flex">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <input type="email" placeholder="Your email" class="flex-1 bg-gray-800 text-white px-4 py-2 rounded-l-lg outline-none">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <button class="bg-orange-500 px-4 py-2 rounded-r-lg hover:bg-orange-600 transition"><i class="fas fa-paper-plane"></i></button>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                </div>&ndash;&gt;-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="footer-bottom">-->
-<!--            <p>&copy; 2023 ShopHub. All rights reserved.</p>-->
-<!--        </div>-->
-<!--    </footer>-->
-{% include "user/footer.html" %}
+    <!-- Footer from shipping_info.html -->
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Profile dropdown functionality
+        // ================= PROFILE DROPDOWN =================
         function toggleProfileMenu() {
             const menu = document.getElementById("dropdownMenu");
-            const arrow = document.querySelector(".dropdown-arrow");
+            const parent = document.getElementById("profileDropdown");
+
+            parent.classList.toggle("active");
             menu.classList.toggle("show");
-            arrow.style.transform = menu.classList.contains("show") ? "rotate(180deg)" : "rotate(0)";
         }
 
         // Close dropdown when clicking outside
-        window.addEventListener('click', function(e) {
-            const dropdown = document.querySelector('.profile-menu-container');
+        window.addEventListener("click", function(e) {
             const menu = document.getElementById("dropdownMenu");
-            const arrow = document.querySelector(".dropdown-arrow");
-            if (!dropdown.contains(e.target)) {
-                menu.classList.remove('show');
-                arrow.style.transform = "rotate(0)";
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
             }
         });
+
+        // ================= MOBILE MENU =================
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
 
         // Filter functionality
         document.querySelector('.clear-filters').addEventListener('click', function() {
@@ -1093,21 +1188,40 @@
             });
         });
 
-        // Sort functionality
-        document.querySelector('.sort-dropdown').addEventListener('change', function(e) {
-            // Add sorting logic here
-            console.log('Sort by:', e.target.value);
-        });
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
 
-<!--        // Add to cart/wishlist functionality-->
-<!--        document.querySelectorAll('.add-to-cart-btn').forEach(button => {-->
-<!--            button.addEventListener('click', function(e) {-->
-<!--&lt;!&ndash;                e.preventDefault();&ndash;&gt;-->
-<!--                const productCard = this.closest('.product-card');-->
-<!--                const productName = productCard.querySelector('.product-name').textContent;-->
-<!--                alert(`Added ${productName} to cart!`);-->
-<!--            });-->
-<!--        });-->
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+
+            // Function to handle scroll event
+            function handleScroll() {
+                animatedElements.forEach(element => {
+                    if (isInViewport(element)) {
+                        element.classList.add('animated');
+                    }
+                });
+            }
+
+            // Initial check on page load
+            handleScroll();
+
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+        document.querySelector('.search-box input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        this.form.submit();
+    }
+});
+
     </script>
 </body>
 </html>

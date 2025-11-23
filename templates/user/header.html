@@ -20,7 +20,14 @@
         </nav>
 
         <!-- Search box -->
-        <form method="GET" action="{% url 'user_home' %}" class="search-box">
+        <form method="GET"
+      action="{% if request.resolver_match.url_name == 'products_list' %}
+                  {% url 'products_list' %}
+              {% else %}
+                  {% url 'user_home' %}
+              {% endif %}"
+              class="search-box">
+
             <i class="fas fa-search"></i>
             <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
         </form>
@@ -95,7 +102,14 @@
                 <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
                 
                 <!-- Mobile search box -->
-                <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                <form method="GET"
+                  action="{% if request.resolver_match.url_name == 'products_list' %}
+                              {% url 'products_list' %}
+                          {% else %}
+                              {% url 'user_home' %}
+                          {% endif %}"
+                  class="pt-4">
+
                     <div class="flex">
                         <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}" 
                                class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
