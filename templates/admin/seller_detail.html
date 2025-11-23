@@ -1,0 +1,456 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Seller - {{ seller.shop_name|default:seller.user.username }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- Header with Back Button -->
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Back to Sellers
+            </a>
+        </div>
+        <h1>{{ seller.shop_name|default:"Seller Details" }}</h1>
+        <p>Seller ID: {{ seller.id }}</p>
+    </div>
+
+    <!-- Seller Status Overview -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Seller Status</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Approval Status:</td>
+                    <td>
+                        {% if seller.is_approved %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-pending">
+                                <i class="fas fa-clock"></i> Pending Approval
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Account Status:</td>
+                    <td>
+                        {% if seller.user.is_blocked %}
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-ban"></i> Blocked
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Member Since:</td>
+                    <td>{{ seller.user.date_joined|date:"M d, Y" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- User Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Account Information</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Username:</td>
+                    <td>{{ seller.user.username }}</td>
+                </tr>
+                <tr>
+                    <td>First Name:</td>
+                    <td>{{ seller.user.first_name|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>Last Name:</td>
+                    <td>{{ seller.user.last_name|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>
+                        <a href="mailto:{{ seller.user.email }}" style="color: #FF7F32; text-decoration: none;">
+                            {{ seller.user.email }}
+                        </a>
+                    </td>
+                </tr>
+                {% if seller.user.phone_number %}
+                <tr>
+                    <td>Phone Number:</td>
+                    <td>{{ seller.user.phone_number }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Shop Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Shop Information</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Shop Name:</td>
+                    <td>{{ seller.shop_name|default:"N/A" }}</td>
+                </tr>
+                {% if seller.shop_description %}
+                <tr>
+                    <td>Shop Description:</td>
+                    <td>{{ seller.shop_description|truncatewords:50 }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.shop_logo %}
+                <tr>
+                    <td>Shop Logo:</td>
+                    <td>
+                        <img src="{{ seller.shop_logo.url }}" alt="Shop Logo" style="max-width: 100px; max-height: 100px; border-radius: 8px; object-fit: cover;">
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Business Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Business Information</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                {% if seller.business_name %}
+                <tr>
+                    <td>Business Name:</td>
+                    <td>{{ seller.business_name }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.business_type %}
+                <tr>
+                    <td>Business Type:</td>
+                    <td>{{ seller.business_type }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.registration_number %}
+                <tr>
+                    <td>Registration Number:</td>
+                    <td>{{ seller.registration_number }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.tax_id %}
+                <tr>
+                    <td>Tax ID:</td>
+                    <td>{{ seller.tax_id }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.business_address %}
+                <tr>
+                    <td>Business Address:</td>
+                    <td>{{ seller.business_address|linebreaks }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Contact & Location -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Contact & Location</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                {% if seller.city %}
+                <tr>
+                    <td>City:</td>
+                    <td>{{ seller.city }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.state %}
+                <tr>
+                    <td>State/Province:</td>
+                    <td>{{ seller.state }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.country %}
+                <tr>
+                    <td>Country:</td>
+                    <td>{{ seller.country }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.postal_code %}
+                <tr>
+                    <td>Postal Code:</td>
+                    <td>{{ seller.postal_code }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bank Information (if stored) -->
+    {% if seller.bank_account_holder or seller.bank_name %}
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Bank Information</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                {% if seller.bank_account_holder %}
+                <tr>
+                    <td>Account Holder:</td>
+                    <td>{{ seller.bank_account_holder }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.bank_name %}
+                <tr>
+                    <td>Bank Name:</td>
+                    <td>{{ seller.bank_name }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.bank_account_number %}
+                <tr>
+                    <td>Account Number:</td>
+                    <td>••••••••{{ seller.bank_account_number|slice:"-4:" }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.bank_routing_number %}
+                <tr>
+                    <td>Routing Number:</td>
+                    <td>••••••••{{ seller.bank_routing_number|slice:"-4:" }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Verification Status -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Verification Status</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                {% if seller.is_verified %}
+                <tr>
+                    <td>Email Verified:</td>
+                    <td>
+                        <span class="status-badge status-active">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </span>
+                    </td>
+                </tr>
+                {% endif %}
+                {% if seller.created_at %}
+                <tr>
+                    <td>Registration Date:</td>
+                    <td>{{ seller.created_at|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+                {% if seller.updated_at %}
+                <tr>
+                    <td>Last Updated:</td>
+                    <td>{{ seller.updated_at|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Actions -->
+    <div class="section" style="margin-top: 30px;">
+        <div class="section-header">
+            <div class="section-title">Quick Actions</div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            {% if not seller.is_approved %}
+            <a href="{% url 'admin_panel:approve_seller' seller.id %}" 
+               class="btn-primary" 
+               style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-check"></i> Approve Seller
+            </a>
+            {% endif %}
+            
+            {% if not seller.user.is_blocked %}
+            <form method="post" action="{% url 'admin_panel:block_seller_user' seller.user.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="btn-primary" 
+                        style="background: #F44336; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: white; text-decoration: none; font-size: 0.85rem;"
+                        onclick="return confirm('Block this seller account?');">
+                    <i class="fas fa-ban"></i> Block Seller
+                </button>
+            </form>
+            {% else %}
+            <form method="post" action="{% url 'admin_panel:unblock_seller_user' seller.user.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="btn-primary" 
+                        style="background: #4CAF50; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: white; text-decoration: none; font-size: 0.85rem;"
+                        onclick="return confirm('Unblock this seller account?');">
+                    <i class="fas fa-unlock"></i> Unblock Seller
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Additional Styles for Seller Details -->
+    <style>
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #E0E0E0;
+            font-size: 0.95rem;
+        }
+
+        .detail-table td:first-child {
+            font-weight: 600;
+            color: #3A3A3A;
+            width: 25%;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+        }
+
+        .status-inactive {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .detail-table td:first-child {
+                width: 35%;
+            }
+
+            .detail-table td {
+                padding: 10px 6px;
+                font-size: 0.9rem;
+            }
+
+            .header {
+                margin-bottom: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .btn-primary {
+                font-size: 0.85rem;
+                padding: 8px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .detail-table td:first-child {
+                width: 40%;
+            }
+
+            .detail-table td {
+                padding: 8px 4px;
+                font-size: 0.85rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            .section {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+
+            .section-title {
+                font-size: 1.05rem;
+            }
+
+            .status-badge {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+
+            .btn-primary {
+                font-size: 0.8rem;
+                padding: 7px 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .detail-table td:first-child {
+                width: 45%;
+            }
+
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .detail-table td {
+                padding: 6px 3px;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</div>
+
+{% endblock %}

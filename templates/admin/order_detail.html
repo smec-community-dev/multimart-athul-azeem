@@ -1,0 +1,348 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <!-- Header with Back Button -->
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <a href="javascript:history.back()" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+        <h1>Order #{{ order.id }}</h1>
+        <p>Order placed on {{ order.order_date|date:"M d, Y \a\t h:i A" }}</p>
+    </div>
+
+    <!-- Order Status Overview -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Order Status</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Order Status:</td>
+                    <td>
+                        <span class="status-badge status-{{ order.status|lower }}">
+                            {{ order.status|title }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Order Date:</td>
+                    <td>{{ order.order_date|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% if order.payment_method %}
+                <tr>
+                    <td>Payment Method:</td>
+                    <td>{{ order.payment_method|title }}</td>
+                </tr>
+                {% endif %}
+                {% if order.pending_date %}
+                <tr>
+                    <td>Status - Pending Since:</td>
+                    <td>{{ order.pending_date|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+                {% if order.processing_date %}
+                <tr>
+                    <td>Status - Processing Since:</td>
+                    <td>{{ order.processing_date|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+                {% if order.shipped_date %}
+                <tr>
+                    <td>Shipped Date:</td>
+                    <td>{{ order.shipped_date|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+                {% if order.delivered_date %}
+                <tr>
+                    <td>Delivered Date:</td>
+                    <td>{{ order.delivered_date|date:"M d, Y \a\t h:i A" }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Customer Information</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Customer Name:</td>
+                    <td>{{ order.user.first_name|default:order.user.username }} {{ order.user.last_name }}</td>
+                </tr>
+                <tr>
+                    <td>Email:</td>
+                    <td>
+                        <a href="mailto:{{ order.user.email }}" style="color: #FF7F32; text-decoration: none;">
+                            {{ order.user.email }}
+                        </a>
+                    </td>
+                </tr>
+                {% if order.user.phone_number %}
+                <tr>
+                    <td>Phone:</td>
+                    <td>{{ order.user.phone_number }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Shipping Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Shipping Address</div>
+        </div>
+        
+        <table class="detail-table">
+            <tbody>
+                <tr>
+                    <td>Address:</td>
+                    <td>
+                        {% if order.shipping_address %}
+                            {{ order.shipping_address|linebreaks }}
+                        {% else %}
+                            <em>No shipping address provided</em>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Order Items -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Order Items</div>
+        </div>
+        
+        <div class="responsive-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td class="product-name">
+                            <span>{{ item.product.name|default:"Unknown Product" }}</span>
+                        </td>
+                        <td>${{ item.price|floatformat:2 }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ item.get_subtotal|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px 20px; color: #999; font-style: italic;">
+                            No items found in this order
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Order Summary</div>
+        </div>
+        
+        <div style="max-width: 400px; margin-left: auto;">
+            <table class="detail-table" style="margin-bottom: 20px;">
+                <tbody>
+                    <tr>
+                        <td>Subtotal:</td>
+                        <td style="text-align: right; font-weight: 600;">${{ order.total|floatformat:2 }}</td>
+                    </tr>
+                    {% if order.shipping_cost %}
+                    <tr>
+                        <td>Shipping:</td>
+                        <td style="text-align: right; font-weight: 600;">${{ order.shipping_cost|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if order.tax %}
+                    <tr>
+                        <td>Tax:</td>
+                        <td style="text-align: right; font-weight: 600;">${{ order.tax|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr style="border-top: 2px solid #FF7F32;">
+                        <td style="font-weight: 700; padding-top: 12px;">Total Amount:</td>
+                        <td style="text-align: right; font-weight: 700; color: #FF7F32; font-size: 1.1rem; padding-top: 12px;">
+                            ${{ order.total|floatformat:2 }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Additional Styles for Order Details -->
+    <style>
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #E0E0E0;
+            font-size: 0.95rem;
+        }
+
+        .detail-table td:first-child {
+            font-weight: 600;
+            color: #3A3A3A;
+            width: 25%;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+        }
+
+        .status-processing {
+            background-color: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .status-shipped {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        .status-delivered {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .status-cancelled {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .detail-table td:first-child {
+                width: 35%;
+            }
+
+            .detail-table td {
+                padding: 10px 6px;
+                font-size: 0.9rem;
+            }
+
+            .header {
+                margin-bottom: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .btn-primary {
+                font-size: 0.85rem;
+                padding: 8px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .detail-table td:first-child {
+                width: 40%;
+            }
+
+            .detail-table td {
+                padding: 8px 4px;
+                font-size: 0.85rem;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            .section {
+                padding: 14px;
+                margin-bottom: 14px;
+            }
+
+            .section-title {
+                font-size: 1.05rem;
+            }
+
+            .status-badge {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+
+            .btn-primary {
+                font-size: 0.8rem;
+                padding: 7px 12px;
+                width: auto;
+            }
+
+            .responsive-table-wrapper table {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .detail-table td:first-child {
+                width: 45%;
+            }
+
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .detail-table td {
+                padding: 6px 3px;
+                font-size: 0.8rem;
+            }
+
+            .section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</div>
+
+{% endblock %}
