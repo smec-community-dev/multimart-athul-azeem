@@ -1,0 +1,44 @@
+<!-- admin/templates/admin/users.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Users - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Users Management</h1>
+    <p>View and manage all registered users</p>
+</div>
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">All Users</div>
+        <button class="btn-primary">Add User</button>
+    </div>
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fas fa-edit"></i></button>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem; background: var(--danger-color);"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="text-align:center;">No users</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

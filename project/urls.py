@@ -21,8 +21,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("user/",include("user.urls")),
-    path("",include("seller.urls")),
+    path('admin-panel/', include(('core.urls', 'admin_panel'), namespace='admin_panel')),
+
+
+
+
 
 ]
 if settings.DEBUG:

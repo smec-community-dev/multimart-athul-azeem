@@ -1,0 +1,134 @@
+<!-- admin/templates/admin/dashboard.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Welcome back, Admin! 👋</h1>
+    <p>Here's the platform overview</p>
+</div>
+<!-- STATS GRID -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-users"></i> Total Users</div>
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-change">↑ 12% from last month</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-store"></i> Total Sellers</div>
+        <div class="stat-value">{{ total_sellers }}</div>
+        <div class="stat-change">↑ {{ pending_orders }} pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-shopping-cart"></i> Total Orders</div>
+        <div class="stat-value">{{ total_orders }}</div>
+        <div class="stat-change">↑ 8% growth</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="fas fa-dollar-sign"></i> Total Revenue</div>
+        <div class="stat-value">$ {{ total_revenue }}</div>
+        <div class="stat-change">Delivered only</div>
+    </div>
+</div>
+<!-- SALES CHART -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">Platform Metrics</div>
+    </div>
+    <div class="chart-container">
+        <canvas id="metricsChart"></canvas>
+    </div>
+</div>
+<!-- LATEST ORDERS -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">Latest Orders</div>
+        <button class="btn-primary"><a href="{% url 'admin_panel:admin_orders' %}">View All</a></button>
+    </div>
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>User</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in latest_orders %}
+                <tr>
+                    <td>ORD-{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>${{ order.total_amount }}</td>
+                    <td>
+                        {% if order.status == 'pending' %}<span class="status-badge status-pending">Pending</span>
+                        {% elif order.status == 'delivered' %}<span class="status-badge status-active">Delivered</span>
+                        {% elif order.status == 'cancelled' %}<span class="status-badge status-inactive">Cancelled</span>
+                        {% else %}<span class="status-badge status-pending">{{ order.status }}</span>{% endif %}
+                    </td>
+                    <td>{{ order.order_date|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="text-align:center;">No orders</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- LOW STOCK -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">Low Stock Products</div>
+        <button class="btn-primary"><a href="{% url 'admin_panel:admin_products' %}">View All</a></button>
+    </div>
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Seller</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in low_stock_products %}
+                <tr>
+                    <td>
+                        <div class="product-name">
+                            <div class="product-icon"><i class="fas fa-box"></i></div>
+                            <span>{{ product.name }}</span>
+                        </div>
+                    </td>
+                    <td><span class="status-badge status-warning">{{ product.stock }}</span></td>
+                    <td>{{ product.subcategory.name }}</td>
+                    <td>{{ product.seller.user.username }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" style="text-align:center;">No low stock</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+<script>
+    const ctx = document.getElementById('metricsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Revenue',
+                data: [12000, 19000, 3000, 5000, 2000, 30000],
+                borderColor: '#FF7F32',
+                backgroundColor: 'rgba(255, 127, 50, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+</script>
+{% endblock %}

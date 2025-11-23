@@ -1,0 +1,83 @@
+<!-- admin/templates/admin/products.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Products - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Products Management</h1>
+    <p>View and manage all products</p>
+</div>
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">All Products</div>
+        <button class="btn-primary">Add Product</button>
+    </div>
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Seller</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                  {% with product.images.first as image %}
+        {% if image %}
+            <img src="{{ image.image.url }}" alt="{{ product.name }}" width="32" class="rounded">
+        {% else %}
+            <div class="product-icon"><i class="fas fa-box"></i></div>
+        {% endif %}
+    {% endwith %}
+                    </td>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>
+                        <span class="status-badge {% if product.stock <= 5 %}status-warning{% else %}status-active{% endif %}">{{ product.stock }}</span>
+                    </td>
+                    <td>{{ product.subcategory.name }}</td>
+                    <td>{{ product.seller.user.username }}</td>
+                    <td>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fas fa-edit"></i></button>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem; background: var(--danger-color);"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" style="text-align:center;">No products</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if products.has_previous %}
+            <a href="?page=1"><i class="fas fa-angle-double-left"></i></a>
+            <a href="?page={{ products.previous_page_number }}"><i class="fas fa-angle-left"></i></a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+            <span class="disabled"><i class="fas fa-angle-left"></i></span>
+        {% endif %}
+        {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+                <span class="active">{{ num }}</span>
+            {% elif num >= products.number|add:'-2' and num <= products.number|add:'2' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}"><i class="fas fa-angle-right"></i></a>
+            <a href="?page={{ products.paginator.num_pages }}"><i class="fas fa-angle-double-right"></i></a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-right"></i></span>
+            <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+        {% endif %}
+        <span class="page-info">{{ products.number }} of {{ products.paginator.num_pages }}</span>
+    </div>
+</div>
+{% endblock %}

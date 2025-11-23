@@ -1,0 +1,44 @@
+<!-- admin/templates/admin/sellers.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Sellers - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Sellers Management</h1>
+    <p>View and manage all registered sellers</p>
+</div>
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">All Sellers</div>
+        <button class="btn-primary">Add Seller</button>
+    </div>
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Store Name</th>
+                    <th>Owner</th>
+                    <th>Date Joined</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seller in sellers %}
+                <tr>
+                    <td>{{ seller.id }}</td>
+                    <td>{{ seller.store_name }}</td>
+                    <td>{{ seller.user.username }}</td>
+                    <td>{{ seller.user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fas fa-edit"></i></button>
+                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem; background: var(--danger-color);"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" style="text-align:center;">No sellers</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
