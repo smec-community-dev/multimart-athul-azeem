@@ -1,0 +1,148 @@
+<!-- admin/templates/admin/user_detail.html -->
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}User Details - {{ user.username }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>User Details: {{ user.username }}</h1>
+    <p>View comprehensive details for user ID: {{ user.id }}</p>
+<a href="{% url 'admin_panel:admin_users' %}" class="btn-secondary">Back to Users</a>
+
+
+</div>
+
+<div class="section">
+    <!-- Profile Section -->
+    <div class="section-header">
+        <div class="section-title">Profile Information</div>
+    </div>
+    <div class="card">
+        <table class="detail-table">
+            <tr><td><strong>ID:</strong></td><td>{{ user.id }}</td></tr>
+            <tr><td><strong>Username:</strong></td><td>{{ user.username }}</td></tr>
+            <tr><td><strong>Email:</strong></td><td>{{ user.email|default:"N/A" }}</td></tr>
+            <tr><td><strong>First Name:</strong></td><td>{{ user.first_name|default:"N/A" }}</td></tr>
+            <tr><td><strong>Last Name:</strong></td><td>{{ user.last_name|default:"N/A" }}</td></tr>
+            <tr><td><strong>Date Joined:</strong></td><td>{{ user.date_joined|date:"M d, Y H:i"|default:"N/A" }}</td></tr>
+            <tr><td><strong>Last Login:</strong></td><td>{{ user.last_login|date:"M d, Y H:i"|default:"N/A" }}</td></tr>
+            <tr><td><strong>Status:</strong></td><td>
+                {% if user.is_blocked %}
+                    <span class="status-badge status-inactive">Blocked</span>
+                {% else %}
+                    <span class="status-badge status-active">Active</span>
+                {% endif %}
+            </td></tr>
+            <tr><td><strong>Is Staff:</strong></td><td>{% if user.is_staff %}Yes{% else %}No{% endif %}</td></tr>
+            <tr><td><strong>Is Superuser:</strong></td><td>{% if user.is_superuser %}Yes{% else %}No{% endif %}</td></tr>
+        </table>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="section-header">
+        <div class="section-title">Orders ({{ orders.count }})</div>
+    </div>
+    {% if orders %}
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+<tbody>
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.order_date|date:"M d, Y" }}</td>
+        <td>${{ order.total|floatformat:2 }}</td>
+        <td>
+            <span class="status-badge status-{{ order.status|lower }}">
+                {{ order.status|title }}
+            </span>
+        </td>
+        <td class="actions-cell">
+            <a href="{% url 'admin_panel:order_detail' order.id %}"
+               title="View Order Details"
+               class="action-icon action-icon-info">
+                <i class="fas fa-eye"></i>
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5" class="empty-message">No orders found.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card"><p>No orders found for this user.</p></div>
+    {% endif %}
+
+    <!-- Reviews Section -->
+    <div class="section-header">
+        <div class="section-title">Reviews ({{ reviews.count }})</div>
+    </div>
+    {% if reviews %}
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review.product.name|default:"N/A" }}</td>
+                    <td>
+                        {% for i in review.rating|make_list %}
+                            <i class="fas fa-star" style="color: #ffc107;"></i>
+                        {% endfor %}
+                        ({{ review.rating }}/5)
+                    </td>
+                    <td>{{ review.comment|truncatewords:10|default:"No comment" }}</td>
+                    <td>{{ review.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card"><p>No reviews found for this user.</p></div>
+    {% endif %}
+
+    <!-- Additional Details Section (e.g., Custom Fields) -->
+    <div class="section-header">
+        <div class="section-title">Additional Details</div>
+    </div>
+    <div class="card">
+        <!-- Add custom user fields here, e.g., address, phone, etc. -->
+        <p>Profile Picture: {% if user.profile_picture %}<img src="{{ user.profile_picture.url }}" alt="Profile" style="max-width: 100px;">{% else %}N/A{% endif %}</p>
+        <!-- Expand as needed with more user-related data -->
+    </div>
+</div>
+
+<style>
+    .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .detail-table { width: 100%; border-collapse: collapse; }
+    .detail-table td { padding: 8px; border-bottom: 1px solid #ddd; }
+    .detail-table td:first-child { font-weight: bold; width: 30%; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+    .status-active { background: #d4edda; color: #155724; }
+    .status-inactive { background: #f8d7da; color: #721c24; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    /* Assume other statuses as needed */
+</style>
+{% endblock %}

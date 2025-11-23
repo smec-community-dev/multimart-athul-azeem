@@ -15,6 +15,7 @@ class User(AbstractUser):
     address = models.TextField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     status = models.CharField(max_length=10, default='Active')
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.role})"

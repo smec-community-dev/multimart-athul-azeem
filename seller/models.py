@@ -13,7 +13,8 @@ class SellerDetails(models.Model):
     phone_number = models.CharField(max_length=15)
     gst_number = models.CharField(max_length=20, blank=True, null=True)
     bank_account = models.CharField(max_length=50, blank=True, null=True)
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)  # ✔ Seller approval
+    is_blocked = models.BooleanField(default=False)  # ✔ Additional
 
     def __str__(self):
         return self.shop_name
