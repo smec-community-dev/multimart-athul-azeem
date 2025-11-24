@@ -1285,79 +1285,74 @@
                 <span></span>
             </div>
             <div class="logo">ShopHub</div>
-            <div class="navbar-title">Order Details</div>
+            <div class="navbar-title">Dashboard</div>
         </div>
         <div class="navbar-right">
             <div class="notification-bell" onclick="showNotifications()">
                 🔔
-                <div class="notification-badge">{{ notification_count|default:0 }}</div>
+                <div class="notification-badge">3</div>
             </div>
-
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">{{ user.seller_details.shop_name|default:user.username }}</div>
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
                         <div class="profile-role">Seller</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
                 </div>
-
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-header">
                         <div class="dropdown-header-content">
                             <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
                             <div class="dropdown-header-info">
                                 <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
-                                <p>{{ user.email }}</p>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
                             </div>
                         </div>
                     </div>
-
                     <div class="dropdown-divider"></div>
-
                     <div class="dropdown-items">
+                        <!-- PROFILE -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label"><a href="{% url 'profile' %}" style="color: inherit; text-decoration: none;">My Profile</a></div>
-                                <div class="dropdown-item-desc">View & edit profile info</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
                         </div>
-
-                        <div class="dropdown-item">
-                            <span class="dropdown-item-icon">🏪</span>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Store Settings</div>
-                                <div class="dropdown-item-desc">Manage store details</div>
-                            </div>
-                        </div>
-
+                        <!-- STORE SETTINGS -->
+    <div class="dropdown-divider"></div>
+                        <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Notifications</div>
-                                <div class="dropdown-item-desc">Notification preferences</div>
+                                <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
-
                         <div class="dropdown-divider"></div>
 
-                        <div class="dropdown-item">
+                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
                         </div>
+                        <!-- HELP -->
 
                         <div class="dropdown-divider"></div>
-
+                        <!-- LOGOUT -->
                         <div class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label"><a href="{% url 'logout' %}" style="color: inherit; text-decoration: none;">Logout</a></div>
-                                <div class="dropdown-item-desc">Sign out of account</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'logout' %}">Logout</a>
+                                </div>
+                                <div class="dropdown-item-desc">Sign out</div>
                             </div>
                         </div>
                     </div>

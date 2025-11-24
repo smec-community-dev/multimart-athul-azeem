@@ -1347,13 +1347,26 @@
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Product Details</div>
         </div>
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Dashboard</div>
+        </div>
         <div class="navbar-right">
-            <div class="notification-bell">🔔<div class="notification-badge">3</div></div>
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
-                    <div class="profile-avatar">A</div>
+                    <div class="profile-avatar">{{ user.username|first|upper}}</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">Ashin123</div>
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
                         <div class="profile-role">Seller</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
@@ -1361,41 +1374,54 @@
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-header">
                         <div class="dropdown-header-content">
-                            <div class="dropdown-header-avatar">A</div>
+                            <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
                             <div class="dropdown-header-info">
-                                <h3>Ashin123</h3>
-                                <p>ashin@example.com</p>
+                                <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-items">
-                        <div class="dropdown-item" onclick="alert('Redirecting to profile...')">
+                        <!-- PROFILE -->
+                        <div class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">My Profile</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
                         </div>
-                        <div class="dropdown-item" onclick="openEditModal()">
-                            <span class="dropdown-item-icon">✏️</span>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Edit Profile</div>
-                                <div class="dropdown-item-desc">Update your info</div>
-                            </div>
-                        </div>
+                        <!-- STORE SETTINGS -->
+    <div class="dropdown-divider"></div>
+                        <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
-                            <span class="dropdown-item-icon">🏪</span>
+                            <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Store Settings</div>
-                                <div class="dropdown-item-desc">Manage store</div>
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <div class="dropdown-item logout" onclick="logout()">
+
+                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
+                            <span class="dropdown-item-icon">❓</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & contact support</div>
+                            </div>
+                        </div>
+                        <!-- HELP -->
+
+                        <div class="dropdown-divider"></div>
+                        <!-- LOGOUT -->
+                        <div class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Logout</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'logout' %}">Logout</a>
+                                </div>
                                 <div class="dropdown-item-desc">Sign out</div>
                             </div>
                         </div>
