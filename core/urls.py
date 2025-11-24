@@ -61,11 +61,13 @@ urlpatterns = [
     path('categories/add/', views.admin_category_add, name='admin_category_add'),
     path('categories/edit/<int:pk>/', views.admin_category_edit, name='admin_category_edit'),
     path('categories/delete/<int:pk>/', views.admin_category_delete, name='admin_category_delete'),
+path('category/<int:category_id>/products/', views.category_products, name='category_products'),
 
     path('subcategories/', views.admin_subcategories, name='admin_subcategories'),
-    path('subcategories/add/', views.admin_subcategory_add, name='admin_subcategory_add'),
-    path('subcategories/edit/<int:pk>/', views.admin_subcategory_edit, name='admin_subcategory_edit'),
-    path('subcategories/delete/<int:pk>/', views.admin_subcategory_delete, name='admin_subcategory_delete'),
-    # Existing URLs...
+    path('subcategory/add/', views.admin_subcategory_add, name='admin_subcategory_add'),
+    path('subcategory/<int:subcategory_id>/edit/', views.admin_subcategory_edit, name='admin_subcategory_edit'),
+    path('subcategory/<int:subcategory_id>/delete/', views.admin_subcategory_delete, name='admin_subcategory_delete'),
+    path('subcategory/<int:subcategory_id>/products/', views.subcategory_products, name='subcategory_products'),
+
 
 ]
