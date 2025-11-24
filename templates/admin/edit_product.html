@@ -1,0 +1,113 @@
+<!-- admin/templates/admin/edit_product.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Edit Product - Admin Panel{% endblock %}
+{% block content %}
+
+<div class="header">
+    <h1>Edit Product</h1>
+    <p>Update product information</p>
+</div>
+
+<div class="section">
+    <form method="POST" enctype="multipart/form-data" class="product-form">
+        {% csrf_token %}
+
+        <!-- Product Name -->
+        <div class="form-group">
+            <label for="name">Product Name *</label>
+            <input type="text" id="name" name="name" value="{{ product.name }}" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4">{{ product.description }}</textarea>
+        </div>
+
+        <!-- Price & Stock -->
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price *</label>
+                <input type="number" id="price" name="price" value="{{ product.price }}" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock Quantity *</label>
+                <input type="number" id="stock" name="stock" value="{{ product.stock }}" required>
+            </div>
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" class="form-control" required>
+                <option value="">Select Category</option>
+
+                {% for category in categories %}
+                    <option value="{{ category.id }}"
+                        {% if product.subcategory.id == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Update Product</button>
+            <a href="{% url 'admin_panel:admin_products' %}" class="btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+<style>
+    .product-form { max-width: 600px; }
+
+    .form-group { margin-bottom: 1.5rem; }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+</style>
+
+{% endblock %}
