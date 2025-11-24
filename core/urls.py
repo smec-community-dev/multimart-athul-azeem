@@ -1,3 +1,4 @@
+# admin_panel/urls.py
 from django.urls import path
 from . import views
 
@@ -46,6 +47,25 @@ urlpatterns = [
     path('profile/', views.admin_profile, name='admin_profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('settings/', views.admin_settings, name='admin_settings'),
+
+    # Support Pages
+    path('help-center/', views.help_center, name='help_center'),
+    path('contact-us/', views.contact_us, name='contact_us'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
+    path('feedback/', views.feedback, name='feedback'),
+
+    # Logout
     path('logout/', views.admin_logout, name='admin_logout'),
+    path('categories/', views.admin_categories, name='admin_categories'),
+    path('categories/add/', views.admin_category_add, name='admin_category_add'),
+    path('categories/edit/<int:pk>/', views.admin_category_edit, name='admin_category_edit'),
+    path('categories/delete/<int:pk>/', views.admin_category_delete, name='admin_category_delete'),
+
+    path('subcategories/', views.admin_subcategories, name='admin_subcategories'),
+    path('subcategories/add/', views.admin_subcategory_add, name='admin_subcategory_add'),
+    path('subcategories/edit/<int:pk>/', views.admin_subcategory_edit, name='admin_subcategory_edit'),
+    path('subcategories/delete/<int:pk>/', views.admin_subcategory_delete, name='admin_subcategory_delete'),
+    # Existing URLs...
 
 ]

@@ -1,0 +1,191 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy - Admin Panel - ShopHub{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Privacy Policy</h1>
+    <p class="sub-header-text">Your privacy matters to us. Here's how we handle your data in the ShopHub Admin Panel.</p>
+</div>
+<div class="section">
+    <div class="policy-content">
+        <div class="policy-section">
+            <h2><i class="fas fa-info-circle policy-icon"></i>Introduction</h2>
+            <p>At **ShopHub Admin**, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our admin panel services.</p>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-user policy-icon"></i>Information We Collect</h2>
+            <p>We collect the following types of information:</p>
+            <ul>
+                <li>**Personal data** such as name, email, and username provided during registration.</li>
+                <li>**Usage data** including login times, page views, and interactions with the dashboard.</li>
+                <li>**E-commerce related data** like order details and user activities for admin management.</li>
+            </ul>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-cogs policy-icon"></i>How We Use Your Information</h2>
+            <p>Your information is used to:</p>
+            <ul>
+                <li>Provide and improve our admin services.</li>
+                <li>Manage user accounts and permissions.</li>
+                <li>Send notifications and updates.</li>
+                <li>Ensure security and prevent fraud.</li>
+            </ul>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-share-alt policy-icon"></i>Sharing Your Information</h2>
+            <p>We do not sell your data. It may be shared with:</p>
+            <ul>
+                <li>**Service providers** for hosting and analytics.</li>
+                <li>**Legal authorities** if required by law.</li>
+            </ul>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-user-shield policy-icon"></i>Your Rights</h2>
+            <p>You have the right to **access, update, or delete** your information. Contact us to exercise these rights.</p>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-cookie-bite policy-icon"></i>Cookies and Tracking</h2>
+            <p>We use **cookies** to enhance your experience. You can manage preferences in your browser settings.</p>
+        </div>
+        <div class="policy-section">
+            <h2><i class="fas fa-edit policy-icon"></i>Changes to This Policy</h2>
+            <p>We may update this policy. Changes will be posted here with the updated date.</p>
+        </div>
+        <div class="last-updated">
+            Policy Version 1.2 | Last updated: **{{ current_date|date:"F d, Y" }}**
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_style %}
+<style>
+    /* 1. Flat Design Variables */
+    :root {
+        --primary-color: #3f51b5; /* Professional Blue */
+        --text-color: #212121;
+        --light-text: #616161;
+        --border-color: #e0e0e0;
+        --background-color: #ffffff;
+        --secondary-background: #f5f5f5;
+        --font-heading: 'Lato', 'Segoe UI', sans-serif;
+        --font-body: 'Open Sans', 'Roboto', sans-serif;
+        --shadow-flat: 0 1px 1px rgba(0, 0, 0, 0.05); /* Minimal shadow */
+    }
+
+    body {
+        font-family: var(--font-body);
+        background-color: var(--secondary-background);
+        color: var(--text-color);
+    }
+
+    /* Header */
+    .header {
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 30px;
+    }
+    .header h1 {
+        color: var(--primary-color);
+        font-family: var(--font-heading);
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+    }
+    .sub-header-text {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+   
+    /* Policy Content */
+    .policy-content {
+        line-height: 1.7;
+        max-width: 950px; /* Wider for full screen reading */
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+   
+    /* Policy Sections - Flat & Crisp */
+    .policy-section {
+        margin-bottom: 25px;
+        background: var(--background-color);
+        padding: 25px 30px;
+        border-radius: 4px; /* Minimal radius */
+        border-left: 5px solid var(--primary-color);
+        box-shadow: var(--shadow-flat);
+        transition: border-left-width 0.2s ease, box-shadow 0.2s ease;
+    }
+    .policy-section:hover {
+        border-left-width: 8px; /* Subtle hover effect */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+   
+    /* Headings */
+    .policy-section h2 {
+        font-family: var(--font-heading);
+        font-size: 1.7rem;
+        color: var(--text-color);
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--border-color); /* Light separator line */
+        display: flex;
+        align-items: center;
+    }
+    .policy-icon {
+        color: var(--primary-color);
+        margin-right: 15px !important;
+        font-size: 1.4rem;
+    }
+   
+    /* Body and Lists */
+    .policy-section p, .policy-section ul {
+        color: var(--light-text);
+        margin-bottom: 10px;
+        font-size: 1rem;
+    }
+    .policy-section ul {
+        padding-left: 20px;
+        list-style: none;
+    }
+    .policy-section li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 18px;
+    }
+    .policy-section li:before {
+        content: "•"; /* Standard disc bullet */
+        color: var(--primary-color);
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+        font-size: 1.2em;
+        line-height: 1;
+    }
+   
+    /* Footer */
+    .last-updated {
+        text-align: center;
+        color: var(--light-text);
+        font-style: italic;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px dashed var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .policy-section {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .policy-section h2 {
+            font-size: 1.5rem;
+        }
+        .policy-content {
+            padding: 0 10px;
+        }
+    }
+</style>
+{% endblock %}

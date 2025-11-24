@@ -1,10 +1,10 @@
-<!-- admin/templates/admin/base.html -->
+<!-- Help Center Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Panel - ShopHub{% endblock %}</title>
+    <title>Help Center - Admin Panel - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -865,6 +865,71 @@
             .product-icon { width: 20px; height: 20px; font-size: 0.7rem; }
             .pagination a, .pagination span { min-width: 28px; height: 28px; padding: 0 4px; font-size: 0.75rem; }
         }
+        /* Help Center Specific Styles */
+        .help-search {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .help-search input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .help-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .help-search i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-text);
+        }
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .faq-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        .faq-question {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+        .faq-answer {
+            color: var(--light-text);
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        .faq-item.active .faq-question i {
+            transform: rotate(45deg);
+        }
+        .faq-question i {
+            float: right;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -887,21 +952,21 @@
             <!-- Profile dropdown section -->
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
-                    <div class="profile-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="profile-avatar">A</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                        <div class="profile-name">Admin User</div>
                         <div class="profile-role">Super Admin</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
                 </div>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-header">
-                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                        <a href="#" style="text-decoration: none; color: inherit;">
                             <div class="dropdown-header-content">
-                                <div class="dropdown-header-avatar">{{ request.user.username|first|upper }}</div>
+                                <div class="dropdown-header-avatar">A</div>
                                 <div class="dropdown-header-info">
-                                    <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
-                                    <p>{{ request.user.email }}</p>
+                                    <h3>Admin User</h3>
+                                    <p>admin@shophub.com</p>
                                 </div>
                             </div>
                         </a>
@@ -909,7 +974,7 @@
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-items">
                         <!-- My Profile -->
-                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                        <a href="#" style="text-decoration: none; color: inherit;">
                             <div class="dropdown-item">
                                 <i class="fas fa-user dropdown-item-icon"></i>
                                 <div class="dropdown-item-text">
@@ -919,7 +984,7 @@
                             </div>
                         </a>
                         <!-- Settings -->
-                        <a href="{% url 'admin_panel:admin_settings' %}" style="text-decoration: none; color: inherit;">
+                        <a href="#" style="text-decoration: none; color: inherit;">
                             <div class="dropdown-item">
                                 <i class="fas fa-cog dropdown-item-icon"></i>
                                 <div class="dropdown-item-text">
@@ -930,7 +995,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <!-- Logout -->
-                        <a href="{% url 'admin_panel:admin_logout' %}" style="text-decoration: none; color: inherit;" onclick="return confirm('Are you sure you want to logout?');">
+                        <a href="#" style="text-decoration: none; color: inherit;" onclick="return confirm('Are you sure you want to logout?');">
                             <div class="dropdown-item logout">
                                 <i class="fas fa-sign-out-alt dropdown-item-icon"></i>
                                 <div class="dropdown-item-text">
@@ -950,125 +1015,180 @@
     <div class="container">
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
-<ul class="sidebar-menu">
-    <!-- Dashboard -->
-    <li>
-        <a href="{% url 'admin_panel:admin_dashboard' %}">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a>
-    </li>
-    <!-- Users -->
-    <li>
-        <a href="{% url 'admin_panel:admin_users' %}">
-            <i class="fas fa-users"></i> Users
-        </a>
-    </li>
-    <!-- Sellers -->
-    <li>
-        <a href="{% url 'admin_panel:admin_sellers' %}">
-            <i class="fas fa-store"></i> Sellers
-        </a>
-    </li>
-    <!-- Products -->
-    <li>
-        <a href="{% url 'admin_panel:admin_products' %}">
-            <i class="fas fa-box"></i> Products
-        </a>
-    </li>
-    <!-- Categories -->
-    <li>
-        <a href="{% url 'admin_panel:admin_categories' %}">
-            <i class="fas fa-tags"></i> Categories
-        </a>
-    </li>
-    <!-- Subcategories -->
-    <li>
-        <a href="{% url 'admin_panel:admin_subcategories' %}">
-            <i class="fas fa-list-ul"></i> Subcategories
-        </a>
-    </li>
-    <!-- Orders -->
-    <li>
-        <a href="{% url 'admin_panel:admin_orders' %}">
-            <i class="fas fa-shopping-cart"></i> Orders
-        </a>
-    </li>
-    <!-- Reviews -->
-    <li>
-        <a href="{% url 'admin_panel:admin_reviews' %}">
-            <i class="fas fa-star"></i> Reviews
-        </a>
-    </li>
-    <!-- Settings -->
-</ul>
+            <ul class="sidebar-menu">
+                <!-- Dashboard -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <!-- Users -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                </li>
+                <!-- Sellers -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-store"></i> Sellers
+                    </a>
+                </li>
+                <!-- Products -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-box"></i> Products
+                    </a>
+                </li>
+                <!-- Orders -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-shopping-cart"></i> Orders
+                    </a>
+                </li>
+                <!-- Reviews -->
+                <li>
+                    <a href="#">
+                        <i class="fas fa-star"></i> Reviews
+                    </a>
+                </li>
+                <!-- Settings -->
+            </ul>
         </div>
         <!-- MAIN CONTENT -->
         <div class="main-content">
-            {% block content %}
-            {% endblock %}
+            <div class="header">
+                <h1>Help Center</h1>
+                <p>Get support for managing your ShopHub admin panel.</p>
+            </div>
+            <div class="section">
+                <div class="help-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search for help articles...">
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            How do I add a new user?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            To add a new user, navigate to the Users section in the sidebar, click the "Add User" button, and fill in the required details such as name, email, and role. Save to confirm.
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            What should I do if an order status is stuck?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Check the Orders page for the specific order ID. If the status is pending, update it manually or contact the seller. Use the status badges to track progress.
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            How can I approve a seller application?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Go to the Sellers tab, review pending applications, verify documents, and click "Approve" to grant access. Rejected applications can be marked with a reason.
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            Managing product listings?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            In the Products section, use the table to edit, approve, or delete listings. Ensure images and descriptions meet quality standards before approval.
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            Reviewing customer feedback?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Access the Reviews page to moderate and respond to user reviews. Flag inappropriate content or highlight positive ones on the dashboard.
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFAQ(this)">
+                        <div class="faq-question">
+                            Updating admin settings?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            From the profile dropdown, select Settings to customize notifications, themes, or API integrations. Changes save automatically.
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-primary">
+                    <a href="#">Contact Support for More Help</a>
+                </div>
+            </div>
         </div>
     </div>
     <!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-grid">
-            <div>
-                <div class="footer-logo">
-                    <i class="fas fa-crown"></i>
-                    <span>ShopHub Admin</span>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-crown"></i>
+                        <span>ShopHub Admin</span>
+                    </div>
+                    <p class="footer-description">Premium admin dashboard for managing e-commerce operations.</p>
+                    <div class="social-links">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
-                <p class="footer-description">Premium admin dashboard for managing e-commerce operations.</p>
-                <div class="social-links">
-                    <a href="https://www.facebook.com/shophub" title="Facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.twitter.com/shophub" title="Twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/shophub" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.linkedin.com/company/shophub" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Dashboard</a></li>
+                        <li><a href="#">Users</a></li>
+                        <li><a href="#">Sellers</a></li>
+                        <li><a href="#">Products</a></li>
+                        <li><a href="#">Orders</a></li>
+                    </ul>
                 </div>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a></li>
-                    <li><a href="{% url 'admin_panel:admin_users' %}">Users</a></li>
-                    <li><a href="{% url 'admin_panel:admin_sellers' %}">Sellers</a></li>
-                    <li><a href="{% url 'admin_panel:admin_products' %}">Products</a></li>
-                    <li><a href="{% url 'admin_panel:admin_orders' %}">Orders</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="{% url 'admin_panel:help_center' %}">Help Center</a></li>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul>
+                                     <li><a href="{% url 'admin_panel:help_center' %}">Help Center</a></li>
                     <li><a href="{% url 'admin_panel:contact_us' %}">Contact Us</a></li>
                     <li><a href="{% url 'admin_panel:privacy_policy' %}">Privacy Policy</a></li>
                     <li><a href="{% url 'admin_panel:terms_of_service' %}">Terms of Service</a></li>
                     <li><a href="{% url 'admin_panel:feedback' %}">Feedback</a></li>
-                </ul>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li>
+                            <i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                            Mumbai, India
+                        </li>
+                        <li>
+                            <i class="fas fa-phone" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                            +91 98765 43210
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                            admin@shophub.com
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-section">
-                <h3>Contact</h3>
-                <ul>
-                    <li>
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
-                        Mumbai, India
-                    </li>
-                    <li>
-                        <i class="fas fa-phone" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
-                        +91 98765 43210
-                    </li>
-                    <li>
-                        <i class="fas fa-envelope" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
-                        <a href="mailto:admin@shophub.com">admin@shophub.com</a>
-                    </li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ShopHub Admin. All rights reserved.</p>
+                <p>Made with ❤️ for Efficient Management</p>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 ShopHub Admin. All rights reserved.</p>
-            <p>Made with ❤️ for Efficient Management</p>
-        </div>
-    </div>
-</footer>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -1126,7 +1246,10 @@
                 profileDropdown.classList.remove('active');
             }
         });
+        // Help Center specific script
+        function toggleFAQ(item) {
+            item.classList.toggle('active');
+        }
     </script>
-    {% block extra_script %}{% endblock %}
 </body>
 </html>
