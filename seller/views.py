@@ -1030,3 +1030,103 @@ def review_analytics(request):
     return render(request, "seller/review_analytics.html", context)
 
 
+# ============================================================================
+# SOCIAL AUTH & ROLE SELECTION VIEWS
+# ============================================================================
+
+@login_required(login_url="login")
+def choose_role(request):
+    """
+    Role selection page after social authentication.
+
+    Redirects existing users to their appropriate dashboard.
+    Shows role selection for new social auth users.
+    """
+    user = request.user
+
+    # Redirect existing customer
+    if user.role == "customer" and hasattr(user, "customer"):
+        return redirect("home")
+
+    # Redirect existing seller
+    if user.role == "seller" and hasattr(user, "sellerdetails"):
+        return redirect("seller_dashboard")
+
+    return render(request, "auth/choose_role.html", {"user": user})
+
+
+@login_required
+def complete_customer(request):
+    """
+    Complete customer profile after Google signup.
+
+    Sets user role to customer and redirects to home page.
+    """
+    user = request.user
+    user.role = "customer"
+    user.save()
+
+    # Later you can create a Customer profile here if needed
+    return redirect("home")
+
+
+@login_required
+def complete_seller(request):
+    """
+    Complete seller profile after Google signup.
+
+    Collects business information and creates SellerDetails profile.
+    """
+    user = request.user
+
+    # Already a seller - just set role and redirect
+    if hasattr(user, "seller_details"):
+        user.role = "seller"
+        user.save()
+        return redirect("seller_dashboard")
+
+    if request.method == "POST":
+        shop_name = request.POST.get("shop_name")
+        shop_address = request.POST.get("shop_address")
+        business_type = request.POST.get("business_type")
+        gst_number = request.POST.get("gst_number")
+        bank_account = request.POST.get("bank_account")
+
+        # Validate required fields
+        if not shop_name:
+            return render(request, "auth/seller_complete_form.html", {
+                "error": "Shop name is required."
+            })
+
+        # Create seller profile
+        SellerDetails.objects.create(
+            user=user,
+            shop_name=shop_name,
+            shop_address=shop_address or "",
+            business_type=business_type or "",
+            gst_number=gst_number or "",
+            bank_account=bank_account or "",
+        )
+
+        user.role = "seller"
+        user.save()
+
+        return redirect("seller_dashboard")
+
+    # Prepopulate form with user data
+    initial = {
+        "shop_name": f"{user.first_name}'s Shop" if user.first_name else "",
+        "email": user.email,
+    }
+    return render(request, "auth/seller_complete_form.html", {"initial": initial})
+
+
+def social_signup_error(request):
+    """
+    Handle social signup errors (e.g., email already registered).
+    """
+    messages.error(request, "This email is already registered. Please login.")
+    return redirect("login")
+
+
+
