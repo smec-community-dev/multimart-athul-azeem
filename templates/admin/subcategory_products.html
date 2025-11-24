@@ -1,21 +1,59 @@
+<!-- admin/templates/admin/subcategory_products.html -->
 {% extends 'admin/base.html' %}
-{% block title %}Subcategories - Admin Panel{% endblock %}
+{% block title %}{{ subcategory.name }} - Products{% endblock %}
 {% block content %}
 <div class="header">
-    <h1>Subcategories Management</h1>
-    <p>View and manage all product subcategories</p>
+    <a href="{% url 'admin_panel:admin_subcategories' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Subcategories
+    </a>
+    <h1>{{ subcategory.name }}</h1>
+    <p>View all products in this subcategory</p>
 </div>
 
 <div class="section">
+    <!-- Subcategory Info Card -->
+    <div class="category-info-card">
+        <div class="info-row">
+            <span class="info-label">Subcategory Name:</span>
+            <span class="info-value">{{ subcategory.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Category:</span>
+            <span class="info-value">{{ subcategory.category.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Description:</span>
+            <span class="info-value">{{ subcategory.description|default:"No description" }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span class="info-value">
+                {% if subcategory.status %}
+                    <span class="status-badge status-active">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                {% else %}
+                    <span class="status-badge status-inactive">
+                        <i class="fas fa-times-circle"></i> Inactive
+                    </span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Created:</span>
+            <span class="info-value">{{ subcategory.created_at|date:"M d, Y" }}</span>
+        </div>
+    </div>
+
     <!-- Statistics Cards -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon" style="background: #e3f2fd;">
-                <i class="fas fa-list-ul" style="color: #2196F3;"></i>
+                <i class="fas fa-box" style="color: #2196F3;"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-value">{{ total_subcategories }}</div>
-                <div class="stat-label">Total Subcategories</div>
+                <div class="stat-value">{{ total_products }}</div>
+                <div class="stat-label">Total Products</div>
             </div>
         </div>
         <div class="stat-card">
@@ -23,142 +61,128 @@
                 <i class="fas fa-check-circle" style="color: #9c27b0;"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-value">{{ active_subcategories }}</div>
-                <div class="stat-label">Active</div>
+                <div class="stat-value">{{ in_stock_count }}</div>
+                <div class="stat-label">In Stock</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background: #fff3e0;">
-                <i class="fas fa-times-circle" style="color: #ff9800;"></i>
+                <i class="fas fa-exclamation-circle" style="color: #ff9800;"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-value">{{ inactive_subcategories }}</div>
-                <div class="stat-label">Inactive</div>
+                <div class="stat-value">{{ low_stock_count }}</div>
+                <div class="stat-label">Low Stock</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon" style="background: #fce4ec;">
-                <i class="fas fa-box" style="color: #e91e63;"></i>
+                <i class="fas fa-dollar-sign" style="color: #e91e63;"></i>
             </div>
             <div class="stat-content">
-                <div class="stat-value">{{ total_products }}</div>
-                <div class="stat-label">Total Products</div>
+                <div class="stat-value">${{ total_inventory_value|floatformat:2 }}</div>
+                <div class="stat-label">Inventory Value</div>
             </div>
         </div>
     </div>
 
     <!-- Section Header -->
     <div class="section-header">
-        <div class="section-title">All Subcategories</div>
-        <a href="{% url 'admin_panel:admin_subcategory_add' %}" class="btn-primary">
-            <i class="fas fa-plus"></i> Add New Subcategory
-        </a>
+        <div class="section-title">Products in {{ subcategory.name }}</div>
     </div>
 
     <!-- Search and Filter Form -->
     <div class="search-filter">
         <form method="get" class="filter-form">
             <div class="form-group">
-                <input type="text" name="search" placeholder="Search by subcategory name..." value="{{ search_query|default:'' }}" class="search-input">
+                <input type="text" name="search" placeholder="Search by product name..." value="{{ search_query|default:'' }}" class="search-input">
             </div>
             <div class="form-group">
-                <select name="category" class="filter-select">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}" {% if current_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <select name="status" class="filter-select">
-                    <option value="">All Status</option>
-                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
-                    <option value="inactive" {% if current_status == 'inactive' %}selected{% endif %}>Inactive</option>
+                <select name="stock_status" class="filter-select">
+                    <option value="">All Stock Status</option>
+                    <option value="in_stock" {% if current_stock_status == 'in_stock' %}selected{% endif %}>In Stock</option>
+                    <option value="low_stock" {% if current_stock_status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                    <option value="out_stock" {% if current_stock_status == 'out_stock' %}selected{% endif %}>Out of Stock</option>
                 </select>
             </div>
             <button type="submit" class="btn-primary">
                 <i class="fas fa-search"></i> Apply Filter
             </button>
-            {% if search_query or current_status or current_category %}
-            <a href="{% url 'admin_panel:admin_subcategories' %}" class="btn-secondary">
+            {% if search_query or current_stock_status %}
+            <a href="{% url 'admin_panel:subcategory_products' subcategory.id %}" class="btn-secondary">
                 <i class="fas fa-times"></i> Clear Filters
             </a>
             {% endif %}
         </form>
     </div>
 
-    <!-- Subcategories Table -->
+    <!-- Products Table -->
     <div class="responsive-table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th data-label="ID">ID</th>
+                    <th data-label="Image">Image</th>
                     <th data-label="Name">Name</th>
-                    <th data-label="Category">Category</th>
-                    <th data-label="Description">Description</th>
-                    <th data-label="Products">Products</th>
-                    <th data-label="Status">Status</th>
-                    <th data-label="Created">Created Date</th>
+                    <th data-label="Price">Price</th>
+                    <th data-label="Stock">Stock</th>
+                    <th data-label="Seller">Seller</th>
                     <th data-label="Actions">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for subcategory in subcategories %}
+                {% for product in products %}
                 <tr>
-                    <td data-label="ID">{{ subcategory.id }}</td>
+                    <td data-label="Image">
+                        {% with product.images.first as image %}
+                            {% if image %}
+                                <img src="{{ image.image.url }}" alt="{{ product.name }}" width="40" class="rounded" style="border-radius: 4px;">
+                            {% else %}
+                                <div class="product-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
                     <td data-label="Name">
-                        <div class="product-name">
-                            <div class="product-icon"><i class="fas fa-list-ul"></i></div>
-                            <strong>{{ subcategory.name }}</strong>
-                        </div>
+                        <strong>{{ product.name }}</strong>
                     </td>
-                    <td data-label="Category">{{ subcategory.category.name }}</td>
-                    <td data-label="Description">{{ subcategory.description|truncatechars:50 }}</td>
-                    <td data-label="Products" class="text-center">
-                        <span class="badge badge-info">{{ subcategory.products.count }}</span>
-                    </td>
-                    <td data-label="Status">
-                        {% if subcategory.status %}
-                            <span class="status-badge status-active">
-                                <i class="fas fa-check-circle"></i> Active
-                            </span>
+                    <td data-label="Price" class="price-cell">${{ product.price }}</td>
+                    <td data-label="Stock">
+                        {% if product.stock == 0 %}
+                            <span class="status-badge status-inactive">Out of Stock</span>
+                        {% elif product.stock <= 5 %}
+                            <span class="status-badge status-warning">{{ product.stock }} Low</span>
                         {% else %}
-                            <span class="status-badge status-inactive">
-                                <i class="fas fa-times-circle"></i> Inactive
-                            </span>
+                            <span class="status-badge status-active">{{ product.stock }}</span>
                         {% endif %}
                     </td>
-                    <td data-label="Created">
-                        <small>{{ subcategory.created_at|date:"M d, Y" }}</small>
-                    </td>
+                    <td data-label="Seller">{{ product.seller.user.username }}</td>
                     <td data-label="Actions">
-                        <!-- View Products -->
-                        <a href="{% url 'admin_panel:subcategory_products' subcategory.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
-                           title="View Products"
+                        <!-- View Details -->
+                        <a href="{% url 'admin_panel:edit_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="View Details"
                            class="action-icon action-icon-info">
                             <i class="fas fa-eye"></i>
                         </a>
 
-                        <!-- Edit Subcategory -->
-                        <a href="{% url 'admin_panel:admin_subcategory_edit' subcategory.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
-                           title="Edit Subcategory"
+                        <!-- Edit Product -->
+                        <a href="{% url 'admin_panel:edit_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="Edit Product"
                            class="action-icon action-icon-warning">
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <!-- Delete Subcategory -->
-                        <a href="{% url 'admin_panel:admin_subcategory_delete' subcategory.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
-                           title="Delete Subcategory"
-                           class="action-icon action-icon-danger"
-                           onclick="return confirm('Are you sure? This may affect related products.');">
+                        <!-- Delete Product -->
+                        <a href="{% url 'admin_panel:delete_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="Delete Product"
+                           class="action-icon action-icon-danger">
                             <i class="fas fa-trash"></i>
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr class="empty-state">
-                    <td colspan="8" style="text-align: center; padding: 40px; font-style: italic; color: var(--light-text);">
-                        No subcategories found.
+                    <td colspan="6" style="text-align: center; padding: 40px; font-style: italic; color: var(--light-text);">
+                        No products found in this subcategory.
                     </td>
                 </tr>
                 {% endfor %}
@@ -167,14 +191,14 @@
     </div>
 
     <!-- Pagination -->
-    {% if subcategories.paginator.num_pages > 1 %}
+    {% if products.paginator.num_pages > 1 %}
     <div class="pagination">
-        {% with search_query=search_query current_category=current_category current_status=current_status %}
-        {% if subcategories.has_previous %}
-            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+        {% with search_query=search_query current_stock_status=current_stock_status %}
+        {% if products.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
                 <i class="fas fa-angle-double-left"></i>
             </a>
-            <a href="?page={{ subcategories.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+            <a href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
                 <i class="fas fa-angle-left"></i>
             </a>
         {% else %}
@@ -182,19 +206,19 @@
             <span class="disabled"><i class="fas fa-angle-left"></i></span>
         {% endif %}
 
-        {% for num in subcategories.paginator.page_range %}
-            {% if subcategories.number == num %}
+        {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
                 <span class="active">{{ num }}</span>
-            {% elif num > subcategories.number|add:'-3' and num < subcategories.number|add:'3' %}
-                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">{{ num }}</a>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
-        {% if subcategories.has_next %}
-            <a href="?page={{ subcategories.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
                 <i class="fas fa-angle-right"></i>
             </a>
-            <a href="?page={{ subcategories.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+            <a href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
                 <i class="fas fa-angle-double-right"></i>
             </a>
         {% else %}
@@ -209,6 +233,55 @@
 </div>
 
 <style>
+    /* Back Link */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-color, #2196F3);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        transition: opacity 0.2s;
+    }
+
+    .back-link:hover {
+        opacity: 0.8;
+    }
+
+    /* Category Info Card */
+    .category-info-card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        min-width: 150px;
+    }
+
+    .info-value {
+        color: #333;
+        flex: 1;
+    }
+
     /* Statistics Grid */
     .stats-grid {
         display: grid;
@@ -266,6 +339,11 @@
         white-space: nowrap;
     }
 
+    .status-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #FFC107;
+    }
+
     .status-active {
         background-color: rgba(76, 175, 80, 0.1);
         color: #4CAF50;
@@ -276,41 +354,23 @@
         color: #F44336;
     }
 
-    /* Badge Info */
-    .badge {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .badge-info {
-        background-color: rgba(23, 162, 184, 0.1);
-        color: #17a2b8;
-    }
-
-    /* Product Name */
-    .product-name {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
+    /* Product Icon */
     .product-icon {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #f0f0f0;
         border-radius: 4px;
         color: #999;
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
 
-    /* Text Utilities */
-    .text-center {
-        text-align: center;
+    /* Price Cell */
+    .price-cell {
+        font-weight: 600;
+        color: #28a745;
     }
 
     /* Action Icons */
@@ -464,9 +524,8 @@
             width: 100%;
         }
 
-        .section-header {
+        .info-row {
             flex-direction: column;
-            gap: 15px;
             align-items: flex-start;
         }
 
@@ -511,6 +570,14 @@
 
         .stat-value {
             font-size: 1.25rem;
+        }
+
+        .category-info-card {
+            padding: 15px;
+        }
+
+        .info-label {
+            min-width: 120px;
         }
     }
 </style>

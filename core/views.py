@@ -448,23 +448,26 @@ def product_detail(request, product_id):
 
     return render(request, 'admin/product_detail.html', context)
 
-
 def edit_product(request, product_id):
-    """Edit a product"""
     product = get_object_or_404(Product, id=product_id)
 
+    # ADD THIS
+    categories = Category.objects.all()
+
     if request.method == 'POST':
-        # Update product fields
         product.name = request.POST.get('name', product.name)
         product.description = request.POST.get('description', product.description)
         product.price = request.POST.get('price', product.price)
         product.stock = request.POST.get('stock', product.stock)
 
+        # UPDATE CATEGORY
+        category_id = request.POST.get('category')
+        if category_id:
+            product.subcategory = SubCategory.objects.get(id=category_id)
+
         try:
             product.save()
             messages.success(request, f'Product "{product.name}" updated successfully!')
-
-            # Preserve filter parameters when redirecting back
             redirect_url = 'admin_panel:admin_products'
             params = []
             if request.POST.get('search_query'):
@@ -476,17 +479,18 @@ def edit_product(request, product_id):
         except Exception as e:
             messages.error(request, f'Error updating product: {str(e)}')
 
-    # Get query parameters to pass to template
     search_query = request.GET.get('search', '')
     current_stock_status = request.GET.get('stock_status', '')
 
     context = {
         'product': product,
+        'categories': categories,   # ← FIX ADDED
         'search_query': search_query,
         'current_stock_status': current_stock_status,
     }
 
     return render(request, 'admin/edit_product.html', context)
+
 
 
 
@@ -1204,13 +1208,125 @@ def admin_category_delete(request, pk):
     return render(request, 'admin/category_confirm_delete.html', {'category': category})
 
 
+def category_products(request, category_id):
+    """
+    View to display all products in a specific category
+    """
+    # Get the category
+    category = get_object_or_404(Category, id=category_id)
+
+    # Get all products in this category (through subcategories)
+    products = Product.objects.filter(subcategory__category=category)
+
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by stock status
+    current_stock_status = request.GET.get('stock_status', '')
+    if current_stock_status == 'in_stock':
+        products = products.filter(stock__gt=5)
+    elif current_stock_status == 'low_stock':
+        products = products.filter(stock__gt=0, stock__lte=5)
+    elif current_stock_status == 'out_stock':
+        products = products.filter(stock=0)
+
+    # Order by name
+    products = products.order_by('name')
+
+    # Pagination
+    paginator = Paginator(products, 10)  # 10 items per page
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # Calculate statistics for this category
+    category_products = Product.objects.filter(subcategory__category=category)
+    total_products = category_products.count()
+    in_stock_count = category_products.filter(stock__gt=5).count()
+    low_stock_count = category_products.filter(stock__gt=0, stock__lte=5).count()
+    total_inventory_value = category_products.aggregate(
+        total=Sum(F('price') * F('stock'), output_field=models.DecimalField())
+    )['total'] or 0
+
+    context = {
+        'category': category,
+        'products': products_page,
+        'search_query': search_query,
+        'current_stock_status': current_stock_status,
+        'total_products': total_products,
+        'in_stock_count': in_stock_count,
+        'low_stock_count': low_stock_count,
+        'total_inventory_value': total_inventory_value,
+    }
+
+    return render(request, 'admin/category_products.html', context)
+
+
+
 
 def admin_subcategories(request):
-    subcategories = SubCategory.objects.select_related('category').all().order_by('name')
-    paginator = Paginator(subcategories, 10)
+    """
+    View to display all subcategories with search, filter, and pagination
+    """
+    subcategories = SubCategory.objects.all().annotate(
+        product_count=Count('products')
+    )
+
+    # Get all categories for filter dropdown
+    categories = Category.objects.all().order_by('name')
+
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        subcategories = subcategories.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by category
+    current_category = request.GET.get('category', '')
+    if current_category:
+        subcategories = subcategories.filter(category_id=current_category)
+
+    # Filter by status
+    current_status = request.GET.get('status', '')
+    if current_status == 'active':
+        subcategories = subcategories.filter(status=True)
+    elif current_status == 'inactive':
+        subcategories = subcategories.filter(status=False)
+
+    # Order by name
+    subcategories = subcategories.order_by('name')
+
+    # Pagination
+    paginator = Paginator(subcategories, 10)  # 10 items per page
     page_number = request.GET.get('page')
     subcategories = paginator.get_page(page_number)
-    return render(request, 'admin/subcategory_list.html', {'subcategories': subcategories})
+
+    # Calculate statistics
+    all_subcategories = SubCategory.objects.all()
+    total_subcategories = all_subcategories.count()
+    active_subcategories = all_subcategories.filter(status=True).count()
+    inactive_subcategories = all_subcategories.filter(status=False).count()
+    total_products = Product.objects.count()
+
+    context = {
+        'subcategories': subcategories,
+        'categories': categories,
+        'search_query': search_query,
+        'current_category': current_category,
+        'current_status': current_status,
+        'total_subcategories': total_subcategories,
+        'active_subcategories': active_subcategories,
+        'inactive_subcategories': inactive_subcategories,
+        'total_products': total_products,
+    }
+
+    return render(request, 'admin/subcategory_list.html', context)
 
 
 
@@ -1294,3 +1410,64 @@ def admin_subcategory_delete(request, pk):
         messages.success(request, 'Subcategory deleted successfully.')
         return redirect('admin_panel:admin_subcategories')
     return render(request, 'admin/subcategory_confirm_delete.html', {'subcategory': subcategory})
+
+
+
+
+
+def subcategory_products(request, subcategory_id):
+    """
+    View to display all products in a specific subcategory
+    """
+    # Get the subcategory
+    subcategory = get_object_or_404(SubCategory, id=subcategory_id)
+
+    # Get all products in this subcategory
+    products = Product.objects.filter(subcategory=subcategory)
+
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by stock status
+    current_stock_status = request.GET.get('stock_status', '')
+    if current_stock_status == 'in_stock':
+        products = products.filter(stock__gt=5)
+    elif current_stock_status == 'low_stock':
+        products = products.filter(stock__gt=0, stock__lte=5)
+    elif current_stock_status == 'out_stock':
+        products = products.filter(stock=0)
+
+    # Order by name
+    products = products.order_by('name')
+
+    # Pagination
+    paginator = Paginator(products, 10)  # 10 items per page
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # Calculate statistics for this subcategory
+    subcategory_products = Product.objects.filter(subcategory=subcategory)
+    total_products = subcategory_products.count()
+    in_stock_count = subcategory_products.filter(stock__gt=5).count()
+    low_stock_count = subcategory_products.filter(stock__gt=0, stock__lte=5).count()
+    total_inventory_value = subcategory_products.aggregate(
+        total=Sum(F('price') * F('stock'), output_field=models.DecimalField())
+    )['total'] or 0
+
+    context = {
+        'subcategory': subcategory,
+        'products': products_page,
+        'search_query': search_query,
+        'current_stock_status': current_stock_status,
+        'total_products': total_products,
+        'in_stock_count': in_stock_count,
+        'low_stock_count': low_stock_count,
+        'total_inventory_value': total_inventory_value,
+    }
+
+    return render(request, 'admin/subcategory_products.html', context)
