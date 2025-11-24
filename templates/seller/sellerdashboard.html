@@ -1177,10 +1177,12 @@ table {
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                            <div class="dropdown-item-text">
+                            <a href="{% url 'help_support'  %}">
+                                    <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
+                            </a>
                         </div>
                         <!-- HELP -->
 
@@ -1227,23 +1229,29 @@ table {
                     <div class="stat-value">₹{{ total_revenue }}</div>
                    <div class="stat-change">↑ {{ revenue_growth }}% from yesterday</div>
                 </div>
-                <div class="stat-card">
+                <a href="{% url 'order' %}">
+                          <div class="stat-card">
                     <div class="stat-label">📦TOTAL ORDERS</div>
                     <div class="stat-value">{{ total_orders }}</div>
                     <div class="stat-change">↑ {{ new_orders_today }} new orders</div>
-                    <div class="stat-change">↑ {{ orders_growth }}% from yesterday</div>
+
 
                 </div>
-                <div class="stat-card">
+                </a>
+                <a href="{% url 'add' %}">
+                       <div class="stat-card">
                     <div class="stat-label">🛍️ PRODUCTS</div>
                     <div class="stat-value">{{ products_count }}</div>
                     <div class="stat-change">{{ pending_products }} pending approval</div>
                 </div>
-                <div class="stat-card">
+                </a>
+                <a href="{% url 'review' %}">
+                      <div class="stat-card">
                     <div class="stat-label">⭐ Rating</div>
                     <div class="stat-value">{{ avg_rating }}/</div>
                     <div class="stat-change">{{ rating_count }} reviews</div>
                 </div>
+                </a>
             </div>
             <!-- SALES CHART -->
             <div class="section">
@@ -1416,22 +1424,22 @@ table {
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                        <a href="#" title="Facebook">f</a>
-                        <a href="#" title="Twitter">𝕏</a>
-                        <a href="#" title="Instagram">📷</a>
-                        <a href="#" title="LinkedIn">💼</a>
+                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
                 <!-- Quick Links -->
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
+
+                <li><a href="#"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
