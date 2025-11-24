@@ -1,0 +1,468 @@
+<!-- admin/templates/admin/reviews.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Reviews - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Reviews Management</h1>
+    <p>View and manage customer reviews</p>
+</div>
+
+<div class="section">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd;">
+                <i class="fas fa-comments" style="color: #2196F3;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_reviews }}</div>
+                <div class="stat-label">Total Reviews</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5;">
+                <i class="fas fa-check-circle" style="color: #9c27b0;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ approved_count }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0;">
+                <i class="fas fa-clock" style="color: #ff9800;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ pending_count }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fce4ec;">
+                <i class="fas fa-star" style="color: #e91e63;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ avg_rating }}</div>
+                <div class="stat-label">Avg Rating</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <div class="section-title">All Reviews</div>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <div class="search-filter">
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <input type="text" name="search" placeholder="Search by product, user, or comment..." value="{{ search_query|default:'' }}" class="search-input">
+            </div>
+            <div class="form-group">
+                <select name="rating" class="filter-select">
+                    <option value="">All Ratings</option>
+                    {% for value, label in rating_choices %}
+                        <option value="{{ value }}" {% if current_rating == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="status" class="filter-select">
+                    <option value="">All Status</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-search"></i> Apply Filter
+            </button>
+            {% if search_query or current_rating or current_status %}
+            <a href="{% url 'admin_panel:admin_reviews' %}" class="btn-secondary">
+                <i class="fas fa-times"></i> Clear Filters
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Reviews Table -->
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th data-label="Product">Product</th>
+                    <th data-label="User">User</th>
+                    <th data-label="Rating">Rating</th>
+                    <th data-label="Comment">Comment</th>
+                    <th data-label="Status">Status</th>
+                    <th data-label="Date">Date</th>
+                    <th data-label="Actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td data-label="Product">
+                        <strong>{{ review.product.name|truncatewords:3 }}</strong>
+                    </td>
+                    <td data-label="User">{{ review.user.username }}</td>
+                    <td data-label="Rating" class="rating-cell">
+                        {% for i in "12345"|make_list %}
+                            <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                        {% endfor %}
+                        <span class="rating-text">({{ review.rating }}/5)</span>
+                    </td>
+                    <td data-label="Comment" class="comment-cell">{{ review.comment|truncatewords:8 }}</td>
+                    <td data-label="Status">
+                        {% if review.is_approved %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-warning">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Date">{{ review.created_at|date:"M d, Y" }}</td>
+                    <td data-label="Actions">
+                        <!-- View Details -->
+                        <a href="{% url 'admin_panel:admin_review_detail' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                           title="View Details"
+                           class="action-icon action-icon-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        <!-- Approve/Reject -->
+                        {% if review.is_approved %}
+                            <a href="{% url 'admin_panel:admin_reject_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                               title="Reject Review"
+                               class="action-icon action-icon-warning"
+                               onclick="return confirm('Reject this review?');">
+                                <i class="fas fa-times-circle"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'admin_panel:admin_approve_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                               title="Approve Review"
+                               class="action-icon action-icon-success"
+                               onclick="return confirm('Approve this review?');">
+                                <i class="fas fa-check-circle"></i>
+                            </a>
+                        {% endif %}
+
+                        <!-- Delete -->
+                        <a href="{% url 'admin_panel:admin_delete_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                           title="Delete Review"
+                           class="action-icon action-icon-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-state">
+                    <td colspan="7" style="text-align: center; padding: 40px; font-style: italic; color: var(--light-text);">
+                        No reviews found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if reviews.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% with search_query=search_query current_rating=current_rating current_status=current_status %}
+        {% if reviews.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ reviews.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+            <span class="disabled"><i class="fas fa-angle-left"></i></span>
+        {% endif %}
+
+        {% for num in reviews.paginator.page_range %}
+            {% if reviews.number == num %}
+                <span class="active">{{ num }}</span>
+            {% elif num > reviews.number|add:'-3' and num < reviews.number|add:'3' %}
+                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if reviews.has_next %}
+            <a href="?page={{ reviews.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ reviews.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-right"></i></span>
+            <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+        {% endif %}
+
+        {% endwith %}
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50;
+    }
+
+    .status-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #FFC107;
+    }
+
+    /* Rating Cell */
+    .rating-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .rating-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-left: 0.5rem;
+    }
+
+    .text-warning {
+        color: #ffc107;
+    }
+
+    .text-muted {
+        color: #ddd;
+    }
+
+    /* Comment Cell */
+    .comment-cell {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Action Icons */
+    .action-icon {
+        padding: 4px;
+        font-size: 0.875rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: white;
+        transition: background-color 0.2s, opacity 0.2s;
+        margin: 2px;
+    }
+
+    .action-icon:hover {
+        opacity: 0.8;
+        text-decoration: none;
+        color: white;
+    }
+
+    .action-icon-success {
+        background: var(--success-color, #28a745);
+    }
+
+    .action-icon-danger {
+        background: var(--danger-color, #dc3545);
+    }
+
+    .action-icon-warning {
+        background: #ff9800;
+    }
+
+    .action-icon-info {
+        background: var(--info-color, #17a2b8);
+    }
+
+    /* Search and Filter */
+    .search-filter {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-width: 200px;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .empty-state td {
+        padding: 40px !important;
+        text-align: center;
+        font-style: italic;
+        color: var(--light-text, #999);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-group {
+            min-width: auto;
+        }
+
+        .search-input,
+        .filter-select {
+            min-width: auto;
+            width: 100%;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            margin: 1px;
+        }
+
+        .comment-cell {
+            max-width: 150px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .empty-state td {
+            display: block !important;
+            padding: 20px !important;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .rating-cell {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+</style>
+
+{% endblock %}

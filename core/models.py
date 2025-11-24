@@ -15,6 +15,7 @@ class User(AbstractUser):
     address = models.TextField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     status = models.CharField(max_length=10, default='Active')
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.role})"
@@ -43,6 +44,7 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='subcategories/', blank=True, null=True)
+    status = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

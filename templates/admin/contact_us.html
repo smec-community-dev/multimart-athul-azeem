@@ -1,0 +1,156 @@
+<!-- admin/templates/admin/contact_us.html -->
+{% extends 'admin/base.html' %}
+
+{% block title %}Contact Us - Admin Panel - ShopHub{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Contact Us</h1>
+    <p>We're here to help. Reach out with any questions or issues.</p>
+</div>
+<div class="section">
+    <div class="contact-grid">
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <h3>Email</h3>
+                    <p>admin@shophub.com</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                    <h3>Phone</h3>
+                    <p>+91 98765 43210</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <h3>Address</h3>
+                    <p>Mumbai, India</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <h3>Hours</h3>
+                    <p>Mon - Fri: 9AM - 6PM IST</p>
+                </div>
+            </div>
+        </div>
+        <div class="contact-form">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<style>
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 24px;
+    }
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        background: rgba(255, 127, 50, 0.05);
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+    }
+    .contact-item i {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        width: 30px;
+    }
+    .contact-form {
+        background: var(--card-bg);
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-light);
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--text-color);
+    }
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        font-family: var(--font-body);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+    .form-group textarea {
+        height: 120px;
+        resize: vertical;
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+    }
+    @media (max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        .contact-form {
+            padding: 24px;
+        }
+    }
+</style>
+{% endblock %}

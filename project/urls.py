@@ -24,6 +24,11 @@ urlpatterns = [
     path("user/",include("user.urls")),
     path("",include("seller.urls")),
 path("accounts/", include("allauth.urls")),
+    path('admin-panel/', include(('core.urls', 'admin_panel'), namespace='admin_panel')),
+
+
+
+
 
 ]
 if settings.DEBUG:
