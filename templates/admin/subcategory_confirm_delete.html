@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% block title %}Delete Subcategory - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Delete Subcategory</h1>
+    <p>Are you sure you want to delete "{{ subcategory.name }}"?</p>
+    <p style="color: var(--warning-color); font-size: 0.9rem;">This action cannot be undone and may affect related products.</p>
+</div>
+
+<div class="section">
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: var(--danger-color); margin-bottom: 16px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 24px;">
+            <strong>Subcategory Details:</strong><br>
+            <strong>Name:</strong> {{ subcategory.name }}<br>
+            <strong>Parent Category:</strong> {{ subcategory.category.name }}<br>
+            <strong>Description:</strong> {{ subcategory.description|truncatechars:100 }}<br>
+            <strong>Status:</strong> {{ subcategory.is_active|yesno:"Active,Inactive" }}
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--danger-color), #d32f2f); border: none;">Yes, Delete Subcategory</button>
+            <a href="{% url 'admin_panel:admin_subcategories' %}" class="btn-primary" style="background: var(--border-color); color: var(--text-color);">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

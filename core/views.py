@@ -7,13 +7,14 @@ from django.db.models.functions import Cast
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from django.db.models import Sum, Q, CharField, F
+from django.db.models import Sum, Q, CharField, F, Count
+
 from django.contrib.auth import get_user_model, logout
 from django.contrib import messages
 from datetime import timedelta, timezone as dt_timezone, datetime
 from django.db import models
 
-from core.models import SubCategory
+from core.models import SubCategory, Category
 from seller.models import SellerDetails, Product
 from user.models import Order, Review
 
@@ -568,7 +569,11 @@ def orders_list(request):
     total_orders = Order.objects.count()
     delivered_count = Order.objects.filter(status='delivered').count()
     pending_count = Order.objects.filter(status='pending').count()
-    total_revenue = Order.objects.values('total_amount').aggregate(total=models.Sum('total_amount'))['total'] or 0
+    total_revenue = (
+        Order.objects.filter(status__iexact='Delivered')
+        .aggregate(total=Sum('total_amount'))['total']
+    )
+    total_revenue = float(total_revenue) if total_revenue else 0
 
     context = {
         'orders': orders_page,
@@ -629,7 +634,7 @@ def order_detail(request, order_id):
         'current_status': current_status,
     }
 
-    return render(request, 'admin/order_detail.html', context)
+    return render(request, 'admin/order_details.html', context)
 
 
 
@@ -1006,4 +1011,286 @@ def admin_logout(request):
     """Logout admin user"""
     logout(request)
     messages.success(request, 'You have been logged out successfully!')
+
     return redirect('login')  # Redirect to login page
+
+
+
+def help_center(request):
+    """
+    View for Help Center page.
+    """
+    return render(request, 'admin/help_center.html')
+
+
+def contact_us(request):
+    """
+    View for Contact Us page.
+    Handles form submission if needed.
+    """
+    if request.method == 'POST':
+        # Process contact form (e.g., send email)
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        # Example: Send email (implement with Django's send_mail)
+        # from django.core.mail import send_mail
+        # send_mail(subject, message, email, ['admin@shophub.com'])
+
+        messages.success(request, 'Your message has been sent! We\'ll get back to you soon.')
+        return redirect('admin_panel:contact_us')
+
+    return render(request, 'admin/contact_us.html')
+
+
+
+def privacy_policy(request):
+    """
+    View for Privacy Policy page.
+    """
+    return render(request, 'admin/privacy_policy.html')
+
+
+
+def terms_of_service(request):
+    """
+    View for Terms of Service page.
+    """
+    return render(request, 'admin/terms_of_service.html')
+
+
+def feedback(request):
+    """
+    View for Feedback page.
+    Handles form submission.
+    """
+    if request.method == 'POST':
+        # Process feedback form
+        rating = request.POST.get('rating', 0)
+        category = request.POST.get('category')
+        feedback_text = request.POST.get('feedback')
+
+        # Example: Save to model or send email
+        # Feedback.objects.create(user=request.user, rating=rating, category=category, text=feedback_text)
+
+        messages.success(request, 'Thank you for your feedback! We appreciate it.')
+        return redirect('admin_panel:feedback')
+
+    return render(request, 'admin/feedback.html')
+
+
+def admin_categories(request):
+    """
+    View to display all categories with search, filter, and pagination
+    """
+    categories = Category.objects.all().annotate(
+        subcategory_count=Count('subcategories')
+    )
+
+    # Search functionality
+    search_query = request.GET.get('search', '')
+    if search_query:
+        categories = categories.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by status
+    current_status = request.GET.get('status', '')
+    if current_status == 'active':
+        categories = categories.filter(status=True)
+    elif current_status == 'inactive':
+        categories = categories.filter(status=False)
+
+    # Order by name
+    categories = categories.order_by('name')
+
+    # Pagination
+    paginator = Paginator(categories, 10)  # 10 items per page
+    page_number = request.GET.get('page')
+    categories = paginator.get_page(page_number)
+
+    # Calculate statistics
+    all_categories = Category.objects.all()
+    total_categories = all_categories.count()
+    active_categories = all_categories.filter(status=True).count()
+    inactive_categories = all_categories.filter(status=False).count()
+    total_subcategories = all_categories.annotate(
+        subcategory_count=Count('subcategories')
+    ).aggregate(total=Count('subcategories', distinct=True))['total'] or 0
+
+    context = {
+        'categories': categories,
+        'search_query': search_query,
+        'current_status': current_status,
+        'total_categories': total_categories,
+        'active_categories': active_categories,
+        'inactive_categories': inactive_categories,
+        'total_subcategories': total_subcategories,
+    }
+
+    return render(request, 'admin/category_list.html', context)
+
+def admin_category_add(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        status = 'status' in request.POST   # checkbox name must be "status"
+
+        # 1️⃣ Name required
+        if not name:
+            messages.error(request, 'Name is required.')
+            return render(request, 'admin/category_add.html')
+
+        # 2️⃣ Duplicate category check (add this here)
+        if Category.objects.filter(name__iexact=name).exists():
+            messages.error(request, "Category with this name already exists.")
+            return render(request, 'admin/category_add.html')
+
+        # 3️⃣ Create category
+        Category.objects.create(
+            name=name,
+            description=description,
+            status=status
+        )
+
+        messages.success(request, 'Category added successfully.')
+        return redirect('admin_panel:admin_categories')
+
+    return render(request, 'admin/category_add.html')
+
+
+
+
+
+def admin_category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        status = 'status' in request.POST  # use 'status' instead of is_active
+
+        if not name:
+            messages.error(request, 'Name is required.')
+            return render(request, 'admin/category_edit.html', {'category': category})
+
+        category.name = name
+        category.description = description
+        category.status = status  # corrected
+        category.save()
+
+        messages.success(request, 'Category updated successfully.')
+        return redirect('admin_panel:admin_categories')
+
+    return render(request, 'admin/category_edit.html', {'category': category})
+
+
+
+
+def admin_category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        # Optional: Check if subcategories exist before delete
+        if SubCategory.objects.filter(category=category).exists():
+            messages.error(request, 'Cannot delete category with subcategories.')
+            return redirect('admin_panel:admin_categories')
+        category.delete()
+        messages.success(request, 'Category deleted successfully.')
+        return redirect('admin_panel:admin_categories')
+    # For GET, render a simple confirm page (optional; create template or use inline)
+    return render(request, 'admin/category_confirm_delete.html', {'category': category})
+
+
+
+def admin_subcategories(request):
+    subcategories = SubCategory.objects.select_related('category').all().order_by('name')
+    paginator = Paginator(subcategories, 10)
+    page_number = request.GET.get('page')
+    subcategories = paginator.get_page(page_number)
+    return render(request, 'admin/subcategory_list.html', {'subcategories': subcategories})
+
+
+
+def admin_subcategory_add(request):
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        category_id = request.POST.get('category_id')
+        description = request.POST.get('description', '').strip()
+
+        if not name:
+            messages.error(request, 'Name is required.')
+            return render(request, 'admin/subcategory_add.html', {'categories': categories})
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            messages.error(request, 'Invalid parent category.')
+            return render(request, 'admin/subcategory_add.html', {'categories': categories})
+
+        SubCategory.objects.create(
+            name=name,
+            category=category,
+            description=description
+        )
+
+        messages.success(request, 'Subcategory added successfully.')
+        return redirect('admin_panel:admin_subcategories')
+
+    return render(request, 'admin/subcategory_add.html', {'categories': categories})
+
+
+
+def admin_subcategory_edit(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        category_id = request.POST.get('category_id')
+        description = request.POST.get('description', '').strip()
+        status = 'status' in request.POST  # <-- ADD THIS
+
+        if not name:
+            messages.error(request, 'Name is required.')
+            return render(request, 'admin/subcategory_edit.html', {
+                'subcategory': subcategory,
+                'categories': categories
+            })
+
+        try:
+            category = Category.objects.get(id=category_id)
+        except Category.DoesNotExist:
+            messages.error(request, 'Invalid parent category.')
+            return render(request, 'admin/subcategory_edit.html', {
+                'subcategory': subcategory,
+                'categories': categories
+            })
+
+        subcategory.name = name
+        subcategory.category = category
+        subcategory.description = description
+        subcategory.status = status  # <-- ADD THIS
+        subcategory.save()
+
+        messages.success(request, 'Subcategory updated successfully.')
+        return redirect('admin_panel:admin_subcategories')
+
+    return render(request, 'admin/subcategory_edit.html', {
+        'subcategory': subcategory,
+        'categories': categories
+    })
+
+
+
+def admin_subcategory_delete(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+    if request.method == 'POST':
+        subcategory.delete()
+        messages.success(request, 'Subcategory deleted successfully.')
+        return redirect('admin_panel:admin_subcategories')
+    return render(request, 'admin/subcategory_confirm_delete.html', {'subcategory': subcategory})

@@ -1,0 +1,347 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Feedback - Admin Panel - ShopHub{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Feedback</h1>
+    <p class="sub-header-text">Help us improve ShopHub Admin. Your input matters!</p>
+</div>
+<div class="section">
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-list-alt"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Total Feedback Submitted</div>
+                <div class="stat-value">127</div>
+                <div class="stat-change text-success">+12 this week</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Average Rating</div>
+                <div class="stat-value">4.2</div>
+                <div class="stat-change text-warning">Overall</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Response Time (Hours)</div>
+                <div class="stat-value">2.4h</div>
+                <div class="stat-change text-info">Target: 3h</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-form form-card-container">
+        <h2 class="form-title"><i class="fas fa-comment-dots"></i> Submit Your Review</h2>
+        <form method="post" id="feedbackForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Rate your experience:</label>
+                <div class="feedback-rating">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <input type="hidden" name="rating" id="ratingInput" value="0">
+            </div>
+
+            <div class="form-group">
+                <label>Select a relevant category:</label>
+                <div class="feedback-categories">
+                    <button type="button" class="category-btn" data-category="UI/UX">UI/UX</button>
+                    <button type="button" class="category-btn" data-category="Features">Features</button>
+                    <button type="button" class="category-btn" data-category="Performance">Performance</button>
+                    <button type="button" class="category-btn" data-category="Support">Support</button>
+                    <button type="button" class="category-btn" data-category="Bug Report">Bug Report</button>
+                    <button type="button" class="category-btn" data-category="Other">Other</button>
+                </div>
+                <input type="hidden" name="category" id="categoryInput" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="feedback">Your Detailed Feedback</label>
+                <textarea id="feedback" name="feedback" rows="6" required placeholder="Tell us more about your experience, suggestions, or issues..."></textarea>
+            </div>
+            <div class="form-action-group">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Send Feedback
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<style>
+    .header h1 {
+        color: var(--text-color);
+        font-family: var(--font-heading);
+    }
+    .sub-header-text {
+        color: var(--light-text);
+    }
+
+    /* --- Stats Grid Styling --- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+        padding: 0 10px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .stat-card {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-light);
+        display: flex;
+        align-items: center;
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+    }
+    .stat-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+    .stat-label {
+        color: var(--light-text);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin: 5px 0;
+        line-height: 1;
+    }
+    .stat-change {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .text-success { color: var(--success-color); }
+    .text-warning { color: var(--warning-color); }
+    .text-info { color: var(--primary-color); }
+
+    /* --- Form Card Styling --- */
+    .form-card-container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--border-color);
+    }
+    .form-title {
+        color: var(--text-color);
+        font-size: 1.8rem;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        font-family: var(--font-heading);
+    }
+    .form-title i {
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 25px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        box-sizing: border-box;
+        resize: vertical;
+        transition: border-color 0.3s ease;
+        font-family: var(--font-body);
+    }
+    textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+    }
+    textarea::placeholder {
+        color: var(--light-text);
+    }
+
+    /* Rating Stars */
+    .feedback-rating {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 0;
+    }
+    .star {
+        font-size: 2.5rem; /* Larger stars */
+        color: var(--light-text); /* Muted color for unselected */
+        cursor: pointer;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .star:hover {
+        transform: translateY(-2px);
+    }
+    .star.selected {
+        color: var(--warning-color); /* Original yellow for selected stars */
+    }
+
+    /* Category Buttons */
+    .feedback-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .category-btn {
+        padding: 10px 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 25px;
+        background: var(--card-bg);
+        color: var(--light-text);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    .category-btn:hover:not(.selected) {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    .category-btn.selected {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 8px rgba(255, 127, 50, 0.3);
+    }
+
+    /* Submit Button */
+    .form-action-group {
+        text-align: right;
+        padding-top: 15px;
+    }
+    .btn-submit {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(255, 127, 50, 0.3);
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 127, 50, 0.4);
+    }
+    .btn-submit i {
+        margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .form-card-container {
+            padding: 25px;
+        }
+        .form-title {
+            font-size: 1.5rem;
+        }
+        .feedback-rating {
+            justify-content: center;
+        }
+        .feedback-categories {
+            justify-content: center;
+        }
+    }
+</style>
+<script>
+    const stars = document.querySelectorAll('.star');
+    let selectedRating = 0;
+
+    // Function to set stars visual state
+    function setStars(rating) {
+        stars.forEach(s => s.classList.remove('selected'));
+        for (let i = 0; i < rating; i++) {
+            stars[i].classList.add('selected');
+        }
+    }
+
+    stars.forEach(star => {
+        // Handle selection on click
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.dataset.rating);
+            document.getElementById('ratingInput').value = selectedRating;
+            setStars(selectedRating);
+        });
+
+        // Handle temporary hover effect
+        star.addEventListener('mouseover', () => {
+            const hoverRating = parseInt(star.dataset.rating);
+            setStars(hoverRating);
+        });
+
+        // Restore permanent selected state on mouse leave
+        star.addEventListener('mouseout', () => {
+            setStars(selectedRating);
+        });
+    });
+
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            document.getElementById('categoryInput').value = btn.dataset.category;
+        });
+    });
+
+    document.getElementById('feedbackForm').addEventListener('submit', (e) => {
+        if (selectedRating === 0) {
+            e.preventDefault();
+            alert('Please select a rating before submitting your feedback.');
+        }
+    });
+</script>
+{% endblock %}

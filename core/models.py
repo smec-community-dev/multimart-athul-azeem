@@ -44,6 +44,7 @@ class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='subcategories/', blank=True, null=True)
+    status = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)

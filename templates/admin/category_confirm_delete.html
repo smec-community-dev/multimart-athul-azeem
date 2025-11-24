@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% block title %}Delete Category - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Delete Category</h1>
+    <p>Are you sure you want to delete "{{ category.name }}"?</p>
+    <p style="color: var(--warning-color); font-size: 0.9rem;">This action cannot be undone and may affect related subcategories or products.</p>
+</div>
+
+<div class="section">
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: var(--danger-color); margin-bottom: 16px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 24px;">
+            <strong>Category Details:</strong><br>
+            <strong>Name:</strong> {{ category.name }}<br>
+            <strong>Description:</strong> {{ category.description|truncatechars:100 }}<br>
+            <strong>Status:</strong> {{ category.is_active|yesno:"Active,Inactive" }}
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--danger-color), #d32f2f); border: none;">Yes, Delete Category</button>
+            <a href="{% url 'admin_panel:admin_categories' %}" class="btn-primary" style="background: var(--border-color); color: var(--text-color);">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
