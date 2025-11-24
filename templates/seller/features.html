@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products - ShopHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        a { text-decoration: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            gap: 12px;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            animation: pulse 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .notification-bell:hover { transform: scale(1.1); }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .profile-dropdown { position: relative; }
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            display: none;
+        }
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
+        }
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+        .profile-role {
+            font-size: 0.7rem;
+            color: var(--light-text);
+        }
+        .dropdown-arrow {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .dropdown-header-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+        .dropdown-header-info p {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        .dropdown-items { padding: 8px 0; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
+        }
+        .dropdown-item-text { flex: 1; }
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dropdown-item-desc {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+        .dropdown-item.logout { color: var(--danger-color); }
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+        /* ======================== MAIN LAYOUT ======================== */
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+        .sidebar {
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            animation: slideInLeft 0.5s ease;
+            overflow-y: auto;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li { margin: 0; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        .sidebar-menu span {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
+            min-width: 0;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== FILTER BAR ======================== */
+        .filter-bar {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+            border: 1px solid var(--border-color);
+        }
+        .filter-bar form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 16px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+        }
+        .filter-group input:hover,
+        .filter-group select:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1), 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .filter-submit {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            min-height: 48px;
+        }
+        .filter-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 127, 50, 0.3);
+        }
+        .filter-bar .filter-display {
+            margin-left: auto;
+            align-self: center;
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 127, 50, 0.2);
+        }
+        .clear-filter {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+        .clear-filter:hover { background: #d32f2f; }
+        /* ======================== SECTION ======================== */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        /* ======================== TABLE ======================== */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px var(--border-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        th:nth-child(1) { width: 60px; }
+        th:nth-child(2) { width: 25%; }
+        th:nth-child(3) { width: 15%; }
+        th:nth-child(4) { width: 10%; }
+        th:nth-child(5) { width: 8%; }
+        th:nth-child(6) { width: 12%; }
+        th:nth-child(7) { width: 80px; }
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        td:nth-child(2) { white-space: normal; word-wrap: break-word; }
+        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+        .thumbnail {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+        .product-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .product-name span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 150px;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        .status-inactive {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--light-text);
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .action-btn:hover {
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            transform: scale(1.05);
+        }
+        /* ======================== PAGINATION ======================== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 0;
+            animation: fadeIn 0.6s ease;
+            flex-wrap: wrap;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .pagination a:hover,
+        .pagination a.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
+        }
+        /* ======================== MODAL ======================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            animation: slideDown 0.3s ease;
+            box-shadow: var(--shadow-medium);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--light-text);
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .close-btn:hover { color: var(--text-color); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .thumbnails-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .thumbnail-container {
+            position: relative;
+            display: inline-block;
+        }
+        .thumbnail-container img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .current-main img {
+            border: 2px solid var(--primary-color);
+        }
+        .delete-img {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .delete-img:hover { background: #d32f2f; }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+        }
+        .btn-cancel {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-logo span:first-child {
+            font-size: 2rem;
+        }
+        .footer-logo span:last-child {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 1024px) {
+            .sidebar { width: 220px; }
+            .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
+            .main-content { padding: 20px; }
+            .section { padding: 18px; }
+            .header h1 { font-size: 1.8rem; }
+            .filter-bar form { grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; }
+            .filter-group { min-width: 0; }
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex !important;
+            }
+            .navbar-title {
+                display: none !important;
+            }
+            .container {
+                flex-direction: column;
+            }
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .header h1 { font-size: 1.5rem; }
+            .header p { font-size: 0.9rem; }
+            .filter-bar {
+                padding: 20px;
+            }
+            .filter-bar form {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .filter-bar .filter-display {
+                margin-left: 0;
+                justify-self: start;
+                order: -1;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-submit {
+                width: 100%;
+                justify-self: stretch;
+            }
+            .section { padding: 16px; margin-bottom: 20px; }
+            .section-title { font-size: 1.1rem; }
+            .section-header { gap: 10px; }
+            .btn-primary { padding: 7px 14px; font-size: 0.8rem; }
+            .table-container {
+                margin: 0 -8px;
+                padding: 8px;
+                border-radius: 0;
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+            }
+            table {
+                font-size: 0.85rem;
+                min-width: 600px;
+            }
+            th, td {
+                padding: 10px 6px;
+            }
+            th:nth-child(1), td:nth-child(1) { width: 50px; }
+            th:nth-child(2), td:nth-child(2) { width: 30%; }
+            th:nth-child(3), td:nth-child(3) { width: 15%; }
+            th:nth-child(4), td:nth-child(4) { width: 12%; }
+            th:nth-child(5), td:nth-child(5) { width: 8%; }
+            th:nth-child(6), td:nth-child(6) { width: 10%; }
+            th:nth-child(7), td:nth-child(7) { width: 60px; }
+            .thumbnail { width: 36px; height: 36px; }
+            .action-buttons { gap: 4px; }
+            .action-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+            .pagination { gap: 6px; flex-wrap: wrap; }
+            .pagination a { padding: 6px 10px; font-size: 0.85rem; }
+            .modal-content { padding: 20px; margin: 0 8px; }
+            .modal-title { font-size: 1.1rem; }
+            .form-group label { font-size: 0.85rem; }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar { padding: 8px 12px; }
+            .logo { font-size: 1.3rem; }
+            .navbar-right { gap: 10px; }
+            .notification-badge { width: 16px; height: 16px; font-size: 0.6rem; }
+            .profile-toggle { padding: 5px 8px; }
+            .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
+            .dropdown-arrow { font-size: 0.9rem; }
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+            .main-content { padding: 12px; }
+            .header { margin-bottom: 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .header p { font-size: 0.85rem; }
+            .filter-bar { padding: 16px; }
+            .filter-bar form { gap: 12px; }
+            .filter-group input,
+            .filter-group select { padding: 12px 14px; }
+            .section { padding: 14px; margin-bottom: 16px; }
+            .section-header { flex-direction: column; align-items: flex-start; padding-bottom: 10px; }
+            .section-title { font-size: 1rem; }
+            .btn-primary { width: 100%; padding: 8px 12px; }
+            .table-container {
+                margin: 0 -4px;
+                padding: 4px;
+            }
+            table {
+                font-size: 0.8rem;
+                min-width: 500px;
+            }
+            th, td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            th:nth-child(1), td:nth-child(1) { width: 45px; }
+            th:nth-child(2), td:nth-child(2) { width: 35%; }
+            th:nth-child(3), td:nth-child(3) { width: 12%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 8%; }
+            th:nth-child(6), td:nth-child(6) { width: 8%; }
+            th:nth-child(7), td:nth-child(7) { width: 50px; }
+            .product-name { gap: 4px; }
+            .product-name span { max-width: 100px; }
+            .thumbnail { width: 32px; height: 32px; }
+            .action-buttons {
+                flex-direction: row;
+                gap: 2px;
+                justify-content: center;
+            }
+            .action-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            .pagination {
+                gap: 4px;
+                padding: 16px 0;
+            }
+            .pagination a {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+                min-width: 32px;
+                text-align: center;
+            }
+            .modal-content {
+                padding: 16px;
+                margin: 0 4px;
+            }
+            .modal-header { margin-bottom: 14px; padding-bottom: 10px; }
+            .modal-title { font-size: 1rem; }
+            .close-btn { font-size: 1.2rem; }
+            .form-group { margin-bottom: 12px; }
+            .form-group label { font-size: 0.8rem; margin-bottom: 4px; }
+            .form-group input,
+            .form-group select,
+            .form-group textarea { padding: 8px; font-size: 0.95rem; }
+            .modal-actions { gap: 8px; margin-top: 16px; padding-top: 12px; }
+            .modal-actions button { padding: 8px; font-size: 0.8rem; }
+            .sidebar-menu a { padding: 8px 10px; font-size: 0.8rem; }
+            .sidebar-menu span { font-size: 1rem; }
+            .dropdown-menu { min-width: 240px; }
+            .dropdown-header { padding: 10px 12px; }
+            .dropdown-header-avatar { width: 36px; height: 36px; font-size: 0.9rem; }
+            .dropdown-header-info h3 { font-size: 0.85rem; }
+            .dropdown-header-info p { font-size: 0.75rem; }
+            .dropdown-item { padding: 8px 12px; font-size: 0.8rem; }
+            .dropdown-item-icon { font-size: 1rem; }
+            .dropdown-item-label { font-size: 0.8rem; }
+            .dropdown-item-desc { font-size: 0.65rem; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        @media (max-width: 360px) {
+            .logo { font-size: 1.2rem; }
+            .navbar { padding: 8px 10px; gap: 6px; }
+            .navbar-left { gap: 8px; }
+            .navbar-right { gap: 8px; }
+            .header h1 { font-size: 1.1rem; }
+            .main-content { padding: 10px; }
+            .filter-bar { padding: 12px; }
+            .filter-bar form { gap: 10px; }
+            .section { padding: 12px; margin-bottom: 14px; }
+            .section-title { font-size: 0.95rem; }
+            .btn-primary { font-size: 0.75rem; padding: 6px 10px; }
+            .table-container { margin: 0; padding: 2px; }
+            table {
+                font-size: 0.75rem;
+                min-width: 450px;
+            }
+            th, td {
+                padding: 6px 3px;
+                font-size: 0.7rem;
+            }
+            th:nth-child(1), td:nth-child(1) { width: 40px; }
+            th:nth-child(2), td:nth-child(2) { width: 40%; }
+            th:nth-child(3), td:nth-child(3) { width: 10%; }
+            th:nth-child(4), td:nth-child(4) { width: 10%; }
+            th:nth-child(5), td:nth-child(5) { width: 8%; }
+            th:nth-child(6), td:nth-child(6) { width: 8%; }
+            th:nth-child(7), td:nth-child(7) { width: 40px; }
+            .thumbnail { width: 28px; height: 28px; }
+            .action-btn { width: 24px; height: 24px; font-size: 0.7rem; }
+            .product-name span { max-width: 80px; }
+            .pagination a {
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                min-width: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Manage Products</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ user.username|first|upper}}</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
+                        <div class="profile-role">Seller</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <!-- PROFILE -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
+                            </div>
+                        </div>
+                        <!-- STORE SETTINGS -->
+                        <div class="dropdown-item" onclick="openStoreModal()">
+                            <span class="dropdown-item-icon">🏪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Store Settings</div>
+                                <div class="dropdown-item-desc">Manage store details</div>
+                            </div>
+                        </div>
+                        <!-- NOTIFICATIONS -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">🔔</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <!-- HELP -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">❓</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & support</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <!-- LOGOUT -->
+                        <div class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'logout' %}">Logout</a>
+                                </div>
+                                <div class="dropdown-item-desc">Sign out</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="#" class="active"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="#"><span>💰</span> Earnings</a></li>
+                <li><a href="#"><span>⭐</span> Reviews</a></li>
+                <li><a href="#"><span>📈</span> Analytics</a></li>
+                <li><a href="#"><span>⚙️</span> Settings</a></li>
+            </ul>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Manage Products</h1>
+                <p>Add, edit, delete and manage all your products</p>
+            </div>
+            <!-- Search + Filter Bar -->
+            <div class="filter-bar">
+                <form method="get">
+                    <div class="filter-group">
+                        <label for="search-input">Search</label>
+                        <input type="text" id="search-input" name="search" placeholder="Search by product name..." value="{{ request.GET.search|default:'' }}">
+                    </div>
+                    <div class="filter-group">
+                        <label for="category-select">Category</label>
+                        <select id="category-select" name="category">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="status-select">Status</label>
+                        <select id="status-select" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+                            <option value="low_stock" {% if request.GET.status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                            <option value="out_of_stock" {% if request.GET.status == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="filter-submit">Apply Filters</button>
+                </form>
+                {% if request.GET.category or request.GET.status or request.GET.search %}
+                <div class="filter-display">
+                    Filters Applied
+                    <button type="button" class="clear-filter" onclick="clearAllFilters()">×</button>
+                </div>
+                {% endif %}
+            </div>
+            <!-- Product Table -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Products List</div>
+                    <div style="margin-bottom: 24px; text-align: right;">
+                        <button id="add-product-btn" class="btn-primary">+ Add Product</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Subcategory</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    {% with main_img=product.images.first %}
+                                    {% if main_img %}
+                                    <img src="{{ main_img.image.url }}" alt="{{ product.name }}" class="thumbnail">
+                                    {% else %}
+                                    <div class="thumbnail" style="background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">📱</div>
+                                    {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    <div class="product-name">
+                                        <span>{{ product.name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ product.subcategory.name|default:'-' }}</td>
+                                <td>₹{{ product.price|floatformat:2 }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>
+                                    {% if product.stock > 10 %}
+                                    <span class="status-badge status-active">Active</span>
+                                    {% elif product.stock > 0 %}
+                                    <span class="status-badge status-warning">Low Stock</span>
+                                    {% else %}
+                                    <span class="status-badge status-inactive">Out of Stock</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn edit"
+                                                data-product-slug="{{ product.slug }}"
+                                                data-name="{{ product.name|escapejs }}"
+                                                data-subcategory-id="{{ product.subcategory.id|default:0 }}"
+                                                data-price="{{ product.price }}"
+                                                data-stock="{{ product.stock }}"
+                                                data-description="{{ product.description|escapejs|default:'' }}"
+                                                data-color="{{ product.color|escapejs|default:'' }}"
+                                                data-size="{{ product.size|escapejs|default:'' }}"
+                                                data-main-image="{% with main_img=product.images.first %}{% if main_img %}{{ main_img.image.url|escapejs }}{% endif %}{% endwith %}"
+                                                data-gallery-images="[{% for img in product.images.all %}{% if not forloop.first %}'{{ img.image.url|escapejs }}',{% endif %}{% endfor %}]"
+                                                data-update-url="{% url 'update' product.slug %}"
+                                                data-view-url="{% url 'product_details' product.slug %}"
+                                                title="Edit">✏️</button>
+                                        <button class="action-btn delete"
+                                                data-delete-url="{% url 'delete' product.slug %}"
+                                                title="Delete">🗑️</button>
+                                        <button class="action-btn view"
+                                                data-view-url="{% url 'product_details' product.slug %}"
+                                                title="View">👁️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem; color: var(--light-text);">No products found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <div class="pagination">
+                {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Previous</a>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                   class="{% if products.number == num %}active{% endif %}">{{ num }}</a>
+                {% endfor %}
+                {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Add Product Modal -->
+    <div id="add-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Product</h2>
+                <button class="close-btn" onclick="closeAddModal()">✕</button>
+            </div>
+            <form method="post" action="{% url 'add' %}" enctype="multipart/form-data" id="add-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="add-name">Product Name</label>
+                    <input type="text" id="add-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-subcategory">Subcategory</label>
+                    <select id="add-subcategory" name="subcategory" required>
+                        <option value="">Select Subcategory</option>
+                        {% for subcat in subcategories %}
+                        <option value="{{ subcat.id }}">{{ subcat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="add-description">Description</label>
+                    <textarea id="add-description" name="description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="add-price">Price</label>
+                    <input type="number" step="0.01" min="0" id="add-price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-stock">Stock</label>
+                    <input type="number" min="0" id="add-stock" name="stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-color">Color</label>
+                    <input type="text" id="add-color" name="color">
+                </div>
+                <div class="form-group">
+                    <label for="add-size">Size</label>
+                    <input type="text" id="add-size" name="size">
+                </div>
+                <div class="form-group">
+                    <label for="add-main-image">Main Image</label>
+                    <input type="file" id="add-main-image" name="main_image" accept="image/*">
+                    <div class="thumbnails-container" id="add-main-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label for="add-gallery-images">Gallery Images</label>
+                    <input type="file" id="add-gallery-images" name="gallery_images" multiple accept="image/*">
+                    <div class="thumbnails-container" id="add-images-preview"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Product Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Product</h2>
+                <button class="close-btn" onclick="closeEditModal()">✕</button>
+            </div>
+            <form method="post" enctype="multipart/form-data" id="edit-form">
+                {% csrf_token %}
+                <input type="hidden" name="product_slug" id="edit-product-slug">
+                <div class="form-group">
+                    <label for="edit-name">Name</label>
+                    <input type="text" id="edit-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-subcategory">Subcategory</label>
+                    <select id="edit-subcategory" name="subcategory" required>
+                        <option value="">Select Subcategory</option>
+                        {% for subcat in subcategories %}
+                        <option value="{{ subcat.id }}">{{ subcat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-price">Price</label>
+                    <input type="number" step="0.01" min="0" id="edit-price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-stock">Stock</label>
+                    <input type="number" min="0" id="edit-stock" name="stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-color">Color</label>
+                    <input type="text" id="edit-color" name="color">
+                </div>
+                <div class="form-group">
+                    <label for="edit-size">Size</label>
+                    <input type="text" id="edit-size" name="size">
+                </div>
+                <div class="form-group">
+                    <label for="edit-description">Description</label>
+                    <textarea id="edit-description" name="description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Main Image</label>
+                    <input type="file" name="main_image" id="edit-main-image" accept="image/*">
+                    <div class="thumbnails-container" id="edit-main-preview"></div>
+                    <p class="help-text" style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Leave empty to keep current image.</p>
+                </div>
+                <div class="form-group">
+                    <label>Gallery Images</label>
+                    <input type="file" name="gallery_images" multiple accept="image/*">
+                    <div class="thumbnails-container" id="edit-images-preview"></div>
+                    <input type="hidden" name="remaining_images" id="remaining-images" value="[]">
+                    <p class="help-text" style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Add new images or remove existing ones below.</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- STORE SETTINGS MODAL (from dashboard) -->
+    <div id="storeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🏪 Store Settings</h2>
+                <button class="close-btn" onclick="closeStoreModal()">✕</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label>Store Name</label>
+                    <input type="text" value="Mobile Store" placeholder="Enter store name">
+                </div>
+                <div class="form-group">
+                    <label>Store Address</label>
+                    <input type="text" value="MG Road, Thrissur" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" value="Thrissur" placeholder="Enter city">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" value="Kerala" placeholder="Enter state">
+                </div>
+                <div class="form-group">
+                    <label>Business Type</label>
+                    <select>
+                        <option selected>Electronics</option>
+                        <option>Clothing</option>
+                        <option>Food</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>GST Number</label>
+                    <input type="text" value="22AABCT1234H1Z0" placeholder="GST number">
+                </div>
+                <div class="form-group">
+                    <label>Store Description</label>
+                    <textarea placeholder="Describe your store">Authorized Mobile Store with genuine products.</textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeStoreModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Logo Section -->
+                <div>
+                    <div class="footer-logo">
+                        <span>🛍️</span>
+                        <span>ShopHub</span>
+                    </div>
+                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="social-links">
+                        <a href="#" title="Facebook">f</a>
+                        <a href="#" title="Twitter">𝕏</a>
+                        <a href="#" title="Instagram">📷</a>
+                        <a href="#" title="LinkedIn">💼</a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Products</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <!-- Customer Service -->
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Returns & Refunds</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Track Your Order</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Us -->
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📍</span>
+                            123 Shopping Street, Mumbai, India
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📞</span>
+                            +91 98765 43210
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            support@shophub.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>Made with ❤️ for Sellers & Shoppers</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Global Functions
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            menu.classList.toggle("show");
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('show');
+
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('show');
+            document.querySelector('.hamburger').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function openStoreModal() {
+            document.getElementById('storeModal').classList.add('show');
+        }
+
+        function closeStoreModal() {
+            document.getElementById('storeModal').classList.remove('show');
+        }
+
+        function showNotifications() {
+            alert('Notifications coming soon!');
+        }
+
+        // Modal Functions for Products
+        const addModal = document.getElementById('add-modal');
+        const editModal = document.getElementById('edit-modal');
+        const addBtn = document.getElementById('add-product-btn');
+
+        function openAddModal() {
+            // Reset form
+            document.getElementById('add-form').reset();
+            document.getElementById('add-main-preview').innerHTML = '';
+            document.getElementById('add-images-preview').innerHTML = '';
+            addModal.classList.add('show');
+        }
+
+        function closeAddModal() {
+            addModal.classList.remove('show');
+        }
+
+        function openEditModal() {
+            editModal.classList.add('show');
+        }
+
+        function closeEditModal() {
+            editModal.classList.remove('show');
+        }
+
+        // Open Add Modal
+        addBtn.addEventListener('click', openAddModal);
+
+        // Close Modals
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal');
+                if (modal) modal.classList.remove('show');
+            });
+        });
+
+        // Close on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Remove gallery image function
+        window.removeGalleryImage = function(element) {
+            const url = element.dataset.url;
+            element.parentElement.remove();
+            const remainingField = document.getElementById('remaining-images');
+            let remaining = JSON.parse(remainingField.value || '[]');
+            remaining = remaining.filter(img => img !== url);
+            remainingField.value = JSON.stringify(remaining);
+        };
+
+        // Edit Buttons
+        document.querySelectorAll('.edit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetBtn = e.currentTarget;
+                const editForm = document.getElementById('edit-form');
+                editForm.action = targetBtn.dataset.updateUrl;
+                document.getElementById('edit-product-slug').value = targetBtn.dataset.productSlug;
+                document.getElementById('edit-name').value = targetBtn.dataset.name || '';
+                document.getElementById('edit-price').value = targetBtn.dataset.price || '';
+                document.getElementById('edit-stock').value = targetBtn.dataset.stock || '';
+                document.getElementById('edit-description').value = targetBtn.dataset.description || '';
+                document.getElementById('edit-color').value = targetBtn.dataset.color || '';
+                document.getElementById('edit-size').value = targetBtn.dataset.size || '';
+
+                // Populate subcategory select
+                const subcategorySelect = document.getElementById('edit-subcategory');
+                subcategorySelect.value = targetBtn.dataset.subcategoryId || '';
+
+                // Clear previews
+                const mainPreview = document.getElementById('edit-main-preview');
+                mainPreview.innerHTML = '';
+                const imagesPreview = document.getElementById('edit-images-preview');
+                imagesPreview.innerHTML = '';
+
+                // Show current main image (non-removable)
+                const mainImageUrl = targetBtn.dataset.mainImage || '';
+                if (mainImageUrl) {
+                    const mainThumb = document.createElement('div');
+                    mainThumb.className = 'thumbnail-container current-main';
+                    mainThumb.innerHTML = `
+                        <img src="${mainImageUrl}" alt="Current main image">
+                        <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px; text-align: center;">Current</p>
+                    `;
+                    mainPreview.appendChild(mainThumb);
+                }
+
+                // Populate existing gallery images with removal option
+                let remainingImages = [];
+                const galleryStr = targetBtn.dataset.galleryImages || '[]';
+                try {
+                    const galleryUrls = JSON.parse(galleryStr);
+                    galleryUrls.forEach(url => {
+                        if (url) {
+                            const thumbContainer = document.createElement('div');
+                            thumbContainer.className = 'thumbnail-container';
+                            thumbContainer.innerHTML = `
+                                <img src="${url}" alt="Gallery image">
+                                <span class="delete-img" data-url="${url}" onclick="removeGalleryImage(this)">×</span>
+                            `;
+                            imagesPreview.appendChild(thumbContainer);
+                            remainingImages.push(url);
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error parsing gallery images:', e);
+                }
+                document.getElementById('remaining-images').value = JSON.stringify(remainingImages);
+
+                openEditModal();
+            });
+        });
+
+        // Delete Confirmation
+        document.querySelectorAll('.delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+                    window.location.href = btn.dataset.deleteUrl;
+                }
+            });
+        });
+
+        // View Product
+        document.querySelectorAll('.view').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.location.href = btn.dataset.viewUrl;
+
+            });
+        });
+
+        // Clear All Filters
+        function clearAllFilters() {
+            window.location.search = '';
+        }
+
+        // Image Previews for Add Modal
+        const addMainFileInput = document.getElementById('add-main-image');
+        if (addMainFileInput) {
+            addMainFileInput.addEventListener('change', (e) => {
+                const preview = document.getElementById('add-main-preview');
+                preview.innerHTML = '';
+                if (e.target.files[0]) {
+                    const url = URL.createObjectURL(e.target.files[0]);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.width = '60px';
+                    img.style.height = '60px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid var(--border-color)';
+                    preview.appendChild(img);
+                }
+            });
+        }
+
+        const addImagesFileInput = document.getElementById('add-gallery-images');
+        if (addImagesFileInput) {
+            addImagesFileInput.addEventListener('change', (e) => {
+                const preview = document.getElementById('add-images-preview');
+                preview.innerHTML = '';
+                Array.from(e.target.files).forEach(file => {
+                    const url = URL.createObjectURL(file);
+                    const thumbContainer = document.createElement('div');
+                    thumbContainer.className = 'thumbnail-container';
+                    thumbContainer.innerHTML = `
+                        <img src="${url}" alt="Preview" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border-color);">
+                        <span class="delete-img" onclick="this.parentElement.remove();">×</span>
+                    `;
+                    preview.appendChild(thumbContainer);
+                });
+            });
+        }
+
+        // Image Previews for Edit Modal (new files)
+        const editMainFileInput = document.getElementById('edit-main-image');
+        if (editMainFileInput) {
+            editMainFileInput.addEventListener('change', (e) => {
+                const preview = document.getElementById('edit-main-preview');
+                // Clear current and add new
+                const currentMain = preview.querySelector('.current-main');
+                if (currentMain) {
+                    currentMain.remove();
+                }
+                if (e.target.files[0]) {
+                    const url = URL.createObjectURL(e.target.files[0]);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.width = '60px';
+                    img.style.height = '60px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid var(--border-color)';
+                    const newThumb = document.createElement('div');
+                    newThumb.className = 'thumbnail-container';
+                    newThumb.appendChild(img);
+                    preview.appendChild(newThumb);
+                } else {
+                    // Restore current if no new file
+                    const mainImageUrl = document.querySelector('.edit[data-product-slug]').dataset.mainImage || '';
+                    if (mainImageUrl) {
+                        const mainThumb = document.createElement('div');
+                        mainThumb.className = 'thumbnail-container current-main';
+                        mainThumb.innerHTML = `
+                            <img src="${mainImageUrl}" alt="Current main image">
+                            <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px; text-align: center;">Current</p>
+                        `;
+                        preview.appendChild(mainThumb);
+                    }
+                }
+            });
+        }
+
+        const editImagesFileInput = document.querySelector('#edit-form input[name="gallery_images"]');
+        if (editImagesFileInput) {
+            editImagesFileInput.addEventListener('change', (e) => {
+                const preview = document.getElementById('edit-images-preview');
+                Array.from(e.target.files).forEach(file => {
+                    const url = URL.createObjectURL(file);
+                    const thumbContainer = document.createElement('div');
+                    thumbContainer.className = 'thumbnail-container';
+                    thumbContainer.innerHTML = `
+                        <img src="${url}" alt="Preview" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border-color);">
+                        <span class="delete-img" onclick="this.parentElement.remove();">×</span>
+                    `;
+                    preview.appendChild(thumbContainer);
+                });
+            });
+        }
+
+        // Ensure sidebar toggle works on resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Orders - ShopHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --info-color: #2196F3;
+            --purple-color: #AA66CC;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        a { text-decoration: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            gap: 12px;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            animation: pulse 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .notification-bell:hover { transform: scale(1.1); }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .profile-dropdown { position: relative; }
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            display: none;
+        }
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
+        }
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+        .profile-role {
+            font-size: 0.7rem;
+            color: var(--light-text);
+        }
+        .dropdown-arrow {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .dropdown-header-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+        .dropdown-header-info p {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        .dropdown-items { padding: 8px 0; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
+        }
+        .dropdown-item-text { flex: 1; }
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dropdown-item-desc {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+        .dropdown-item.logout { color: var(--danger-color); }
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+        /* ======================== MAIN LAYOUT ======================== */
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+        .sidebar {
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            animation: slideInLeft 0.5s ease;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li { margin: 0; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        .sidebar-menu span {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+        /* ======================== SEARCH & FILTERS ======================== */
+        .search-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--card-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-box:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            flex: 1;
+            outline: none;
+        }
+        .search-box input::placeholder { color: var(--light-text); }
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.85rem;
+        }
+        .filter-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
+        }
+        /* ======================== SECTION ======================== */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== TABLE ======================== */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: -5px;
+            padding: 5px;
+        }
+        table {
+            width: auto;
+            min-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        thead { background-color: rgba(255, 127, 50, 0.05); }
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+        .order-id {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .customer-name {
+            font-weight: 600;
+        }
+        .product-name {
+            font-weight: 500;
+        }
+        .quantity {
+            text-align: center;
+            font-weight: 600;
+        }
+        .order-total {
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: right;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid;
+        }
+        .status-delivered {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #FFC107;
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+        .status-processing {
+            background-color: rgba(33, 150, 243, 0.15);
+            color: #2196F3;
+            border-color: rgba(33, 150, 243, 0.3);
+        }
+        .status-shipped {
+            background-color: rgba(170, 102, 204, 0.15);
+            color: #AA66CC;
+            border-color: rgba(170, 102, 204, 0.3);
+        }
+        .status-cancelled {
+            background-color: rgba(244, 67, 54, 0.15);
+            color: #F44336;
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+        .action-btn {
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--light-text);
+        }
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        .empty-state-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        /* ======================== PAGINATION ======================== */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            text-align: center;
+        }
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-logo span:first-child {
+            font-size: 2rem;
+        }
+        .footer-logo span:last-child {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 1024px) {
+            .sidebar { width: 220px; }
+            .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
+            .main-content { padding: 20px; }
+            .search-filters { flex-direction: column; align-items: stretch; }
+            .search-box { min-width: auto; }
+            .filter-tabs { justify-content: center; }
+            table { min-width: 700px; }
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .navbar-title {
+                display: none !important;
+            }
+            .container {
+                flex-direction: column;
+            }
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .header h1 { font-size: 1.5rem; }
+            .header p { font-size: 0.9rem; }
+            .search-box { padding: 8px 12px; }
+            .filter-tab { padding: 6px 12px; font-size: 0.8rem; }
+            table { min-width: 600px; font-size: 0.85rem; }
+            th { padding: 8px 6px; font-size: 0.8rem; }
+            td { padding: 8px 6px; }
+            .status-badge { padding: 4px 10px; font-size: 0.75rem; }
+            .action-btn { padding: 5px 10px; font-size: 0.75rem; }
+            .pagination-btn { padding: 6px 10px; font-size: 0.8rem; }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar { padding: 8px 12px; }
+            .logo { font-size: 1.3rem; }
+            .navbar-right { gap: 10px; }
+            .notification-badge { width: 16px; height: 16px; font-size: 0.6rem; }
+            .profile-toggle { padding: 5px 8px; }
+            .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
+            .dropdown-arrow { font-size: 0.9rem; }
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+            .main-content { padding: 12px; }
+            .header { margin-bottom: 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .header p { font-size: 0.85rem; }
+            .search-box { padding: 6px 10px; }
+            .filter-tab { padding: 5px 8px; font-size: 0.75rem; }
+            table { min-width: 500px; font-size: 0.8rem; }
+            th { padding: 6px 4px; font-size: 0.75rem; }
+            td { padding: 6px 4px; }
+            .order-total { text-align: left; }
+            .pagination-btn { padding: 5px 8px; font-size: 0.75rem; min-width: 32px; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 360px) {
+            .logo { font-size: 1.2rem; }
+            .navbar { padding: 8px 10px; gap: 6px; }
+            .navbar-left { gap: 8px; }
+            .navbar-right { gap: 8px; }
+            .header h1 { font-size: 1.1rem; }
+            .main-content { padding: 10px; }
+            .filter-tab { padding: 4px 6px; font-size: 0.7rem; }
+            table { min-width: 400px; font-size: 0.75rem; }
+            th, td { padding: 4px 2px; }
+            .status-badge { padding: 3px 6px; font-size: 0.7rem; }
+        }
+        /* ======================== RESPONSIVE TABLE ======================== */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px; /* desktop */
+        }
+        @media (max-width: 768px) {
+            table {
+                min-width: 600px;
+                font-size: 0.85rem;
+            }
+            th, td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+        }
+        @media (max-width: 480px) {
+            table {
+                min-width: 500px;
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 6px 4px;
+                font-size: 0.75rem;
+            }
+            .status-badge {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                border-radius: 12px;
+            }
+        }
+        @media (max-width: 360px) {
+            table {
+                min-width: 400px;
+                font-size: 0.75rem;
+            }
+            th, td {
+                padding: 4px 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Orders</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">{{ notification_count|default:3 }}</div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ user.username|first|upper}}</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
+                        <div class="profile-role">Seller</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <!-- PROFILE -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
+                            </div>
+                        </div>
+                        <!-- STORE SETTINGS -->
+                        <div class="dropdown-item" onclick="openStoreModal()">
+                            <span class="dropdown-item-icon">🏪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Store Settings</div>
+                                <div class="dropdown-item-desc">Manage store details</div>
+                            </div>
+                        </div>
+                        <!-- NOTIFICATIONS -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">🔔</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <!-- HELP -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">❓</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & support</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <!-- LOGOUT -->
+                        <div class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'logout' %}">Logout</a>
+                                </div>
+                                <div class="dropdown-item-desc">Sign out</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.path == '/seller_dashboard/' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}" class="{% if 'add' in request.path %}active{% endif %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}" class="{% if 'order' in request.path %}active{% endif %}"><span>🛒</span> Orders</a></li>
+                <li><a href="#"><span>💰</span> Earnings</a></li>
+                <li><a href="#"><span>⭐</span> Reviews</a></li>
+                <li><a href="#"><span>📈</span> Analytics</a></li>
+                <li><a href="#"><span>⚙️</span> Settings</a></li>
+            </ul>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <h1>🛒 Orders</h1>
+                <p>Manage your customer orders efficiently</p>
+            </div>
+            <!-- SEARCH & FILTERS -->
+            <div class="search-filters">
+                <form method="GET" style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px;">
+                    <div class="search-box">
+                        <span style="font-size: 1rem; color: var(--light-text);">🔍</span>
+                        <input type="text" name="search" placeholder="Search orders…" value="{{ search_query }}" style="min-width: 200px;">
+                    </div>
+                    <input type="hidden" name="status" value="{{ request.GET.status|default:'all' }}">
+                    <button type="submit" class="btn-primary" style="flex-shrink: 0; padding: 10px 16px;">Search</button>
+                </form>
+                <form id="filterForm" method="GET" style="display: flex; gap: 8px;">
+                    <button type="submit" name="status" value="all" class="filter-tab {% if request.GET.status|default:'all' == 'all' %}active{% endif %}">📋 All Orders</button>
+                    <button type="submit" name="status" value="pending" class="filter-tab {% if request.GET.status == 'pending' %}active{% endif %}">⏳ Pending</button>
+                    <button type="submit" name="status" value="processing" class="filter-tab {% if request.GET.status == 'processing' %}active{% endif %}">⚙️ Processing</button>
+                    <button type="submit" name="status" value="shipped" class="filter-tab {% if request.GET.status == 'shipped' %}active{% endif %}">📦 Shipped</button>
+                    <button type="submit" name="status" value="delivered" class="filter-tab {% if request.GET.status == 'delivered' %}active{% endif %}">✅ Delivered</button>
+                    <button type="submit" name="status" value="cancelled" class="filter-tab {% if request.GET.status == 'cancelled' %}active{% endif %}">❌ Cancelled</button>
+                    <input type="hidden" name="search" value="{{ search_query }}">
+                </form>
+            </div>
+            <!-- ORDERS TABLE -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">All Orders</div>
+                    <button class="btn-primary"><a href="{% url 'order' %}">Refresh</a></button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead><tbody>
+    {% if orders %}
+        {% for order in orders %}
+            <tr>
+                <td class="order-id">#{{ order.id }}</td>
+                <td class="customer-name">{{ order.user.username }}</td>
+
+                <td class="product-name">
+                    {% for item in order.items.all %}
+                        {{ item.product.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+
+                <td class="quantity">{{ order.total_qty }}</td>
+
+                <td class="order-total">₹{{ order.total_price|stringformat:".2f" }}</td>
+
+                <td>
+                    <span class="status-badge status-{{ order.status|lower }}">
+                        {% if order.status == 'Pending' %}⏳ Pending
+                        {% elif order.status == 'Processing' %}⚙️ Processing
+                        {% elif order.status == 'Shipped' %}📦 Shipped
+                        {% elif order.status == 'Delivered' %}✅ Delivered
+                        {% elif order.status == 'Cancelled' %}❌ Cancelled
+                        {% endif %}
+                    </span>
+                </td>
+
+                <td><a href="{% url 'seller_order_view' order.id %}" class="action-btn">View</a></td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">No orders found</div>
+            </td>
+        </tr>
+    {% endif %}
+</tbody>
+
+                    </table>
+                </div>
+            </div>
+            <!-- PAGINATION -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination-container">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">« Previous</a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">Next »</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Logo Section -->
+                <div>
+                    <div class="footer-logo">
+                        <span>🛍️</span>
+                        <span>ShopHub</span>
+                    </div>
+                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="social-links">
+                        <a href="#" title="Facebook">f</a>
+                        <a href="#" title="Twitter">𝕏</a>
+                        <a href="#" title="Instagram">📷</a>
+                        <a href="#" title="LinkedIn">💼</a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Products</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <!-- Customer Service -->
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Returns & Refunds</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Track Your Order</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Us -->
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📍</span>
+                            123 Shopping Street, Mumbai, India
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📞</span>
+                            +91 98765 43210
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            support@shophub.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>Made with ❤️ for Sellers & Shoppers</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        /* ==================== GLOBAL FUNCTIONS ==================== */
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            menu.classList.toggle("show");
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('show');
+
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('show');
+            document.querySelector('.hamburger').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function showNotifications() {
+            alert('🔔 You have new pending orders!');
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            if (dropdown && menu && !dropdown.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Placeholder functions
+        function openStoreModal() { alert('Opening Store Settings'); }
+    </script>
+</body>
+</html>
