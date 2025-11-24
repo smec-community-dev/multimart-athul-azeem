@@ -133,7 +133,11 @@
             font-size: 0.65rem;
             font-weight: 700;
         }
-        .profile-dropdown { position: relative; }
+        .profile-dropdown {
+            position: relative;
+            flex-shrink: 0;
+            z-index: 1001;
+        }
         .profile-toggle {
             display: flex;
             align-items: center;
@@ -149,19 +153,18 @@
             background: rgba(255, 127, 50, 0.2);
             border-color: var(--primary-color);
         }
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-        }
+      .profile-avatar {
+    width: 45px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    border: 3px solid white;
+}
         .profile-info-text {
             display: flex;
             flex-direction: column;
@@ -196,6 +199,7 @@
             border-radius: 12px;
             box-shadow: var(--shadow-medium);
             min-width: 260px;
+            max-width: 90vw;
             margin-top: 8px;
             display: none;
             z-index: 1000;
@@ -791,6 +795,14 @@
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .dropdown-menu {
+                min-width: 240px;
+                max-width: 85vw;
+                right: -20px;
+            }
+            .profile-toggle {
+                padding: 4px 8px;
+            }
         }
         @media (max-width: 480px) {
             .navbar { padding: 8px 12px; }
@@ -824,6 +836,15 @@
             .pagination a, .pagination span { min-width: 32px; height: 32px; padding: 0 6px; font-size: 0.8rem; }
             .footer-grid {
                 grid-template-columns: 1fr;
+            }
+            .dropdown-menu {
+                min-width: 200px;
+                max-width: 95vw;
+                right: -10px;
+                border-radius: 0 0 12px 12px;
+            }
+            .profile-toggle {
+                padding: 4px 8px;
             }
         }
         @media (max-width: 360px) {
@@ -863,49 +884,61 @@
                 <i class="fas fa-bell"></i>
                 <div class="notification-badge">3</div>
             </div>
+            <!-- Profile dropdown section -->
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
-                    <div class="profile-avatar">A</div>
+                    <div class="profile-avatar">{{ request.user.username|first|upper }}</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">Admin</div>
+                        <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
                         <div class="profile-role">Super Admin</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
                 </div>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <div class="dropdown-header">
-                        <div class="dropdown-header-content">
-                            <div class="dropdown-header-avatar">A</div>
-                            <div class="dropdown-header-info">
-                                <h3>Admin User</h3>
-                                <p>admin@shophub.com</p>
+                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ request.user.username|first|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
+                                    <p>{{ request.user.email }}</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-items">
-                        <div class="dropdown-item">
-                            <i class="fas fa-user dropdown-item-icon"></i>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">My Profile</div>
-                                <div class="dropdown-item-desc">View & edit profile</div>
+                        <!-- My Profile -->
+                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-item">
+                                <i class="fas fa-user dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">My Profile</div>
+                                    <div class="dropdown-item-desc">View & edit profile</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="dropdown-item">
-                            <i class="fas fa-cog dropdown-item-icon"></i>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Settings</div>
-                                <div class="dropdown-item-desc">Admin settings</div>
+                        </a>
+                        <!-- Settings -->
+                        <a href="{% url 'admin_panel:admin_settings' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-item">
+                                <i class="fas fa-cog dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">Settings</div>
+                                    <div class="dropdown-item-desc">Admin settings</div>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                         <div class="dropdown-divider"></div>
-                        <div class="dropdown-item logout">
-                            <i class="fas fa-sign-out-alt dropdown-item-icon"></i>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Logout</div>
-                                <div class="dropdown-item-desc">Sign out</div>
+                        <!-- Logout -->
+                        <a href="{% url 'admin_panel:admin_logout' %}" style="text-decoration: none; color: inherit;" onclick="return confirm('Are you sure you want to logout?');">
+                            <div class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">Logout</div>
+                                    <div class="dropdown-item-desc">Sign out</div>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -955,10 +988,8 @@
                     </a>
                 </li>
                 <!-- Settings -->
-
             </ul>
         </div>
-
         <!-- MAIN CONTENT -->
         <div class="main-content">
             {% block content %}
@@ -1033,7 +1064,6 @@
         function setActiveSidebarLink() {
             const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
             const currentURL = window.location.href;
-
             sidebarLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.href === currentURL) {
@@ -1041,10 +1071,8 @@
                 }
             });
         }
-
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', setActiveSidebarLink);
-
         // Handle sidebar link clicks
         document.querySelectorAll('.sidebar-menu a').forEach(link => {
             link.addEventListener('click', function() {
@@ -1053,14 +1081,12 @@
                 closeSidebar();
             });
         });
-
         function toggleProfileMenu() {
             const menu = document.getElementById("dropdownMenu");
             const dropdown = document.getElementById("profileDropdown");
             menu.classList.toggle("show");
             dropdown.classList.toggle("active");
         }
-
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
             const overlay = document.querySelector(".sidebar-overlay");
@@ -1070,23 +1096,19 @@
             menu.classList.toggle("active");
             document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
         }
-
         function closeSidebar() {
             document.getElementById("sidebar").classList.remove("show");
             document.querySelector(".sidebar-overlay").classList.remove("show");
             document.querySelector(".hamburger").classList.remove("active");
             document.body.style.overflow = "";
         }
-
         function showNotifications() {
             alert("Notifications coming soon!");
         }
-
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const profileDropdown = document.getElementById('profileDropdown');
             const dropdownMenu = document.getElementById('dropdownMenu');
-
             if (!profileDropdown.contains(event.target)) {
                 dropdownMenu.classList.remove('show');
                 profileDropdown.classList.remove('active');

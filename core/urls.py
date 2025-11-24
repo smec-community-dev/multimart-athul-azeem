@@ -37,4 +37,15 @@ urlpatterns = [
 
     # Reviews Management
     path('reviews/', views.reviews_list, name='admin_reviews'),
+    path('reviews/<int:review_id>/detail/', views.review_detail, name='admin_review_detail'),
+    path('reviews/<int:review_id>/delete/', views.delete_review, name='admin_delete_review'),
+    path('reviews/<int:review_id>/approve/', views.approve_review, name='admin_approve_review'),
+    path('reviews/<int:review_id>/reject/', views.reject_review, name='admin_reject_review'),
+
+    # Admin Profile and Settings
+    path('profile/', views.admin_profile, name='admin_profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('settings/', views.admin_settings, name='admin_settings'),
+    path('logout/', views.admin_logout, name='admin_logout'),
+
 ]

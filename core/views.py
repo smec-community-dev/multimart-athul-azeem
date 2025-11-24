@@ -1,14 +1,17 @@
 import calendar
 import csv
+
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models.functions import Cast
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from django.db.models import Sum, Q, CharField
-from django.contrib.auth import get_user_model
+from django.db.models import Sum, Q, CharField, F
+from django.contrib.auth import get_user_model, logout
 from django.contrib import messages
 from datetime import timedelta, timezone as dt_timezone, datetime
+from django.db import models
 
 from core.models import SubCategory
 from seller.models import SellerDetails, Product
@@ -354,48 +357,140 @@ def delete_seller(request, seller_id):
 # PRODUCTS MANAGEMENT
 # ============================================================================
 
+
 def products_list(request):
-    all_products = Product.objects.all()
-    paginator = Paginator(all_products, 10)
+    """Display all products with search, filtering, and pagination"""
+    products = Product.objects.select_related(
+        'subcategory',
+        'seller__user'
+    ).prefetch_related(
+        'images'
+    ).order_by('-created_at')
+
+    # Search by product name or category
+    search_query = request.GET.get('search', '').strip()
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(subcategory__name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by stock status
+    stock_status_filter = request.GET.get('stock_status', '').strip()
+    if stock_status_filter == 'in_stock':
+        products = products.filter(stock__gt=5)
+    elif stock_status_filter == 'low_stock':
+        products = products.filter(stock__lte=5, stock__gt=0)
+    elif stock_status_filter == 'out_of_stock':
+        products = products.filter(stock=0)
+
+    # Stock status choices for dropdown
+    stock_status_choices = [
+        ('in_stock', 'In Stock'),
+        ('low_stock', 'Low Stock'),
+        ('out_of_stock', 'Out of Stock'),
+    ]
+
+    # Pagination
+    paginator = Paginator(products, 20)  # 20 products per page
     page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)
+    products_page = paginator.get_page(page_number)
+
+    # Calculate statistics
+    total_products = Product.objects.count()
+    in_stock_count = Product.objects.filter(stock__gt=5).count()
+    low_stock_count = Product.objects.filter(stock__lte=5, stock__gt=0).count()
+
+    # Calculate total inventory value (price * stock)
+    inventory_data = Product.objects.aggregate(
+        total=Sum(F('price') * F('stock'), output_field=models.DecimalField())
+    )
+    total_inventory_value = inventory_data['total'] or 0
 
     context = {
-        'products': products,
-        'page_obj': products,
-        'is_paginated': products.has_other_pages(),
+        'products': products_page,
+        'stock_status_choices': stock_status_choices,
+        'current_stock_status': stock_status_filter,
+        'search_query': search_query,
+        'total_products': total_products,
+        'in_stock_count': in_stock_count,
+        'low_stock_count': low_stock_count,
+        'total_inventory_value': round(total_inventory_value, 2),
     }
+
     return render(request, 'admin/products.html', context)
 
 
+
+def product_detail(request, product_id):
+    """Display detailed product information"""
+    product = get_object_or_404(
+        Product.objects.select_related(
+            'subcategory',
+            'seller__user'
+        ).prefetch_related(
+            'images'
+        ),
+        id=product_id
+    )
+
+    # Get query parameters to preserve search/filter
+    search_query = request.GET.get('search', '')
+    current_stock_status = request.GET.get('stock_status', '')
+
+    context = {
+        'product': product,
+        'search_query': search_query,
+        'current_stock_status': current_stock_status,
+    }
+
+    return render(request, 'admin/product_detail.html', context)
+
+
 def edit_product(request, product_id):
+    """Edit a product"""
     product = get_object_or_404(Product, id=product_id)
-    categories = SubCategory.objects.all()
 
     if request.method == 'POST':
+        # Update product fields
         product.name = request.POST.get('name', product.name)
         product.description = request.POST.get('description', product.description)
         product.price = request.POST.get('price', product.price)
         product.stock = request.POST.get('stock', product.stock)
 
-        subcategory_id = request.POST.get('category')
-        if subcategory_id:
-            product.subcategory_id = subcategory_id
-
         try:
             product.save()
             messages.success(request, f'Product "{product.name}" updated successfully!')
-            return redirect('admin_panel:admin_products')
+
+            # Preserve filter parameters when redirecting back
+            redirect_url = 'admin_panel:admin_products'
+            params = []
+            if request.POST.get('search_query'):
+                params.append(f'search={request.POST.get("search_query")}')
+            if request.POST.get('current_stock_status'):
+                params.append(f'stock_status={request.POST.get("current_stock_status")}')
+
+            return redirect(f"{redirect_url}?{'&'.join(params)}" if params else redirect_url)
         except Exception as e:
             messages.error(request, f'Error updating product: {str(e)}')
 
-    return render(request, 'admin/edit_product.html', {
+    # Get query parameters to pass to template
+    search_query = request.GET.get('search', '')
+    current_stock_status = request.GET.get('stock_status', '')
+
+    context = {
         'product': product,
-        'categories': categories
-    })
+        'search_query': search_query,
+        'current_stock_status': current_stock_status,
+    }
+
+    return render(request, 'admin/edit_product.html', context)
+
 
 
 def delete_product(request, product_id):
+    """Delete a product"""
     product = get_object_or_404(Product, id=product_id)
 
     if request.method == 'POST':
@@ -403,17 +498,37 @@ def delete_product(request, product_id):
         try:
             product.delete()
             messages.success(request, f'Product "{product_name}" deleted successfully!')
-            return redirect('admin_panel:admin_products')
+
+            # Preserve filter parameters when redirecting back
+            redirect_url = 'admin_panel:admin_products'
+            params = []
+            if request.POST.get('search_query'):
+                params.append(f'search={request.POST.get("search_query")}')
+            if request.POST.get('current_stock_status'):
+                params.append(f'stock_status={request.POST.get("current_stock_status")}')
+
+            return redirect(f"{redirect_url}?{'&'.join(params)}" if params else redirect_url)
         except Exception as e:
             messages.error(request, f'Error deleting product: {str(e)}')
+            return redirect('admin_panel:admin_products')
 
-    return render(request, 'admin/delete_product.html', {'product': product})
+    # Get query parameters to pass to confirmation page
+    search_query = request.GET.get('search', '')
+    current_stock_status = request.GET.get('stock_status', '')
 
+    context = {
+        'product': product,
+        'search_query': search_query,
+        'current_stock_status': current_stock_status,
+    }
 
+    return render(request, 'admin/delete_product_confirm.html', context)
 # ============================================================================
 # ORDERS MANAGEMENT
 # ============================================================================
+
 def orders_list(request):
+    """Display all orders with search, filtering, and pagination"""
     orders = Order.objects.select_related(
         "user",
         "seller__user"
@@ -421,34 +536,21 @@ def orders_list(request):
         "items__product"
     ).order_by("-order_date")
 
-    # --------------------
-    # SEARCH FIXED HERE
-    # --------------------
+    # Search by Order ID or Username
     search_query = request.GET.get('search', '').strip()
     if search_query:
-        orders = orders.annotate(
-            id_str=Cast('id', CharField())
-        ).filter(
+        orders = orders.filter(
+            Q(id__icontains=search_query) |
             Q(user__username__icontains=search_query) |
-            Q(user__email__icontains=search_query) |
-            Q(seller__user__username__icontains=search_query)
+            Q(user__email__icontains=search_query)
         )
 
-    # --------------------
-    # STATUS FILTER
-    # --------------------
+    # Filter by status
     status_filter = request.GET.get('status', '').strip()
     if status_filter:
         orders = orders.filter(status=status_filter)
 
-    # --------------------
-    # PAGINATION
-    # --------------------
-    paginator = Paginator(orders, 15)
-    page_number = request.GET.get('page')
-    orders_page = paginator.get_page(page_number)
-
-    # Status dropdown values
+    # Status choices for dropdown
     status_choices = [
         ('pending', 'Pending'),
         ('processing', 'Processing'),
@@ -457,21 +559,46 @@ def orders_list(request):
         ('cancelled', 'Cancelled'),
     ]
 
+    # Pagination
+    paginator = Paginator(orders, 15)  # 15 orders per page
+    page_number = request.GET.get('page')
+    orders_page = paginator.get_page(page_number)
+
+    # Calculate statistics
+    total_orders = Order.objects.count()
+    delivered_count = Order.objects.filter(status='delivered').count()
+    pending_count = Order.objects.filter(status='pending').count()
+    total_revenue = Order.objects.values('total_amount').aggregate(total=models.Sum('total_amount'))['total'] or 0
+
     context = {
         'orders': orders_page,
         'status_choices': status_choices,
         'current_status': status_filter,
         'search_query': search_query,
+        'total_orders': total_orders,
+        'delivered_count': delivered_count,
+        'pending_count': pending_count,
+        'total_revenue': round(total_revenue, 2),
     }
 
     return render(request, "admin/orders.html", context)
 
 
+
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    order_items = order.items.all().select_related('product')
+    """Display detailed order information with status update"""
+    order = get_object_or_404(
+        Order.objects.select_related(
+            "user",
+            "seller__user"
+        ).prefetch_related(
+            "items__product"
+        ),
+        id=order_id
+    )
 
     if request.method == 'POST':
+        # Update order status
         new_status = request.POST.get('status', '').strip()
         if new_status:
             order.status = new_status
@@ -490,16 +617,24 @@ def order_detail(request, order_id):
         ('cancelled', 'Cancelled'),
     ]
 
+    # Get query parameters to preserve search/filter when going back
+    search_query = request.GET.get('search', '')
+    current_status = request.GET.get('status', '')
+
     context = {
         'order': order,
-        'order_items': order_items,
+        'order_items': order.items.all(),
         'status_choices': status_choices,
+        'search_query': search_query,
+        'current_status': current_status,
     }
 
-    return render(request, 'admin/user_order_detail.html', context)
+    return render(request, 'admin/order_detail.html', context)
+
 
 
 def delete_order(request, order_id):
+    """Delete an order with confirmation"""
     order = get_object_or_404(Order, id=order_id)
 
     if request.method == 'POST':
@@ -507,19 +642,70 @@ def delete_order(request, order_id):
         try:
             order.delete()
             messages.success(request, f'Order #{order_id_display} deleted successfully!')
-            return redirect('admin_panel:admin_orders')
+
+            # Preserve search/filter parameters when redirecting back
+            redirect_url = 'admin_panel:admin_orders'
+            search_query = request.POST.get('search_query', '')
+            current_status = request.POST.get('current_status', '')
+
+            if search_query or current_status:
+                params = []
+                if search_query:
+                    params.append(f'search={search_query}')
+                if current_status:
+                    params.append(f'status={current_status}')
+                return redirect(f"{redirect_url}?{'&'.join(params)}")
+
+            return redirect(redirect_url)
         except Exception as e:
             messages.error(request, f'Error deleting order: {str(e)}')
+            return redirect('admin_panel:admin_orders')
 
-    return render(request, 'admin/delete_order_confirm.html', {'order': order})
+    # Get query parameters to pass to confirmation page
+    search_query = request.GET.get('search', '')
+    current_status = request.GET.get('status', '')
+
+    context = {
+        'order': order,
+        'search_query': search_query,
+        'current_status': current_status,
+    }
+
+    return render(request, 'admin/delete_order_confirm.html', context)
+
 
 
 def export_orders(request):
+    """Export orders to CSV file"""
     try:
+        # Get filtered orders if filters are applied
+        orders = Order.objects.select_related(
+            "user",
+            "seller__user"
+        ).prefetch_related(
+            "items__product"
+        ).order_by("-order_date")
+
+        search_query = request.GET.get('search', '').strip()
+        if search_query:
+            orders = orders.filter(
+                Q(id__icontains=search_query) |
+                Q(user__username__icontains=search_query) |
+                Q(user__email__icontains=search_query)
+            )
+
+        status_filter = request.GET.get('status', '').strip()
+        if status_filter:
+            orders = orders.filter(status=status_filter)
+
+        # Create CSV response
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="orders_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        filename = f'orders_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
         writer = csv.writer(response)
+
+        # Write header
         writer.writerow([
             'Order ID',
             'User',
@@ -527,11 +713,13 @@ def export_orders(request):
             'Total Amount',
             'Status',
             'Order Date',
-            'Number of Items'
+            'Number of Items',
+            'Seller'
         ])
 
-        orders = Order.objects.all().select_related('user').prefetch_related('items')
+        # Write data
         for order in orders:
+            seller_name = order.seller.user.username if order.seller else 'N/A'
             writer.writerow([
                 f'ORD-{order.id}',
                 order.user.username,
@@ -539,7 +727,8 @@ def export_orders(request):
                 f'${order.total_amount}',
                 order.status.capitalize(),
                 order.order_date.strftime('%Y-%m-%d %H:%M:%S'),
-                order.items.count()
+                order.items.count(),
+                seller_name
             ])
 
         return response
@@ -548,16 +737,273 @@ def export_orders(request):
         messages.error(request, f'Error exporting orders: {str(e)}')
         return redirect('admin_panel:admin_orders')
 
-
 # ============================================================================
 # REVIEWS MANAGEMENT
 # ============================================================================
 
+
+
 def reviews_list(request):
+    """Display all reviews with search, filtering, and pagination"""
     reviews = Review.objects.select_related(
-        'product__seller__user',
-        'user',
-        'product__subcategory__category'
+        'product',
+        'user'
     ).order_by('-created_at')
-    context = {'reviews': reviews}
+
+    # Search by Product name or Username
+    search_query = request.GET.get('search', '').strip()
+    if search_query:
+        reviews = reviews.filter(
+            Q(product__name__icontains=search_query) |
+            Q(user__username__icontains=search_query) |
+            Q(comment__icontains=search_query)
+        )
+
+    # Filter by rating
+    rating_filter = request.GET.get('rating', '').strip()
+    if rating_filter:
+        try:
+            rating = int(rating_filter)
+            reviews = reviews.filter(rating=rating)
+        except (ValueError, TypeError):
+            pass
+
+    # Filter by status (approved/pending)
+    status_filter = request.GET.get('status', '').strip()
+    if status_filter == 'approved':
+        reviews = reviews.filter(is_approved=True)
+    elif status_filter == 'pending':
+        reviews = reviews.filter(is_approved=False)
+
+    # Rating choices for dropdown
+    rating_choices = [
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    ]
+
+    # Status choices for dropdown
+    status_choices = [
+        ('approved', 'Approved'),
+        ('pending', 'Pending'),
+    ]
+
+    # Pagination
+    paginator = Paginator(reviews, 20)  # 20 reviews per page
+    page_number = request.GET.get('page')
+    reviews_page = paginator.get_page(page_number)
+
+    # Calculate statistics
+    total_reviews = Review.objects.count()
+    approved_count = Review.objects.filter(is_approved=True).count()
+    pending_count = Review.objects.filter(is_approved=False).count()
+    avg_rating = Review.objects.values('rating').aggregate(avg=models.Avg('rating'))['avg']
+
+    context = {
+        'reviews': reviews_page,
+        'rating_choices': rating_choices,
+        'status_choices': status_choices,
+        'current_rating': rating_filter,
+        'current_status': status_filter,
+        'search_query': search_query,
+        'total_reviews': total_reviews,
+        'approved_count': approved_count,
+        'pending_count': pending_count,
+        'avg_rating': round(avg_rating, 2) if avg_rating else 0,
+    }
+
     return render(request, 'admin/reviews.html', context)
+
+
+
+def review_detail(request, review_id):
+    """Display detailed review information"""
+    review = get_object_or_404(
+        Review.objects.select_related('product', 'user'),
+        id=review_id
+    )
+
+    # Get query parameters to preserve search/filter
+    search_query = request.GET.get('search', '')
+    current_rating = request.GET.get('rating', '')
+    current_status = request.GET.get('status', '')
+
+    context = {
+        'review': review,
+        'search_query': search_query,
+        'current_rating': current_rating,
+        'current_status': current_status,
+    }
+
+    return render(request, 'admin/review_detail.html', context)
+
+
+def approve_review(request, review_id):
+    """Approve a review"""
+    review = get_object_or_404(Review, id=review_id)
+
+    try:
+        review.is_approved = True
+        review.save()
+        messages.success(request, f'Review for "{review.product.name}" has been approved!')
+    except Exception as e:
+        messages.error(request, f'Error approving review: {str(e)}')
+
+    # Preserve filter parameters
+    redirect_url = 'admin_panel:admin_reviews'
+    params = []
+    if request.GET.get('search'):
+        params.append(f'search={request.GET.get("search")}')
+    if request.GET.get('rating'):
+        params.append(f'rating={request.GET.get("rating")}')
+    if request.GET.get('status'):
+        params.append(f'status={request.GET.get("status")}')
+    if request.GET.get('page'):
+        params.append(f'page={request.GET.get("page")}')
+
+    return redirect(f"{redirect_url}?{'&'.join(params)}" if params else redirect_url)
+
+
+
+def reject_review(request, review_id):
+    """Reject/Unapprove a review"""
+    review = get_object_or_404(Review, id=review_id)
+
+    try:
+        review.is_approved = False
+        review.save()
+        messages.success(request, f'Review for "{review.product.name}" has been rejected!')
+    except Exception as e:
+        messages.error(request, f'Error rejecting review: {str(e)}')
+
+    # Preserve filter parameters
+    redirect_url = 'admin_panel:admin_reviews'
+    params = []
+    if request.GET.get('search'):
+        params.append(f'search={request.GET.get("search")}')
+    if request.GET.get('rating'):
+        params.append(f'rating={request.GET.get("rating")}')
+    if request.GET.get('status'):
+        params.append(f'status={request.GET.get("status")}')
+    if request.GET.get('page'):
+        params.append(f'page={request.GET.get("page")}')
+
+    return redirect(f"{redirect_url}?{'&'.join(params)}" if params else redirect_url)
+
+
+
+def delete_review(request, review_id):
+    """Delete a review"""
+    review = get_object_or_404(Review, id=review_id)
+
+    if request.method == 'POST':
+        product_name = review.product.name
+        try:
+            review.delete()
+            messages.success(request, f'Review for "{product_name}" has been deleted!')
+
+            # Preserve filter parameters
+            redirect_url = 'admin_panel:admin_reviews'
+            params = []
+            if request.POST.get('search_query'):
+                params.append(f'search={request.POST.get("search_query")}')
+            if request.POST.get('current_rating'):
+                params.append(f'rating={request.POST.get("current_rating")}')
+            if request.POST.get('current_status'):
+                params.append(f'status={request.POST.get("current_status")}')
+
+            return redirect(f"{redirect_url}?{'&'.join(params)}" if params else redirect_url)
+        except Exception as e:
+            messages.error(request, f'Error deleting review: {str(e)}')
+            return redirect('admin_panel:admin_reviews')
+
+    # Get query parameters to pass to confirmation page
+    search_query = request.GET.get('search', '')
+    current_rating = request.GET.get('rating', '')
+    current_status = request.GET.get('status', '')
+
+    context = {
+        'review': review,
+        'search_query': search_query,
+        'current_rating': current_rating,
+        'current_status': current_status,
+    }
+
+    return render(request, 'admin/delete_review_confirm.html', context)
+
+#Admin Profile#####################
+@login_required(login_url='login')
+def admin_profile(request):
+    user = request.user
+    return render(request, 'admin/profile.html', {'user': user})
+
+
+
+
+def edit_profile(request):
+    """Edit admin profile"""
+    user = request.user
+
+    if request.method == 'POST':
+        # Update user information
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+
+        try:
+            user.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('admin_panel:admin_profile')
+        except Exception as e:
+            messages.error(request, f'Error updating profile: {str(e)}')
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'admin/edit_profile.html', context)
+
+
+
+def admin_settings(request):
+    """Admin settings page"""
+    user = request.user
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'change_password':
+            from django.contrib.auth import update_session_auth_hash
+            from django.contrib.auth.models import User
+
+            old_password = request.POST.get('old_password', '')
+            new_password = request.POST.get('new_password', '')
+            confirm_password = request.POST.get('confirm_password', '')
+
+            # Validate old password
+            if not user.check_password(old_password):
+                messages.error(request, 'Old password is incorrect!')
+            elif new_password != confirm_password:
+                messages.error(request, 'New passwords do not match!')
+            elif len(new_password) < 8:
+                messages.error(request, 'Password must be at least 8 characters!')
+            else:
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Password changed successfully!')
+                return redirect('admin_panel:admin_settings')
+
+    context = {
+        'user': user,
+    }
+    return render(request, 'admin/settings.html', context)
+
+
+
+def admin_logout(request):
+    """Logout admin user"""
+    logout(request)
+    messages.success(request, 'You have been logged out successfully!')
+    return redirect('login')  # Redirect to login page

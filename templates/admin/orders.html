@@ -8,6 +8,46 @@
 </div>
 
 <div class="section">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd;">
+                <i class="fas fa-shopping-cart" style="color: #2196F3;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_orders }}</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5;">
+                <i class="fas fa-check-circle" style="color: #9c27b0;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ delivered_count }}</div>
+                <div class="stat-label">Delivered</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0;">
+                <i class="fas fa-clock" style="color: #ff9800;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ pending_count }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e8f5e9;">
+                <i class="fas fa-dollar-sign" style="color: #4caf50;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">${{ total_revenue }}</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Section Header -->
     <div class="section-header">
         <div class="section-title">All Orders</div>
@@ -155,6 +195,51 @@
 </div>
 
 <style>
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
     /* Status Badge Styles */
     .status-badge {
         padding: 6px 12px;
@@ -274,7 +359,17 @@
     }
 
     /* Responsive Design */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
     @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
         .filter-form {
             flex-direction: column;
             align-items: stretch;
@@ -317,6 +412,20 @@
         .status-badge {
             padding: 4px 8px;
             font-size: 0.7rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
         }
     }
 </style>
