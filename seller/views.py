@@ -8,64 +8,73 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db.models import (
-    Count, Sum, F, ExpressionWrapper, DecimalField, Q, Avg
+    Count, Sum, F, ExpressionWrapper, DecimalField, Q, Avg, Value, IntegerField
 )
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.utils import timezone
+from django.utils.timezone import now
+from datetime import timedelta
 
-# Project models
-from core.models import User, SubCategory, Category  # Assuming Category is in core.models
+# ============================================================================
+# IMPORTS - Project Models
+# ============================================================================
+from core.models import User, SubCategory, Category
 from seller.decorators import seller_required
 from seller.models import Product, SellerDetails, ProductImage
 from user.models import Order, Review, OrderItem
 
-from django.db.models import Sum, Value, IntegerField
-from django.db.models.functions import Coalesce
 
-from django.utils.timezone import now
-import json
-import csv
-from datetime import timedelta
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count, Q, F
-from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponse
-from django.utils import timezone
-from datetime import datetime
-from django.views.decorators.http import require_http_methods
 
+# ============================================================================
+# DASHBOARD & ANALYTICS VIEWS
+# ============================================================================
 
 @login_required
 @seller_required
 def view_product(request):
+    """
+    Seller Dashboard - Main overview page.
+
+    Displays:
+    - Total revenue and orders
+    - Product count and ratings
+    - Top 3 products (prioritizing low stock items)
+    - Recent orders (last 4)
+    - Weekly sales chart data
+    """
     seller = request.user.seller_details
 
+    # Calculate total revenue from all orders
     total_revenue = (
-        OrderItem.objects.filter(order__seller=seller)
-        .aggregate(total=Sum(F("unit_price") * F("quantity")))["total"]
-        or 0
+            OrderItem.objects.filter(order__seller=seller)
+            .aggregate(total=Sum(F("unit_price") * F("quantity")))["total"]
+            or 0
     )
 
+    # Count total orders
     total_orders = Order.objects.filter(seller=seller).count()
 
+    # Count total products
     products_count = Product.objects.filter(seller=seller).count()
 
-    pending_products = 0  # TODO: Implement if needed
+    # Placeholder for pending products (implement if needed)
+    pending_products = 0
 
+    # Calculate average rating and count
     rating_data = Review.objects.filter(product__seller=seller).aggregate(
         avg=Avg("rating"),
         count=Count("id")
     )
-
     avg_rating = rating_data["avg"] or 0
     rating_count = rating_data["count"]
 
-    # Low stock threshold (customize based on your business logic)
+    # Low stock threshold (customize based on business logic)
     low_stock_threshold = 10
 
-    # First, try to get top products with low stock
+    # Get top 3 products (prioritize low stock items)
     top_low_stock_products = (
         Product.objects.filter(seller=seller, stock__lt=low_stock_threshold)
         .annotate(
@@ -77,7 +86,7 @@ def view_product(request):
         .order_by("-total_sold")[:3]
     )
 
-    # Unsliced queryset for overall top to allow further filtering
+    # Get overall top products queryset
     overall_top_qs = (
         Product.objects.filter(seller=seller)
         .annotate(
@@ -90,20 +99,21 @@ def view_product(request):
     )
 
     # Combine: prioritize low-stock ones, fill gaps with overall top
-    top_products = list(top_low_stock_products)  # Convert to list early to avoid issues
+    top_products = list(top_low_stock_products)
     if len(top_products) < 3:
-        # Exclude already included low-stock ones to avoid duplicates
         excluded_ids = [p.id for p in top_products]
         fillers = overall_top_qs.exclude(id__in=excluded_ids)[:3 - len(top_products)]
         top_products += list(fillers)
 
+    # Get recent orders (last 4)
     recent_orders = (
         Order.objects.filter(seller=seller)
         .select_related("user")
-        .prefetch_related("items")
-        .prefetch_related("items__product")
+        .prefetch_related("items", "items__product")
         .order_by("-order_date")[:4]
     )
+
+    # Calculate weekly sales data (last 7 days)
     today = now().date()
     last_week = today - timedelta(days=6)
 
@@ -112,7 +122,7 @@ def view_product(request):
         order_date__date__range=[last_week, today]
     ).prefetch_related("items")
 
-    # Mon-Sun format
+    # Mon-Sun format for chart
     week_days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     week_data = {day: 0 for day in week_days}
 
@@ -123,6 +133,7 @@ def view_product(request):
 
     sales_labels = list(week_data.keys())
     sales_values = list(week_data.values())
+
     context = {
         "total_revenue": total_revenue,
         "total_orders": total_orders,
@@ -133,33 +144,34 @@ def view_product(request):
         "top_products": top_products,
         "recent_orders": recent_orders,
         "low_stock_threshold": low_stock_threshold,
-    "sales_labels": sales_labels,
-    "sales_values": sales_values,
+        "sales_labels": sales_labels,
+        "sales_values": sales_values,
     }
 
     return render(request, "seller/sellerdashboard.html", context)
 
 
-def sanitize_filename(filename):
-    """Sanitize filename: remove invalid chars, limit length, add timestamp."""
-    base, ext = os.path.splitext(filename)
-    # Remove invalid chars (Windows/Linux safe: alnum, space, -, _ only)
-    base = ''.join(c for c in base if c.isalnum() or c in (' ', '-', '_')).rstrip()
-    # Limit length
-    if len(base) > 100:
-        base = base[:100]
-    # Add timestamp to avoid collisions
-    timestamp = int(time.time())
-    return f"{base}_{timestamp}{ext}"
+# ============================================================================
+# PRODUCT MANAGEMENT VIEWS
+# ============================================================================
 
-@login_required()
+@login_required
 @seller_required
 def add_product(request):
-    seller = SellerDetails.objects.get(user=request.user)
+    """
+    Add new product and view all products with filtering/pagination.
 
+    POST: Creates new product with images
+    GET: Displays product list with filters:
+        - Search by name
+        - Filter by category
+        - Filter by status (active/low_stock/out_of_stock)
+        - Pagination (10 per page)
+    """
+    seller = request.user.seller_details
+
+    # Handle POST - Create new product
     if request.method == "POST":
-        seller = SellerDetails.objects.get(user=request.user)
-
         name = request.POST.get('name')
         subcat_id = request.POST.get('subcategory')
         description = request.POST.get('description')
@@ -172,8 +184,8 @@ def add_product(request):
         gallery_images = request.FILES.getlist('gallery_images')
 
         subcategory = SubCategory.objects.get(id=subcat_id)
-        print(subcategory)
 
+        # Create product
         product = Product.objects.create(
             seller=seller,
             subcategory=subcategory,
@@ -183,10 +195,10 @@ def add_product(request):
             stock=stock,
             color=color,
             size=size,
-            slug=slugify(name)  # Ensure slug is set
+            slug=slugify(name)
         )
 
-        # Sanitize and save main image
+        # Save main image with sanitized filename
         if main_image:
             sanitized_filename = sanitize_filename(main_image.name)
             main_image.name = sanitized_filename
@@ -196,7 +208,7 @@ def add_product(request):
                 image_type="Main"
             )
 
-        # Sanitize and save gallery images
+        # Save gallery images with sanitized filenames
         for img in gallery_images:
             sanitized_filename = sanitize_filename(img.name)
             img.name = sanitized_filename
@@ -208,22 +220,20 @@ def add_product(request):
 
         return redirect("seller_dashboard")
 
-   
-
-    # GET request - handle filtering and pagination
+    # Handle GET - Display products with filters
     products_qs = Product.objects.filter(seller=seller).order_by('-id')
 
-    # Search filter
+    # Apply search filter
     search = request.GET.get('search', '').strip()
     if search:
         products_qs = products_qs.filter(name__icontains=search)
 
-    # Category filter (assuming Category exists and SubCategory has category field)
+    # Apply category filter
     category_id = request.GET.get('category')
     if category_id:
         products_qs = products_qs.filter(subcategory__category_id=category_id)
 
-    # Status filter based on stock
+    # Apply status filter based on stock levels
     status = request.GET.get('status')
     if status == 'active':
         products_qs = products_qs.filter(stock__gt=10)
@@ -232,15 +242,16 @@ def add_product(request):
     elif status == 'out_of_stock':
         products_qs = products_qs.filter(stock__lte=0)
 
-    # Pagination
-    paginator = Paginator(products_qs, 10)  # Show 10 products per page
+    # Pagination (10 products per page)
+    paginator = Paginator(products_qs, 10)
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+    # Get categories and subcategories for filters
     categories = Category.objects.all()
     subcategories = SubCategory.objects.all()
 
-    # For filter display
+    # Get selected category for display
     selected_category = None
     if category_id:
         try:
@@ -256,12 +267,20 @@ def add_product(request):
     }
     return render(request, "seller/features.html", context)
 
-@login_required()
+
+@login_required
 @seller_required
 def update_product(request, slug):
+    """
+    Update existing product details and images.
+
+    Args:
+        slug (str): Product slug identifier
+    """
     product = get_object_or_404(Product, slug=slug)
 
     if request.method == "POST":
+        # Update product fields
         product.name = request.POST.get("name")
         product.description = request.POST.get("description")
         product.price = request.POST.get("price")
@@ -270,12 +289,13 @@ def update_product(request, slug):
         product.size = request.POST.get("size")
         product.subcategory_id = request.POST.get("subcategory")
 
-        # Update slug if name changed
+        # Regenerate slug if name changed
         new_name = request.POST.get("name")
         if new_name != product.name:
-            product.slug = None  # regenerate
+            product.slug = None
             product.name = new_name
 
+        # Add new main image if uploaded
         if "main_image" in request.FILES:
             ProductImage.objects.create(
                 product=product,
@@ -283,98 +303,138 @@ def update_product(request, slug):
                 image_type="Main"
             )
 
+        # Add new gallery images if uploaded
         if "gallery_images" in request.FILES:
             for img in request.FILES.getlist("gallery_images"):
-                ProductImage.objects.create(product=product, image=img, image_type="Gallery")
+                ProductImage.objects.create(
+                    product=product,
+                    image=img,
+                    image_type="Gallery"
+                )
 
         product.save()
-
         return redirect("add")
 
     subcategories = SubCategory.objects.all()
-    return render(request, "seller/update_product.html", {"product": product, "subcategories": subcategories})
+    return render(request, "seller/update_product.html", {
+        "product": product,
+        "subcategories": subcategories
+    })
 
 
-
-@login_required()
+@login_required
 @seller_required
 def delete_product(request, slug):
+    """
+    Delete a product permanently.
+
+    Args:
+        slug (str): Product slug identifier
+    """
     product = get_object_or_404(Product, slug=slug)
     product.delete()
     return redirect("add")
 
 
+@login_required
+@seller_required
+def product_details(request, slug):
+    """
+    View detailed product information including reviews and sales stats.
+
+    Displays:
+    - Product information and images
+    - Reviews with average rating
+    - Total quantity sold
+    - Number of orders containing this product
+
+    Args:
+        slug (str): Product slug identifier
+    """
+    product = get_object_or_404(
+        Product,
+        slug=slug,
+        seller=request.user.seller_details
+    )
+
+    # Get all subcategories for dropdown
+    subcategories = SubCategory.objects.all()
+
+    # Fetch reviews with user details
+    reviews = (
+        Review.objects.filter(product=product)
+        .select_related("user")
+        .order_by("-created_at")
+    )
+
+    # Calculate average rating
+    avg_rating = reviews.aggregate(avg=Avg("rating"))["avg"] or 0
+
+    # Get order items for this product
+    order_items = OrderItem.objects.filter(product=product)
+
+    # Calculate total quantity sold
+    total_quantity_sold = (
+            order_items.aggregate(q=Sum("quantity"))["q"] or 0
+    )
+
+    # Count unique orders
+    order_count = order_items.values("order").distinct().count()
+
+    # Get product images
+    images = product.images.all()
+    main_image = product.images.first()
+
+    return render(
+        request,
+        "seller/seller_product_details.html",
+        {
+            "product": product,
+            "subcategories": subcategories,
+            "reviews": reviews,
+            "avg_rating": round(avg_rating, 1),
+            "total_quantity_sold": total_quantity_sold,
+            "order_count": order_count,
+            "images": images,
+            "main_image": main_image,
+        }
+    )
 
 
-def seller_registration(request):
-    if request.method=="POST":
+# ============================================================================
+# ORDER MANAGEMENT VIEWS
+# ============================================================================
 
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        role = request.POST.get("role")
-        shop_name = request.POST.get("shop_name")
-        shop_address = request.POST.get("shop_address")
-        business_type = request.POST.get("business_type")
-        gst_number = request.POST.get("gst_number")
-        bank_account = request.POST.get("bank_account")
-
-
-        if User.objects.filter(username=username).exists():
-            messages.error(request, f" username {username} already exists")
-            return render(request, "seller/seller_registration.html")
-
-        user=User.objects.create_user(
-            username=username,
-            password=password,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            role=role
-
-
-        )
-        SellerDetails.objects.create(
-            user=user,
-            shop_name=shop_name,
-            shop_address=shop_address,
-            business_type=business_type,
-            gst_number=gst_number,
-            bank_account=bank_account
-        )
-
-        messages.success(request, "Registration successful! Please log in.")
-        return redirect('login')
-
-
-
-
-
-
-    return render(request,"seller/seller_registration.html")
-
-@login_required()
+@login_required
 @seller_required
 def order_product(request):
+    """
+    View all orders for the seller with filtering and pagination.
+
+    Features:
+    - Search by order ID, username, or product name
+    - Filter by order status (Pending/Processing/Shipped/Delivered)
+    - Pagination (10 orders per page)
+    - Shows notification count for pending orders
+    """
     seller = getattr(request.user, "seller_details", None)
-    search = request.GET.get("search", "").strip()
 
     if not seller:
         return HttpResponse("You are not a seller")
 
+    # Get base queryset with aggregations
     orders = (
         Order.objects.filter(seller=seller)
         .prefetch_related("items", "items__product")
         .annotate(
             items_count=Count("items"),
             total_price=Sum(F("items__unit_price") * F("items__quantity")),
-            total_qty=Sum("items__quantity")  # ADD THIS LINE
+            total_qty=Sum("items__quantity")
         )
     )
 
+    # Apply search filter
+    search = request.GET.get("search", "").strip()
     if search:
         orders = orders.filter(
             Q(id__icontains=search) |
@@ -382,19 +442,13 @@ def order_product(request):
             Q(items__product__name__icontains=search)
         ).distinct()
 
-    # Get status filter from URL query parameter
+    # Apply status filter
     status = request.GET.get('status', None)
-
-    # Filter by status if provided
     if status and status != 'all':
         orders = orders.filter(status=status.capitalize())
 
-    # DEBUG: Print order count
-    print(f"DEBUG: Total orders for this seller: {orders.count()}")
-    print(f"DEBUG: Seller: {seller}")
-
-    # Pagination
-    paginator = Paginator(orders, 10)  # 10 orders per page
+    # Pagination (10 orders per page)
+    paginator = Paginator(orders, 10)
     page_number = request.GET.get('page')
 
     try:
@@ -404,11 +458,7 @@ def order_product(request):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
 
-    # DEBUG: Print pagination info
-    print(f"DEBUG: Total pages: {page_obj.paginator.num_pages}")
-    print(f"DEBUG: Current page: {page_obj.number}")
-    print(f"DEBUG: Orders on this page: {len(page_obj.object_list)}")
-
+    # Count pending orders for notifications
     notification_count = Order.objects.filter(seller=seller, status='Pending').count()
 
     return render(
@@ -422,18 +472,23 @@ def order_product(request):
             "current_status": status if status else 'all'
         }
     )
-from django.utils import timezone
-from django.db.models import Sum
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-# Assume @seller_required is custom decorator
 
-# ... (other imports/models)
 
-@seller_required
 @login_required
+@seller_required
 def order_detail(request, id):
+    """
+    View detailed information for a specific order.
+
+    Features:
+    - Order timeline with status dates
+    - Order items with quantities and prices
+    - Automatic fallback dates for historical orders
+    - Total amount validation and discrepancy detection
+
+    Args:
+        id (int): Order ID
+    """
     try:
         seller = request.user.seller_details
 
@@ -445,7 +500,7 @@ def order_detail(request, id):
             seller=seller
         )
 
-        # Fallbacks: Set null dates for past/completed steps to order_date (historical accuracy)
+        # Set fallback dates for timeline (historical accuracy)
         # Pending: Always fallback to order_date if null
         if not order.pending_date:
             order.pending_date = order.order_date
@@ -453,17 +508,17 @@ def order_detail(request, id):
 
         # Processing: Set if status implies it happened (and null)
         if not order.processing_date and order.status in ['Processing', 'Shipped', 'Delivered']:
-            order.processing_date = order.order_date  # Fallback to order_date for past step
+            order.processing_date = order.order_date
             order.save(update_fields=['processing_date'])
 
         # Shipped: Set if status implies it happened (and null)
         if not order.shipped_date and order.status in ['Shipped', 'Delivered']:
-            order.shipped_date = order.order_date  # Fallback to order_date for past step
+            order.shipped_date = order.order_date
             order.save(update_fields=['shipped_date'])
 
-        # Delivered: Already handled in update, but ensure if viewing Delivered
+        # Delivered: Ensure if viewing Delivered status
         if not order.delivered_date and order.status == 'Delivered':
-            order.delivered_date = order.order_date  # Rare, but fallback
+            order.delivered_date = order.order_date
             order.save(update_fields=['delivered_date'])
 
         # Get order items
@@ -473,13 +528,13 @@ def order_detail(request, id):
         order.total_amount = sum(item.unit_price * item.quantity for item in items)
         order.save(update_fields=['total_amount'])
 
-        # Total quantity
+        # Calculate total quantity
         total_quantity = items.aggregate(total_qty=Sum('quantity'))['total_qty'] or 0
 
-        # Items total price
+        # Calculate items total price
         calculated_items_total = sum(item.unit_price * item.quantity for item in items)
 
-        # Difference check
+        # Check for discrepancies
         amount_difference = order.total_amount - calculated_items_total
 
         context = {
@@ -497,9 +552,19 @@ def order_detail(request, id):
         return HttpResponse(f"Error: {e}")
 
 
-@seller_required
 @login_required
+@seller_required
 def update_order_status(request, id):
+    """
+    Update order status and timeline dates.
+
+    Updates:
+    - Order status (Pending/Processing/Shipped/Delivered)
+    - Corresponding timeline dates (only sets once)
+
+    Args:
+        id (int): Order ID
+    """
     if request.method == "POST":
         order = get_object_or_404(Order, id=id, seller=request.user.seller_details)
         new_status = request.POST.get("status")
@@ -507,7 +572,7 @@ def update_order_status(request, id):
         # Update status
         order.status = new_status
 
-        # Update timeline dates once (with current time for new steps)
+        # Update timeline dates (only set once per status)
         if new_status == "Processing" and not order.processing_date:
             order.processing_date = timezone.now()
 
@@ -519,58 +584,145 @@ def update_order_status(request, id):
 
         order.save()
 
-        # Redirect back to the order detail page (re-triggers fallbacks for past)
+        # Redirect back to order detail page
         return redirect("seller_order_view", id=id)
 
     # If GET request, redirect to order detail page
     return redirect("seller_order_view", id=id)
 
 
+# ============================================================================
+# AUTHENTICATION & REGISTRATION VIEWS
+# ============================================================================
+
+def seller_registration(request):
+    """
+    Register new seller account with business details.
+
+    Creates:
+    - User account with seller role
+    - SellerDetails profile with business information
+
+    Auto-logout: If authenticated user accesses this page, they are logged out
+    """
+    # Auto-logout if logged-in user opens this page
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect("login")
+
+    if request.method == "POST":
+        # Get user fields
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        # Get seller fields
+        role = request.POST.get("role")
+        shop_name = request.POST.get("shop_name")
+        shop_address = request.POST.get("shop_address")
+        business_type = request.POST.get("business_type")
+        gst_number = request.POST.get("gst")
+        bank_account = request.POST.get("bank_account")
+
+        # Validate username uniqueness
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f"Username {username} already exists")
+            return render(request, "seller/seller_registration.html")
+
+        # Validate email uniqueness
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists. Please login.")
+            return redirect("login")
+
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            role=role
+        )
+
+        # Create seller profile
+        if role == "seller":
+            SellerDetails.objects.create(
+                user=user,
+                shop_name=shop_name,
+                shop_address=shop_address,
+                business_type=business_type,
+                gst_number=gst_number,
+                bank_account=bank_account
+            )
+
+        messages.success(request, "Registration successful! Please login.")
+        return redirect("login")
+
+    return render(request, "seller/seller_registration.html")
 
 
 def login_seller(request):
-    if request.method =="POST":
-        username=request.POST.get("username")
-        password=request.POST.get("password")
-        print(username,password)
+    """
+    Authenticate and login seller users.
 
+    Redirects:
+    - Sellers to dashboard
+    - Regular users to home page
+    """
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        user=authenticate(request,username=username,password=password)
-        print(user)
+        # Authenticate user
+        user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
 
-            is_seller=SellerDetails.objects.filter(user=user).exists()
+            # Check if user is a seller
+            is_seller = SellerDetails.objects.filter(user=user).exists()
             if is_seller:
-                print(".............")
                 return redirect('seller_dashboard')
-
             else:
                 return redirect('home')
-        return render(request,"seller/login.html",{"error":"invalid username or password"})
-    return render(request,"seller/login.html")
+
+        return render(request, "seller/login.html", {
+            "error": "Invalid username or password"
+        })
+
+    return render(request, "seller/login.html")
+
 
 def logout_seller(request):
+    """Logout current user and redirect to home page."""
     logout(request)
     return redirect('home')
 
 
-def home(request):
-    return render(request,"seller/seller_home.html")
+# ============================================================================
+# PROFILE & SETTINGS VIEWS
+# ============================================================================
 
-
-
-@login_required()
+@login_required
 @seller_required
 def seller_profile_view(request):
+    """
+    View and edit seller profile information.
+
+    Handles two forms:
+    1. Business Information (shop details, GST, bank account)
+    2. Password Change (with validation)
+    """
     # Get or create seller details for the user
     seller, created = SellerDetails.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
 
+        # Handle business information update
         if form_type == 'business_info':
-            # Handle business information form
             seller.shop_name = request.POST.get('shop_name', '')
             seller.shop_address = request.POST.get('shop_address', '')
             seller.business_type = request.POST.get('business_type', '')
@@ -586,8 +738,8 @@ def seller_profile_view(request):
 
             return redirect('profile')
 
+        # Handle password change
         elif form_type == 'change_password':
-            # Handle password change form
             old_password = request.POST.get('old_password')
             new_password1 = request.POST.get('new_password1')
             new_password2 = request.POST.get('new_password2')
@@ -602,7 +754,7 @@ def seller_profile_view(request):
                 messages.error(request, 'The two new password fields didn\'t match.')
                 return redirect('profile')
 
-            # Validate new password
+            # Validate new password strength
             try:
                 validate_password(new_password1, request.user)
             except ValidationError as e:
@@ -610,10 +762,11 @@ def seller_profile_view(request):
                     messages.error(request, error)
                 return redirect('profile')
 
-            # Set new password
+            # Set new password and keep user logged in
             request.user.set_password(new_password1)
             request.user.save()
-            update_session_auth_hash(request, request.user)  # Important to keep user logged in
+            update_session_auth_hash(request, request.user)
+
             messages.success(request, 'Your password was successfully updated!')
             return redirect('profile')
 
@@ -624,409 +777,114 @@ def seller_profile_view(request):
     return render(request, 'seller/profile.html', context)
 
 
-def not_seller(request):
-    return HttpResponse("⛔ You are not allowed to access seller pages.")
+# ============================================================================
+# SOCIAL AUTH & ROLE SELECTION VIEWS
+# ============================================================================
 
-@login_required()
-@seller_required
-def product_details(request, slug):
+@login_required(login_url="login")
+def choose_role(request):
+    """
+    Role selection page after social authentication.
 
-    product = get_object_or_404(
-        Product,
-        slug=slug,
-        seller=request.user.seller_details
-    )
+    Redirects existing users to their appropriate dashboard.
+    Shows role selection for new social auth users.
+    """
+    user = request.user
 
-    # Get all subcategories for the dropdown
-    subcategories = SubCategory.objects.all()
+    # Redirect existing customer
+    if user.role == "customer" and hasattr(user, "customer"):
+        return redirect("home")
 
-    # Fetch reviews
-    reviews = (
-        Review.objects.filter(product=product)
-        .select_related("user")
-        .order_by("-created_at")
-    )
+    # Redirect existing seller
+    if user.role == "seller" and hasattr(user, "sellerdetails"):
+        return redirect("seller_dashboard")
 
-    avg_rating = reviews.aggregate(avg=Avg("rating"))["avg"] or 0
-
-    order_items = OrderItem.objects.filter(product=product)
-
-    total_quantity_sold = (
-        order_items.aggregate(q=Sum("quantity"))["q"] or 0
-    )
-
-    order_count = order_items.values("order").distinct().count()
-    images = product.images.all()
-    main_image = product.images.first()
-
-    return render(
-        request,
-        "seller/seller_product_details.html",
-        {
-            "product": product,
-            "subcategories": subcategories,
-            "reviews": reviews,
-            "avg_rating": round(avg_rating, 1),
-            "total_quantity_sold": total_quantity_sold,
-            "order_count": order_count,
-    "images": images,
-    "main_image": main_image,
-        }
-    )
-
-
-# views.py
-
-
-# views.py - Review Dashboard (Compatible with your Review model)
-
-
-
-
-
-
-
+    return render(request, "auth/choose_role.html", {"user": user})
 
 
 @login_required
-@seller_required
-def review_dashboard(request):
-    # -------------------- YOUR FULL DASHBOARD LOGIC (UNCHANGED) --------------------
-    try:
-        seller = SellerDetails.objects.get(user=request.user)
-    except SellerDetails.DoesNotExist:
-        return redirect('seller_login')
+def complete_customer(request):
+    """
+    Complete customer profile after Google signup.
 
-    seller_products = Product.objects.filter(seller=seller)
+    Sets user role to customer and redirects to home page.
+    """
+    user = request.user
+    user.role = "customer"
+    user.save()
 
-    all_reviews = Review.objects.filter(
-        product__in=seller_products
-    ).select_related('product', 'user').order_by('-created_at')
-    # ==================== FILTERING & SEARCHING ====================
-    search_query = request.GET.get('search', '').strip()
-    rating_filter = request.GET.get('rating', '')  # Keep as string
-    product_filter = request.GET.get('product', '')  # Keep as string
-    sort_by = request.GET.get('sort', 'newest')
+    # Later you can create a Customer profile here if needed
+    return redirect("home")
 
-    filtered_reviews = all_reviews
 
-    # Search filter - search in comment and user info
-    if search_query:
-        filtered_reviews = filtered_reviews.filter(
-            Q(comment__icontains=search_query) |
-            Q(user__username__icontains=search_query) |
-            Q(user__first_name__icontains=search_query) |
-            Q(user__last_name__icontains=search_query)
+@login_required
+def complete_seller(request):
+    """
+    Complete seller profile after Google signup.
+
+    Collects business information and creates SellerDetails profile.
+    """
+    user = request.user
+
+    # Already a seller - just set role and redirect
+    if hasattr(user, "seller_details"):
+        user.role = "seller"
+        user.save()
+        return redirect("seller_dashboard")
+
+    if request.method == "POST":
+        shop_name = request.POST.get("shop_name")
+        shop_address = request.POST.get("shop_address")
+        business_type = request.POST.get("business_type")
+        gst_number = request.POST.get("gst_number")
+        bank_account = request.POST.get("bank_account")
+
+        # Validate required fields
+        if not shop_name:
+            return render(request, "auth/seller_complete_form.html", {
+                "error": "Shop name is required."
+            })
+
+        # Create seller profile
+        SellerDetails.objects.create(
+            user=user,
+            shop_name=shop_name,
+            shop_address=shop_address or "",
+            business_type=business_type or "",
+            gst_number=gst_number or "",
+            bank_account=bank_account or "",
         )
 
-    # Rating filter - convert to int ONLY for the query
-    if rating_filter:
-        try:
-            rating_int = int(rating_filter)
-            if 1 <= rating_int <= 5:
-                filtered_reviews = filtered_reviews.filter(rating=rating_int)
-            else:
-                rating_filter = ''
-        except (ValueError, TypeError):
-            rating_filter = ''
+        user.role = "seller"
+        user.save()
 
-    # Product filter - convert to int ONLY for the query
-    if product_filter:
-        try:
-            product_int = int(product_filter)
-            filtered_reviews = filtered_reviews.filter(product_id=product_int)
-        except (ValueError, TypeError):
-            product_filter = ''
+        return redirect("seller_dashboard")
 
-    # Sorting
-    if sort_by == 'oldest':
-        filtered_reviews = filtered_reviews.order_by('created_at')
-    elif sort_by == 'highest':
-        filtered_reviews = filtered_reviews.order_by('-rating')
-    elif sort_by == 'lowest':
-        filtered_reviews = filtered_reviews.order_by('rating')
-    else:  # newest (default)
-        filtered_reviews = filtered_reviews.order_by('-created_at')
-        sort_by = 'newest'
-
-    paginator = Paginator(filtered_reviews, 10)
-    page_number = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_number)
-
-    query_params = []
-    if search_query:
-        query_params.append(f'search={search_query}')
-    if rating_filter:
-        query_params.append(f'rating={rating_filter}')
-    if product_filter:
-        query_params.append(f'product={product_filter}')
-    if sort_by != 'newest':
-        query_params.append(f'sort={sort_by}')
-
-    query_string = '&'.join(query_params)
-
-    total_reviews = all_reviews.count()
-    average_rating = all_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
-    unique_reviewers = all_reviews.values('user').distinct().count()
-    products_reviewed = all_reviews.values('product').distinct().count()
-
-    star_distribution = {}
-    for star in range(1, 6):
-        count = all_reviews.filter(rating=star).count()
-        percentage = (count / total_reviews * 100) if total_reviews > 0 else 0
-        star_distribution[star] = {
-            'count': count,
-            'percentage': round(percentage, 1)
-        }
-
-    top_highest_rated = seller_products.annotate(
-        avg_rating=Avg('review__rating'),
-        review_count=Count('review')
-    ).filter(review_count__gt=0).order_by('-avg_rating')[:5]
-
-    top_highest_rated = [
-        {
-            'name': product.name,
-            'rating': round(product.avg_rating, 1) if product.avg_rating else 0
-        }
-        for product in top_highest_rated
-    ]
-
-    top_most_reviewed = seller_products.annotate(
-        review_count=Count('review')
-    ).filter(review_count__gt=0).order_by('-review_count')[:5]
-
-    top_most_reviewed = [
-        {'name': product.name, 'count': product.review_count}
-        for product in top_most_reviewed
-    ]
-
-    lowest_rated = seller_products.annotate(
-        avg_rating=Avg('review__rating'),
-        review_count=Count('review')
-    ).filter(review_count__gt=0).order_by('avg_rating')[:5]
-
-    lowest_rated = [
-        {
-            'name': product.name,
-            'rating': round(product.avg_rating, 1) if product.avg_rating else 0
-        }
-        for product in lowest_rated
-    ]
-
-    positive_reviews = all_reviews.filter(rating__gte=4).count()
-    negative_reviews = all_reviews.filter(rating__lte=2).count()
-
-    positive_sentiment = int((positive_reviews / total_reviews * 100)) if total_reviews > 0 else 0
-    negative_sentiment = int((negative_reviews / total_reviews * 100)) if total_reviews > 0 else 0
-    positive_impact = round((positive_reviews / total_reviews * 100)) if total_reviews > 0 else 0
-
-    repeat_customers = all_reviews.values('user').annotate(
-        review_count=Count('id')
-    ).filter(review_count__gt=1).count()
-
-    also_ordered_count = repeat_customers
-    response_time = "2-3 hours"
-    influenced_sales = positive_sentiment
-
-    reviews_for_template = []
-    for review in page_obj:
-        customer_review_count = all_reviews.filter(user=review.user).count()
-        is_repeat = customer_review_count > 1
-
-        reviews_for_template.append({
-            'id': review.id,
-            'customer_name': review.user.get_full_name() or review.user.username,
-            'customer_username': review.user.username,
-            'rating': review.rating,
-            'comment': review.comment[:100] + '...' if len(review.comment) > 100 else review.comment,
-            'comment_full': review.comment,
-            'product_name': review.product.name,
-            'product_id': review.product.id,
-            'date': review.created_at,
-            'is_repeat_customer': is_repeat,
-            'times_range': range(review.rating),
-            'empty_stars_range': range(5 - review.rating),
-        })
-
-    most_reviewed_products = seller_products.annotate(
-        review_count=Count('review')
-    ).filter(review_count__gt=0).order_by('-review_count')[:5]
-
-    most_reviewed_chart_labels = [p.name[:15] for p in most_reviewed_products]
-    most_reviewed_chart_data = [p.review_count for p in most_reviewed_products]
-
-    monthly_data = {}
-    today = timezone.now()
-
-    for i in range(11, -1, -1):
-        month_date = today - timedelta(days=30 * i)
-        month_key = month_date.strftime('%Y-%m')
-        monthly_data[month_key] = 0
-
-    for review in all_reviews:
-        month_key = review.created_at.strftime('%Y-%m')
-        if month_key in monthly_data:
-            monthly_data[month_key] += 1
-
-    monthly_labels = list(monthly_data.keys())
-    monthly_values = list(monthly_data.values())
-
-    rating_dist_labels = ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star']
-    rating_dist_data = [
-        all_reviews.filter(rating=5).count(),
-        all_reviews.filter(rating=4).count(),
-        all_reviews.filter(rating=3).count(),
-        all_reviews.filter(rating=2).count(),
-        all_reviews.filter(rating=1).count(),
-    ]
-
-    repeat_reviewer_names = list(
-        Review.objects
-        .filter(product__in=seller_products)
-        .values(username=F("user__username"))
-        .annotate(total=Count("id"))
-        .filter(total__gt=1)
-        .values_list("username", flat=True)[:5]
-    )
-
-    positive_customers = list(
-        Review.objects
-        .filter(product__in=seller_products, rating__gte=4)
-        .values_list("user__username", flat=True)
-        .distinct()[:5]
-    )
-
-    negative_customers = list(
-        Review.objects
-        .filter(product__in=seller_products, rating__lte=2)
-        .values_list("user__username", flat=True)
-        .distinct()[:5]
-    )
-
-    context = {
-        'seller': seller,
-        'reviews': reviews_for_template,
-        'page_obj': page_obj,
-        'paginator': paginator,
-
-        'rating_avg': round(average_rating, 1),
-        'total_reviews': total_reviews,
-        'unique_reviewers': unique_reviewers,
-        'products_reviewed': products_reviewed,
-
-        'star_distribution': star_distribution,
-
-        'top_highest_rated': top_highest_rated,
-        'top_most_reviewed': top_most_reviewed,
-        'lowest_rated': lowest_rated,
-
-        'positive_sentiment': positive_sentiment,
-        'negative_sentiment': negative_sentiment,
-        'positive_impact': positive_impact,
-        'influenced_sales': influenced_sales,
-        'response_time': response_time,
-        'also_ordered_count': also_ordered_count,
-
-        'products': seller_products.values('id', 'name')[:20],
-
-        'most_reviewed_chart_labels': json.dumps(most_reviewed_chart_labels),
-        'most_reviewed_chart_data': json.dumps(most_reviewed_chart_data),
-        'monthly_labels': json.dumps(monthly_labels),
-        'monthly_values': json.dumps(monthly_values),
-        'rating_dist_labels': json.dumps(rating_dist_labels),
-        'rating_dist_data': json.dumps(rating_dist_data),
-
-        'search_query': search_query,
-        'rating_filter': rating_filter,
-        'product_filter': product_filter,
-        'sort_by': sort_by,
-        'query_string': query_string,
-
-        'repeat_reviewer_names': repeat_reviewer_names,
-        'positive_customers': positive_customers,
-        'negative_customers': negative_customers,
+    # Prepopulate form with user data
+    initial = {
+        "shop_name": f"{user.first_name}'s Shop" if user.first_name else "",
+        "email": user.email,
     }
-
-    return render(request, 'seller/seller_review.html', context)
-
-
-@login_required
-@seller_required
-@require_http_methods(["POST"])
-def delete_review(request, review_id):
-    try:
-        seller = SellerDetails.objects.get(user=request.user)
-    except SellerDetails.DoesNotExist:
-        return JsonResponse({'error': 'Seller not found'}, status=403)
-
-    try:
-        review = Review.objects.get(id=review_id, product__seller=seller)
-    except Review.DoesNotExist:
-        return JsonResponse({'error': 'Review not found or unauthorized'}, status=404)
-
-    review.delete()
-    return JsonResponse({'success': True, 'message': 'Review deleted successfully'})
+    return render(request, "auth/seller_complete_form.html", {"initial": initial})
 
 
-@login_required
-@seller_required
-def download_reviews_csv(request):
-    try:
-        seller = SellerDetails.objects.get(user=request.user)
-    except SellerDetails.DoesNotExist:
-        return redirect('seller_login')
-
-    seller_products = Product.objects.filter(seller=seller)
-    all_reviews = Review.objects.filter(
-        product__in=seller_products
-    ).select_related('product', 'user').order_by('-created_at')
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="reviews_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Customer', 'Rating', 'Review', 'Product', 'Date'])
-
-    for review in all_reviews:
-        writer.writerow([
-            review.user.get_full_name() or review.user.username,
-            review.rating,
-            review.comment,
-            review.product.name,
-            review.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        ])
-
-    return response
-@login_required
-@seller_required
-def review_analytics(request):
+def social_signup_error(request):
     """
-    Review analytics page (non-API version)
+    Handle social signup errors (e.g., email already registered).
     """
-    try:
-        seller = SellerDetails.objects.get(user=request.user)
-    except SellerDetails.DoesNotExist:
-        return redirect('seller_login')
-
-    seller_products = Product.objects.filter(seller=seller)
-    all_reviews = Review.objects.filter(product__in=seller_products)
-
-    total_reviews = all_reviews.count()
-    average_rating = all_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
-
-    # Star count distribution
-    star_data = {}
-    for star in range(1, 6):
-        star_data[star] = all_reviews.filter(rating=star).count()
-
-    context = {
-        "total_reviews": total_reviews,
-        "average_rating": round(average_rating, 1),
-        "star_distribution": star_data,
-        "seller": seller
-    }
-
-    return render(request, "seller/review_analytics.html", context)
+    messages.error(request, "This email is already registered. Please login.")
+    return redirect("login")
 
 
+# ============================================================================
+# ERROR & UTILITY VIEWS
+# ============================================================================
+
+def home(request):
+    """Seller homepage/landing page."""
+    return render(request, "seller/seller_home.html")
+
+
+def not_seller(request):
+    """Error page for non-sellers trying to access seller pages."""
+    return HttpResponse("⛔ You are not allowed to access seller pages.")
