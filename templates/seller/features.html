@@ -1099,7 +1099,7 @@
 </head>
 <body>
     <!-- NAVBAR -->
-    <div class="navbar">
+      <div class="navbar">
         <div class="navbar-left">
             <div class="hamburger" onclick="toggleSidebar()">
                 <span></span>
@@ -1107,7 +1107,7 @@
                 <span></span>
             </div>
             <div class="logo">ShopHub</div>
-            <div class="navbar-title">Manage Products</div>
+            <div class="navbar-title">Dashboard</div>
         </div>
         <div class="navbar-right">
             <div class="notification-bell" onclick="showNotifications()">
@@ -1146,13 +1146,7 @@
                             </div>
                         </div>
                         <!-- STORE SETTINGS -->
-                        <div class="dropdown-item" onclick="openStoreModal()">
-                            <span class="dropdown-item-icon">🏪</span>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Store Settings</div>
-                                <div class="dropdown-item-desc">Manage store details</div>
-                            </div>
-                        </div>
+    <div class="dropdown-divider"></div>
                         <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
@@ -1162,14 +1156,16 @@
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <!-- HELP -->
-                        <div class="dropdown-item">
+
+                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
-                                <div class="dropdown-item-desc">FAQs & support</div>
+                                <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
                         </div>
+                        <!-- HELP -->
+
                         <div class="dropdown-divider"></div>
                         <!-- LOGOUT -->
                         <div class="dropdown-item logout">
