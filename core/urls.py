@@ -15,6 +15,7 @@ urlpatterns = [
     path('users/<int:user_id>/block/', views.block_user, name='block_user'),
     path('users/<int:user_id>/unblock/', views.unblock_user, name='unblock_user'),
     path('users/<int:user_id>/delete/', views.delete_user, name='delete_user'),
+    path('users/<int:user_id>/send-email/', views.send_user_email, name='send_user_email'),
 
     # Sellers Management
     path('sellers/', views.sellers_list, name='admin_sellers'),
@@ -24,6 +25,7 @@ urlpatterns = [
     path('sellers/<int:seller_id>/unblock/', views.unblock_seller_user, name='unblock_seller_user'),
     path('sellers/<int:seller_id>/approve/', views.approve_seller, name='approve_seller'),
     path('sellers/<int:seller_id>/delete/', views.delete_seller, name='delete_seller'),
+    path('sellers/<int:seller_id>/send-email/', views.send_seller_email, name='send_seller_email'),
 
     # Products Management
     path('products/', views.products_list, name='admin_products'),
@@ -42,6 +44,7 @@ urlpatterns = [
     path('reviews/<int:review_id>/delete/', views.delete_review, name='admin_delete_review'),
     path('reviews/<int:review_id>/approve/', views.approve_review, name='admin_approve_review'),
     path('reviews/<int:review_id>/reject/', views.reject_review, name='admin_reject_review'),
+
 
     # Admin Profile and Settings
     path('profile/', views.admin_profile, name='admin_profile'),

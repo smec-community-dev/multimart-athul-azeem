@@ -17,6 +17,9 @@ from django.db import models
 from core.models import SubCategory, Category
 from seller.models import SellerDetails, Product
 from user.models import Order, Review
+from django.contrib import messages as django_messages
+from django.core.mail import send_mail
+from django.conf import settings
 
 User = get_user_model()
 
@@ -148,6 +151,9 @@ def users_list(request):
 
 
 def user_detail(request, pk):
+    """
+    Display user details with orders and reviews
+    """
     user = get_object_or_404(User, pk=pk)
     orders = Order.objects.filter(user=user).order_by('-order_date')
     reviews = Review.objects.filter(user=user).order_by('-created_at')
@@ -158,6 +164,41 @@ def user_detail(request, pk):
         'reviews': reviews,
     }
     return render(request, 'admin/user_detail.html', context)
+
+
+def send_user_email(request, user_id):
+    """
+    Send email to a user
+    """
+    if request.method != 'POST':
+        return redirect('admin_panel:user_detail', pk=user_id)
+
+    user = get_object_or_404(User, pk=user_id)
+
+    subject = request.POST.get('subject')
+    message = request.POST.get('message')
+
+    # Validation
+    if not subject or not message:
+        django_messages.error(request, 'Subject and message are required!')
+        return redirect('admin_panel:user_detail', pk=user_id)
+
+    try:
+        # Send email
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+        django_messages.success(request, f'Email sent successfully to {user.email}!')
+
+    except Exception as e:
+        django_messages.error(request, f'Error sending email: {str(e)}')
+
+    return redirect('admin_panel:user_detail', pk=user_id)
 
 
 def add_user(request):
@@ -259,6 +300,41 @@ def seller_detail(request, pk):
     seller = get_object_or_404(SellerDetails, id=pk)
     context = {'seller': seller}
     return render(request, 'admin/seller_detail.html', context)
+
+
+def send_seller_email(request, seller_id):
+    """
+    Send email to a seller
+    """
+    if request.method != 'POST':
+        return redirect('admin_panel:seller_detail', seller_id=seller_id)
+
+    seller = get_object_or_404(Seller, id=seller_id)
+
+    subject = request.POST.get('subject')
+    message = request.POST.get('message')
+
+    # Validation
+    if not subject or not message:
+        django_messages.error(request, 'Subject and message are required!')
+        return redirect('admin_panel:seller_detail', seller_id=seller_id)
+
+    try:
+        # Send email to seller's user email
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[seller.user.email],
+            fail_silently=False,
+        )
+
+        django_messages.success(request, f'Email sent successfully to {seller.user.email}!')
+
+    except Exception as e:
+        django_messages.error(request, f'Error sending email: {str(e)}')
+
+    return redirect('admin_panel:seller_detail', seller_id=seller_id)
 
 
 def add_seller(request):
