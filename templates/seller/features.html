@@ -1193,13 +1193,10 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="#" class="active"><span>📦</span> Products</a></li>
+                     <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"  class="active"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="#"><span>💰</span> Earnings</a></li>
-                <li><a href="#"><span>⭐</span> Reviews</a></li>
-                <li><a href="#"><span>📈</span> Analytics</a></li>
-                <li><a href="#"><span>⚙️</span> Settings</a></li>
+                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
             </ul>
         </div>
         <!-- MAIN CONTENT -->
