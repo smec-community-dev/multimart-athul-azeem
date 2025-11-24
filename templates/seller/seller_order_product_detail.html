@@ -1337,10 +1337,12 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                            <div class="dropdown-item-text">
+                             <a href="{% url 'help_support'  %}">
+                                    <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
+                            </a>
                         </div>
                         <!-- HELP -->
 
@@ -1369,10 +1371,9 @@
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.path == '/seller_dashboard/' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" class="{% if 'add' in request.path %}active{% endif %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}" class="{% if 'order' in request.path %}active{% endif %}"><span>🛒</span> Orders</a></li>
-                <li><a href="#"><span>💰</span> Earnings</a></li>
+                                <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"  ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}" class="active"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
 
             </ul>
@@ -1593,21 +1594,20 @@
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                        <a href="#" title="Facebook">f</a>
-                        <a href="#" title="Twitter">𝕏</a>
-                        <a href="#" title="Instagram">📷</a>
-                        <a href="#" title="LinkedIn">💼</a>
+                                          <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
 
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
+                           <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
 

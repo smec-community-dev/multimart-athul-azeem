@@ -1129,4 +1129,23 @@ def social_signup_error(request):
     return redirect("login")
 
 
+@login_required
+def help_support(request):
+    """
+    Help & Support page view
+    """
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'seller/help.html', context)
+
+@login_required
+def seller_guide(request):
+    """
+    seller guide page view
+    """
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'seller/seller_guide.html', context)
 

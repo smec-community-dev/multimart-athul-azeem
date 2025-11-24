@@ -36,5 +36,7 @@ path("social/error/", views.social_signup_error, name="social_error"),
 
     # Download CSV
     path('reviews/download/csv/', views.download_reviews_csv, name='download_reviews_csv'),
+    path('help-support/', views.help_support, name='help_support'),
+    path('seller-guide/', views. seller_guide, name='seller_guide'),
 
 ]

@@ -1339,16 +1339,6 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <div class="logo">ShopHub</div>
-            <div class="navbar-title">Product Details</div>
-        </div>
-    <div class="navbar">
-        <div class="navbar-left">
             <div class="hamburger" onclick="toggleSidebar()">
                 <span></span>
                 <span></span>
@@ -1407,10 +1397,12 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                            <div class="dropdown-item-text">
+                             <a href="{% url 'help_support'  %}">
+                                    <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
+                            </a>
                         </div>
                         <!-- HELP -->
 
@@ -1436,13 +1428,10 @@
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="#"><span>📊</span> Dashboard</a></li>
-                <li><a href="#" class="active"><span>📦</span> Products</a></li>
-                <li><a href="#"><span>🛒</span> Orders</a></li>
-                <li><a href="#"><span>💰</span> Earnings</a></li>
-                <li><a href="#"><span>⭐</span> Reviews</a></li>
-                <li><a href="#"><span>📈</span> Analytics</a></li>
-                <li><a href="#"><span>⚙️</span> Settings</a></li>
+                             <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"  class="active"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
             </ul>
         </aside>
 
@@ -1677,21 +1666,19 @@
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
+                                        <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Customer Service</h4>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                                <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </ul>
                 </div>
                 <div class="footer-section">
