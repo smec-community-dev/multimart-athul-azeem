@@ -1,0 +1,283 @@
+<!-- admin/templates/admin/review_detail.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Review Details - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Review Details</h1>
+    <p>View and manage review information</p>
+</div>
+
+<div class="section">
+    <div class="review-header">
+        <div class="review-info">
+            <h2>Review for "{{ review.product.name }}"</h2>
+            <p class="review-date">{{ review.created_at|date:"F d, Y - H:i" }}</p>
+        </div>
+        <div class="review-status">
+            {% if review.is_approved %}
+                <span class="status-badge status-active">
+                    <i class="fas fa-check-circle"></i> Approved
+                </span>
+            {% else %}
+                <span class="status-badge status-warning">
+                    <i class="fas fa-clock"></i> Pending
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="review-grid">
+        <!-- Reviewer Information -->
+        <div class="card">
+            <h3>Reviewer Information</h3>
+            <div class="info-group">
+                <label>Username:</label>
+                <p>{{ review.user.username }}</p>
+            </div>
+            <div class="info-group">
+                <label>Email:</label>
+                <p>{{ review.user.email }}</p>
+            </div>
+            <div class="info-group">
+                <label>Review Date:</label>
+                <p>{{ review.created_at|date:"F d, Y" }}</p>
+            </div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="card">
+            <h3>Product Information</h3>
+            <div class="info-group">
+                <label>Product Name:</label>
+                <p>{{ review.product.name }}</p>
+            </div>
+            <div class="info-group">
+                <label>Product ID:</label>
+                <p>#{{ review.product.id }}</p>
+            </div>
+            <div class="info-group">
+                <label>Rating:</label>
+                <p class="rating-display">
+                    {% for i in "12345"|make_list %}
+                        <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                    {% endfor %}
+                    <span class="rating-text">{{ review.rating }}/5</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Comment -->
+    <div class="section">
+        <h3>Review Comment</h3>
+        <div class="comment-box">
+            {{ review.comment }}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="section">
+        <div class="action-buttons">
+            {% if review.is_approved %}
+                <a href="{% url 'admin_panel:admin_reject_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                   class="btn-warning"
+                   onclick="return confirm('Reject this review?');">
+                    <i class="fas fa-times-circle"></i> Reject Review
+                </a>
+            {% else %}
+                <a href="{% url 'admin_panel:admin_approve_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                   class="btn-success"
+                   onclick="return confirm('Approve this review?');">
+                    <i class="fas fa-check-circle"></i> Approve Review
+                </a>
+            {% endif %}
+
+            <a href="{% url 'admin_panel:admin_delete_review' review.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+               class="btn-danger">
+                <i class="fas fa-trash"></i> Delete Review
+            </a>
+
+            <a href="{% url 'admin_panel:admin_reviews' %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+               class="btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reviews
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #eee;
+    }
+
+    .review-info h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .review-date {
+        color: #666;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .review-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .card h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+    }
+
+    .info-group {
+        margin-bottom: 1rem;
+    }
+
+    .info-group label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .info-group p {
+        margin: 0.25rem 0 0 0;
+        color: #666;
+    }
+
+    .rating-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .rating-text {
+        margin-left: 0.5rem;
+        font-weight: 600;
+    }
+
+    .text-warning {
+        color: #ffc107;
+    }
+
+    .text-muted {
+        color: #ddd;
+    }
+
+    .comment-box {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #2196F3;
+        line-height: 1.6;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-success, .btn-danger, .btn-warning, .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        transition: background 0.3s;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-warning {
+        background: #ff9800;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background: #e68900;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .status-badge {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-active {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50;
+    }
+
+    .status-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #FFC107;
+    }
+
+    @media (max-width: 768px) {
+        .review-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-success, .btn-danger, .btn-warning, .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
