@@ -1,0 +1,490 @@
+{% extends 'admin/base.html' %}
+{% block title %}Categories - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Categories Management</h1>
+    <p>View and manage all product categories</p>
+</div>
+
+<div class="section">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd;">
+                <i class="fas fa-th" style="color: #2196F3;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_categories }}</div>
+                <div class="stat-label">Total Categories</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5;">
+                <i class="fas fa-check-circle" style="color: #9c27b0;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ active_categories }}</div>
+                <div class="stat-label">Active</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0;">
+                <i class="fas fa-times-circle" style="color: #ff9800;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ inactive_categories }}</div>
+                <div class="stat-label">Inactive</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fce4ec;">
+                <i class="fas fa-list-ul" style="color: #e91e63;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_subcategories }}</div>
+                <div class="stat-label">Subcategories</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <div class="section-title">All Categories</div>
+        <a href="{% url 'admin_panel:admin_category_add' %}" class="btn-primary">
+            <i class="fas fa-plus"></i> Add New Category
+        </a>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <div class="search-filter">
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <input type="text" name="search" placeholder="Search by category name..." value="{{ search_query|default:'' }}" class="search-input">
+            </div>
+            <div class="form-group">
+                <select name="status" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if current_status == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-search"></i> Apply Filter
+            </button>
+            {% if search_query or current_status %}
+            <a href="{% url 'admin_panel:admin_categories' %}" class="btn-secondary">
+                <i class="fas fa-times"></i> Clear Filters
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th data-label="ID">ID</th>
+                    <th data-label="Name">Name</th>
+                    <th data-label="Description">Description</th>
+                    <th data-label="Subcategories">Subcategories</th>
+                    <th data-label="Status">Status</th>
+                    <th data-label="Created">Created Date</th>
+                    <th data-label="Actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td data-label="ID">{{ category.id }}</td>
+                    <td data-label="Name">
+                        <strong>{{ category.name }}</strong>
+                    </td>
+                    <td data-label="Description">{{ category.description|truncatechars:50 }}</td>
+                    <td data-label="Subcategories" class="text-center">
+                        <span class="badge badge-info">{{ category.subcategories.count }}</span>
+                    </td>
+                    <td data-label="Status">
+                        {% if category.status %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-times-circle"></i> Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Created">
+                        <small>{{ category.created_at|date:"M d, Y" }}</small>
+                    </td>
+                    <td data-label="Actions">
+                        <!-- View Details -->
+                      <a href="{% url 'admin_panel:category_products' category.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+   title="View Products"
+   class="action-icon action-icon-info">
+    <i class="fas fa-eye"></i>
+</a>
+
+                        <!-- Edit Category -->
+                        <a href="{% url 'admin_panel:admin_category_edit' category.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                           title="Edit Category"
+                           class="action-icon action-icon-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <!-- Delete Category -->
+                        <a href="{% url 'admin_panel:admin_category_delete' category.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+                           title="Delete Category"
+                           class="action-icon action-icon-danger"
+                           onclick="return confirm('Are you sure? This may affect related subcategories.');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-state">
+                    <td colspan="7" style="text-align: center; padding: 40px; font-style: italic; color: var(--light-text);">
+                        No categories found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if categories.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% with search_query=search_query current_status=current_status %}
+        {% if categories.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ categories.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+            <span class="disabled"><i class="fas fa-angle-left"></i></span>
+        {% endif %}
+
+        {% for num in categories.paginator.page_range %}
+            {% if categories.number == num %}
+                <span class="active">{{ num }}</span>
+            {% elif num > categories.number|add:'-3' and num < categories.number|add:'3' %}
+                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if categories.has_next %}
+            <a href="?page={{ categories.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ categories.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-right"></i></span>
+            <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+        {% endif %}
+
+        {% endwith %}
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
+    /* Status Badge Styles */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50;
+    }
+
+    .status-inactive {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: #F44336;
+    }
+
+    /* Badge Info */
+    .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-info {
+        background-color: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+    }
+
+    /* Text Utilities */
+    .text-center {
+        text-align: center;
+    }
+
+    /* Action Icons */
+    .action-icon {
+        padding: 4px;
+        font-size: 0.875rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: white;
+        transition: background-color 0.2s, opacity 0.2s;
+        margin: 2px;
+    }
+
+    .action-icon:hover {
+        opacity: 0.8;
+        text-decoration: none;
+        color: white;
+    }
+
+    .action-icon i {
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    .action-icon-success {
+        background: var(--success-color, #28a745);
+    }
+
+    .action-icon-danger {
+        background: var(--danger-color, #dc3545);
+    }
+
+    .action-icon-warning {
+        background: #ff9800;
+    }
+
+    .action-icon-info {
+        background: var(--info-color, #17a2b8);
+    }
+
+    /* Search and Filter */
+    .search-filter {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-width: 200px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color, #2196F3);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .empty-state td {
+        padding: 40px !important;
+        text-align: center;
+        font-style: italic;
+        color: var(--light-text, #999);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-group {
+            min-width: auto;
+        }
+
+        .search-input,
+        .filter-select {
+            min-width: auto;
+            width: 100%;
+        }
+
+        .section-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            margin: 1px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .empty-state td {
+            display: block !important;
+            padding: 20px !important;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            padding: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+    }
+</style>
+
+{% endblock %}

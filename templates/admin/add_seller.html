@@ -1,0 +1,131 @@
+<!-- admin/templates/admin/add_seller.html -->
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Add Seller - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Add New Seller</h1>
+    <p>Create a new seller account</p>
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">Seller Details</div>
+        <a href="{% url 'admin_panel:admin_sellers' %}" class="btn-primary">Back to Sellers</a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" required class="form-control" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required class="form-control" placeholder="Enter email address">
+            </div>
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required class="form-control" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label for="shop_name">Store Name *</label>
+                <input type="text" id="shop_name" name="shop_name" required class="form-control" placeholder="Enter store name">
+            </div>
+            <!-- Additional fields based on model (optional) -->
+            <div class="form-group">
+                <label for="phone_number">Phone Number</label>
+                <input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Enter phone number">
+            </div>
+            <div class="form-group full-width">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="3" class="form-control" placeholder="Enter address"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="profile_image">Profile Image</label>
+                <input type="file" id="profile_image" name="profile_image" accept="image/*" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Create Seller</button>
+            <a href="{% url 'admin_panel:admin_sellers' %}" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--text-color);
+        font-size: 0.9rem;
+    }
+    .form-control {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+        background: var(--card-bg);
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(255, 127, 50, 0.1);
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+    }
+    .btn-secondary {
+        background: var(--border-color);
+        color: var(--text-color);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background: var(--light-text);
+        color: var(--card-bg);
+    }
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .form-actions {
+            flex-direction: column;
+        }
+        .btn-primary, .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% block title %}Add Subcategory - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Add New Subcategory</h1>
+    <p>Create a new product subcategory</p>
+</div>
+
+<div class="section">
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: var(--danger-color); margin-bottom: 16px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: grid; gap: 16px; max-width: 500px;">
+            <div>
+                <label for="name" style="display: block; margin-bottom: 4px; font-weight: 600;">Name *</label>
+                <input type="text" id="name" name="name" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+            </div>
+            <div>
+                <label for="category_id" style="display: block; margin-bottom: 4px; font-weight: 600;">Parent Category *</label>
+                <select id="category_id" name="category_id" required style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <option value="">Select a category</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="description" style="display: block; margin-bottom: 4px; font-weight: 600;">Description</label>
+                <textarea id="description" name="description" rows="3" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px;"></textarea>
+            </div>
+            <div>
+                <label for="is_active" style="display: block; margin-bottom: 4px; font-weight: 600;">Active</label>
+                <input type="checkbox" id="is_active" name="is_active" checked>
+            </div>
+        </div>
+        <div style="margin-top: 24px;">
+            <button type="submit" class="btn-primary">Save Subcategory</button>
+            <a href="{% url 'admin_panel:admin_subcategories' %}" style="margin-left: 10px; color: var(--light-text);">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
