@@ -278,26 +278,47 @@
         </table>
     </div>
 
+    <!-- Send Email Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fas fa-envelope"></i> Send Message to Seller
+            </div>
+        </div>
+
+        <div class="email-card">
+            <p style="margin-bottom: 15px; color: #555;">
+                Click the button below to send an email to the seller. This will open your default email client.
+            </p>
+
+            <a href="mailto:{{ seller.user.email }}?subject=Seller%20Notice&body=Dear%20{{ seller.user.first_name|default:'Seller' }},%0A%0AThis%20is%20a%20message%20regarding%20your%20seller%20account.%0A%0ABest%20regards,%0AAdmin%20Team"
+               class="btn-email"
+               style="display: inline-flex; align-items: center; gap: 8px; background: #4CAF50; color: white; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+                <i class="fas fa-envelope"></i> Send Email to {{ seller.user.email }}
+            </a>
+        </div>
+    </div>
+
     <!-- Actions -->
     <div class="section" style="margin-top: 30px;">
         <div class="section-header">
             <div class="section-title">Quick Actions</div>
         </div>
-        
+
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             {% if not seller.is_approved %}
-            <a href="{% url 'admin_panel:approve_seller' seller.id %}" 
-               class="btn-primary" 
+            <a href="{% url 'admin_panel:approve_seller' seller.id %}"
+               class="btn-primary"
                style="display: inline-flex; align-items: center; gap: 8px;">
                 <i class="fas fa-check"></i> Approve Seller
             </a>
             {% endif %}
-            
+
             {% if not seller.user.is_blocked %}
             <form method="post" action="{% url 'admin_panel:block_seller_user' seller.user.id %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" 
-                        class="btn-primary" 
+                <button type="submit"
+                        class="btn-primary"
                         style="background: #F44336; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: white; text-decoration: none; font-size: 0.85rem;"
                         onclick="return confirm('Block this seller account?');">
                     <i class="fas fa-ban"></i> Block Seller
@@ -306,8 +327,8 @@
             {% else %}
             <form method="post" action="{% url 'admin_panel:unblock_seller_user' seller.user.id %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" 
-                        class="btn-primary" 
+                <button type="submit"
+                        class="btn-primary"
                         style="background: #4CAF50; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-weight: 600; color: white; text-decoration: none; font-size: 0.85rem;"
                         onclick="return confirm('Unblock this seller account?');">
                     <i class="fas fa-unlock"></i> Unblock Seller
@@ -362,6 +383,18 @@
             color: #F44336;
         }
 
+        /* Email Card */
+        .email-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .btn-email:hover {
+            opacity: 0.9;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .detail-table td:first-child {
@@ -389,6 +422,11 @@
             .btn-primary {
                 font-size: 0.85rem;
                 padding: 8px 14px;
+            }
+
+            .btn-email {
+                width: 100%;
+                justify-content: center;
             }
         }
 
