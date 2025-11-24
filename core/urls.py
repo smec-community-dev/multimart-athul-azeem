@@ -4,6 +4,7 @@ from . import views
 app_name = 'admin_panel'
 
 urlpatterns = [
+    # Dashboard
     path('', views.dashboard, name='admin_dashboard'),
 
     # Users Management
@@ -25,10 +26,14 @@ urlpatterns = [
 
     # Products Management
     path('products/', views.products_list, name='admin_products'),
+    path('products/<int:product_id>/edit/', views.edit_product, name='edit_product'),
+    path('products/<int:product_id>/delete/', views.delete_product, name='delete_product'),
 
     # Orders Management
     path('orders/', views.orders_list, name='admin_orders'),
-    path('orders/<int:pk>/', views.order_detail, name='order_detail'),
+    path('orders/<int:order_id>/detail/', views.order_detail, name='admin_order_detail'),
+    path('orders/<int:order_id>/delete/', views.delete_order, name='admin_delete_order'),
+    path('orders/export/', views.export_orders, name='admin_export_orders'),
 
     # Reviews Management
     path('reviews/', views.reviews_list, name='admin_reviews'),

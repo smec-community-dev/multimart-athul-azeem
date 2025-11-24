@@ -9,7 +9,7 @@
 <div class="section">
     <div class="section-header">
         <div class="section-title">All Products</div>
-        <button class="btn-primary">Add Product</button>
+
     </div>
     <div class="responsive-table-wrapper">
         <table>
@@ -43,10 +43,20 @@
                     </td>
                     <td>{{ product.subcategory.name }}</td>
                     <td>{{ product.seller.user.username }}</td>
-                    <td>
-                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fas fa-edit"></i></button>
-                        <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem; background: var(--danger-color);"><i class="fas fa-trash"></i></button>
-                    </td>
+                <!-- Updated action buttons section in admin/templates/admin/products.html -->
+<td>
+    <a href="{% url 'admin_panel:edit_product' product.id %}
+"
+       class="btn-primary"
+       style="padding: 4px 8px; font-size: 0.75rem; text-decoration: none; display: inline-block;">
+        <i class="fas fa-edit"></i>
+    </a>
+    <a href="{% url 'admin_panel:delete_product' product.id %}"
+       class="btn-primary"
+       style="padding: 4px 8px; font-size: 0.75rem; background: var(--danger-color); text-decoration: none; display: inline-block;">
+        <i class="fas fa-trash"></i>
+    </a>
+</td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="7" style="text-align:center;">No products</td></tr>
