@@ -1047,6 +1047,71 @@ table {
         font-size: 0.7rem;
     }
 }
+/* ============================================
+   FINAL RESPONSIVE TABLE FIX (Place at bottom)
+   ============================================ */
+.responsive-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+}
+
+.responsive-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px; /* Ensures columns don't squeeze */
+}
+
+.responsive-table-wrapper th,
+.responsive-table-wrapper td {
+    white-space: nowrap;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+/* Medium Devices */
+@media (max-width: 768px) {
+    .responsive-table-wrapper table {
+        min-width: 650px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Small Devices */
+@media (max-width: 480px) {
+    .responsive-table-wrapper table {
+        min-width: 550px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+    .product-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Very Small Phones */
+@media (max-width: 360px) {
+    .responsive-table-wrapper table {
+        min-width: 480px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 4px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+
 
     </style>
 </head>
@@ -1149,10 +1214,8 @@ table {
                 <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
                 <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href=""><span>💰</span> Earnings</a></li>
                 <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
-                <li><a href="#"><span>📈</span> Analytics</a></li>
-                <li><a href="#"><span>⚙️</span> Settings</a></li>
+
             </ul>
         </div>
         <!-- MAIN CONTENT -->
@@ -1166,12 +1229,14 @@ table {
                 <div class="stat-card">
                     <div class="stat-label">📊 TOTAL REVENUE</div>
                     <div class="stat-value">₹{{ total_revenue }}</div>
-                    <div class="stat-change">↑ 12.5% from yesterday</div>
+                   <div class="stat-change">↑ {{ revenue_growth }}% from yesterday</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">📦TOTAL ORDERS</div>
                     <div class="stat-value">{{ total_orders }}</div>
-                    <div class="stat-change">↑ 8 new orders</div>
+                    <div class="stat-change">↑ {{ new_orders_today }} new orders</div>
+                    <div class="stat-change">↑ {{ orders_growth }}% from yesterday</div>
+
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">🛍️ PRODUCTS</div>
@@ -1199,6 +1264,7 @@ table {
                     <div class="section-title">Top Products</div>
                     <button class="btn-primary"><a href="{% url 'add' %}">View All</a></button>
                 </div>
+                <div class="responsive-table-wrapper">
                 <div class="table-container">
                     <table>
                         <thead>
@@ -1207,6 +1273,7 @@ table {
                                 <th>Category</th>
                                 <th>Price</th>
                                 <th>Stock</th>
+                                  <th>Units Sold</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -1221,18 +1288,26 @@ table {
                                 </td>
                                 <td>{{ p.subcategory.name}}</td>
                                 <td>₹{{ p.price }}</td>
-                                <td>{{ p.stock }}</td>
-                                <td>
-                                    {% if p.stock > low_stock_threshold %}
-                                        {% if p.stock > 0 %}
-                                            <span class="status-badge status-active">Active</span>
-                                        {% else %}
-                                            <span class="status-badge status-inactive">Out</span>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="status-badge status-warning">Low Stock ({{ p.stock }})</span>
-                                    {% endif %}
-                                </td>
+                               <td>{{ p.stock }}</td>
+
+<td>
+    <span class="status-badge status-active">
+        {{ p.total_sold }} Sold
+    </span>
+</td>
+
+<td>
+    {% if p.stock > low_stock_threshold %}
+        {% if p.stock > 0 %}
+            <span class="status-badge status-active">Active</span>
+        {% else %}
+            <span class="status-badge status-inactive">Out</span>
+        {% endif %}
+    {% else %}
+        <span class="status-badge status-warning">Low Stock ({{ p.stock }})</span>
+    {% endif %}
+</td>
+
                             </tr>
                             {% empty %}
                             <tr>
@@ -1242,6 +1317,7 @@ table {
                         </tbody>
                     </table>
                 </div>
+                    </div>
             </div>
             <!-- RECENT ORDERS -->
             <div class="section">
@@ -1398,96 +1474,247 @@ table {
             </div>
         </div>
     </footer>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    /* ==================== WEEKLY SALES CHART ==================== */
-    document.addEventListener("DOMContentLoaded", function () {
+/* ========================================================
+   GLOBAL VARIABLES
+   ======================================================== */
+let chartInstance = null;
 
-        const ctx = document.getElementById('weeklySalesChart');
-        if (ctx) {
-            const chartCtx = ctx.getContext('2d');
-            const gradient = chartCtx.createLinearGradient(0, 0, 0, 280);
-            gradient.addColorStop(0, '#FFB273');
-            gradient.addColorStop(1, '#FF7F32');
+const chartConfig = {
+    animationDuration: 1600,
+    animationEasing: 'easeOutQuart',
+    tension: 0.45,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    borderWidth: 3
+};
 
-            new Chart(chartCtx, {
-                type: 'bar',
-                data: {
-                    labels: {{ sales_labels|default:"[]"|safe }},
-                    datasets: [{
-                        data: {{ sales_values|default:"[]"|safe }},
-                        backgroundColor: gradient,
-                        borderColor: '#FF7F32',
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        barThickness: 28,
-                        categoryPercentage: 0.8,
-                    }]
+/* ========================================================
+   DJANGO-CONNECTED DATASETS (FIXED)
+   ======================================================== */
+const salesDatasets = {
+    week: {
+        labels: {{ sales_labels|safe }},
+        values: {{ sales_values|safe }},
+        comparison: {{ sales_values|safe }}
+    },
+    month: {
+        labels: {{ month_labels|default:"[]"|safe }},
+        values: {{ month_values|default:"[]"|safe }},
+        comparison: {{ month_values|default:"[]"|safe }}
+    },
+    year: {
+        labels: {{ year_labels|default:"[]"|safe }},
+        values: {{ year_values|default:"[]"|safe }},
+        comparison: {{ year_values|default:"[]"|safe }}
+    }
+};
+
+/* ========================================================
+   ON PAGE LOAD
+   ======================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+    initializeChart("week");
+    setupEventListeners();
+});
+
+/* ========================================================
+   INITIALIZE CHART (YOUR ORIGINAL CHART)
+   ======================================================== */
+function initializeChart(period = "week") {
+    const canvas = document.getElementById("weeklySalesChart");
+    if (!canvas) return;
+
+    const c = canvas.getContext("2d");
+    const data = salesDatasets[period];
+
+    if (chartInstance) chartInstance.destroy();
+
+    /* ---------- ORANGE GRADIENT ---------- */
+    const primaryGradient = c.createLinearGradient(0, 0, 0, 300);
+    primaryGradient.addColorStop(0, "rgba(255, 127, 50, 0.45)");
+    primaryGradient.addColorStop(0.5, "rgba(255, 127, 50, 0.15)");
+    primaryGradient.addColorStop(1, "rgba(255, 127, 50, 0.02)");
+
+    /* ---------- GREEN GRADIENT ---------- */
+    const secondaryGradient = c.createLinearGradient(0, 0, 0, 300);
+    secondaryGradient.addColorStop(0, "rgba(52, 211, 153, 0.3)");
+    secondaryGradient.addColorStop(1, "rgba(52, 211, 153, 0.01)");
+
+    /* ---------- CREATE CHART ---------- */
+    chartInstance = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: "Current Period",
+                    data: data.values,
+                    fill: true,
+                    backgroundColor: primaryGradient,
+                    borderColor: "#FF7F32",
+                    borderWidth: chartConfig.borderWidth,
+                    tension: chartConfig.tension,
+                    pointRadius: chartConfig.pointRadius,
+                    pointBackgroundColor: "#FF7F32",
+                    pointBorderColor: "#fff",
+                    pointBorderWidth: 2,
+                    pointHoverRadius: chartConfig.pointHoverRadius,
+                    pointHoverBackgroundColor: "#FFB366",
+                    pointHoverBorderWidth: 3,
+                    segment: {
+                        borderColor: ctx =>
+                            ctx.p0DataIndex % 2 === 0 ? "#FF7F32" : "#FFB366"
+                    }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            cornerRadius: 8,
-                            displayColors: false,
-                            callbacks: {
-                                label: (context) => '₹' + context.parsed.y.toLocaleString()
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { display: false }, grid: { display: false }, border: { display: false } },
-                        x: { ticks: { color: '#666666', font: { size: 11 } }, grid: { display: false }, border: { display: false } }
-                    },
-                    animation: { duration: 1400, easing: 'easeOutQuart' }
+                {
+                    label: "Previous Period",
+                    data: data.comparison,
+                    fill: true,
+                    backgroundColor: secondaryGradient,
+                    borderColor: "#34D399",
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: chartConfig.tension,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#34D399",
+                    pointBorderColor: "#fff",
+                    pointBorderWidth: 1.5,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: "#6EE7B7",
+                    pointHoverBorderWidth: 2
                 }
-            });
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "top",
+                    labels: {
+                        color: "#777",
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        padding: 20,
+                        font: { size: 12, weight: "600" }
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: "rgba(0,0,0,0.92)",
+                    titleColor: "#FF7F32",
+                    bodyColor: "#fff",
+                    borderColor: "rgba(255,127,50,0.5)",
+                    borderWidth: 1,
+                    padding: 14,
+                    cornerRadius: 12,
+                    displayColors: true,
+                    callbacks: {
+                        title: ctx => ctx[0].label,
+                        label: ctx => {
+                            const value = ctx.parsed.y;
+                            return `${ctx.dataset.label}: ₹${value.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
+                    ticks: { color: "#777", font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
+                    ticks: {
+                        color: "#777",
+                        font: { size: 11 },
+                        callback: value =>
+                            value >= 1000
+                                ? "₹" + (value / 1000).toFixed(0) + "K"
+                                : "₹" + value
+                    }
+                }
+            },
+
+            animation: {
+                duration: chartConfig.animationDuration,
+                easing: chartConfig.animationEasing,
+                delay: ctx =>
+                    ctx.type === "data" ? ctx.dataIndex * 60 : 0
+            }
         }
-
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                alert('Changes saved successfully!');
-                this.closest('.modal').classList.remove('show');
-            });
-        });
-
     });
+}
 
-    /* ==================== GLOBAL FUNCTIONS (must be outside) ==================== */
+/* ========================================================
+   PERIOD SWITCH BUTTONS
+   ======================================================== */
+function setPeriod(period) {
+    initializeChart(period);
+    updatePeriodButtons(period);
+}
 
+function updatePeriodButtons(activePeriod) {
+    document
+        .querySelectorAll("button[data-period]")
+        .forEach(btn =>
+            btn.classList.toggle("active", btn.dataset.period === activePeriod)
+        );
+}
 
-    function toggleProfileMenu() {
-        const menu = document.getElementById("dropdownMenu");
-        menu.classList.toggle("show");
-    }
+/* ========================================================
+   FORM HANDLERS
+   ======================================================== */
+function setupEventListeners() {
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            alert("Changes saved successfully!");
+            const modal = this.closest(".modal");
+            if (modal) modal.classList.remove("show");
+        });
+    });
+}
 
+/* ========================================================
+   PROFILE MENU
+   ======================================================== */
+function toggleProfileMenu() {
+    document.getElementById("dropdownMenu").classList.toggle("show");
+}
 
+/* ========================================================
+   SIDEBAR
+   ======================================================== */
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.querySelector(".sidebar-overlay");
+    const menu = document.querySelector(".hamburger");
 
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const hamburger = document.querySelector('.hamburger');
-        const overlay = document.querySelector('.sidebar-overlay');
+    sidebar.classList.toggle("show");
+    overlay.classList.toggle("show");
+    menu.classList.toggle("active");
 
-        sidebar.classList.toggle('show');
-        hamburger.classList.toggle('active');
-        overlay.classList.toggle('show');
+    document.body.style.overflow =
+        sidebar.classList.contains("show") ? "hidden" : "";
+}
 
-        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
-    }
-
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('show');
-        document.querySelector('.hamburger').classList.remove('active');
-        document.querySelector('.sidebar-overlay').classList.remove('show');
-        document.body.style.overflow = '';
-    }
+function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("show");
+    document.querySelector(".sidebar-overlay").classList.remove("show");
+    document.querySelector(".hamburger").classList.remove("active");
+    document.body.style.overflow = "";
+}
 </script>
+
+
 
 </body>
 </html>
