@@ -28,6 +28,13 @@ urlpatterns = [
     path("complete-customer/", views.complete_customer, name="complete_customer"),
     path("complete-seller/", views.complete_seller, name="complete_seller"),
 path("social/error/", views.social_signup_error, name="social_error"),
+    # Reviews
+    path('seller_dashboard/reviews/', views.review_dashboard, name='review'),
 
+    # DELETE REVIEW (Fix for delete button)
+    path("seller/reviews/delete/<int:review_id>/", views.delete_review, name="delete_review"),
+
+    # Download CSV
+    path('reviews/download/csv/', views.download_reviews_csv, name='download_reviews_csv'),
 
 ]
