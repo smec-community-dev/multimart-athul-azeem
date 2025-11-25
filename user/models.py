@@ -46,7 +46,6 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=50)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     order_date = models.DateTimeField(auto_now_add=True)
-    delivery_date = models.DateTimeField(null=True, blank=True)
     pending_date = models.DateTimeField(default=timezone.now)
     processing_date = models.DateTimeField(null=True, blank=True)
     shipped_date = models.DateTimeField(null=True, blank=True)

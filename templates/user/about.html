@@ -491,11 +491,11 @@
 
             <!-- Navigation for medium screens and up -->
             <nav class="nav-center">
-                <a href="{% url 'user_home' %}">Home</a>
-                <a href="{% url 'products_list' %}">Products</a>
-                <a href="{% url 'about' %}" style="color: #ff8c00;">About</a>
-                <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
-                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}" style="color: #ff8c00;">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
             </nav>
 
 <!--            &lt;!&ndash; Search box &ndash;&gt;-->
@@ -505,12 +505,12 @@
 <!--            </div>-->
 
             <div class="header-right">
-                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
                     <i class="fas fa-heart"></i>
                     <span class="badge">{{ wishlist_count|default:0 }}</span>
                 </a>
 
-                <a href="{% url 'cart_page' %}" class="icon-btn">
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge">{{ cart_count|default:0 }}</span>
                 </a>
@@ -535,14 +535,14 @@
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'profile' %}" class="dropdown-item">
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <span class="dropdown-item-label">My Profile</span>
                         </a>
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <span class="dropdown-item-label">Logout</span>
                         </a>
@@ -550,8 +550,8 @@
                 </div>
                 {% else %}
                 <div class="auth-buttons">
-                    <button class="login-btn" onclick="window.location.href='{% url 'login' %}'">Login</button>
-                    <button class="register-btn" onclick="window.location.href='{% url 'register' %}'">Register</button>
+                    <button class="login-btn" onclick="window.location.href='{% url 'admin_panel:login' %}'">Login</button>
+                    <button class="register-btn" onclick="window.location.href='{% url 'admin_panel:registration' %}'">Register</button>
                 </div>
                 {% endif %}
             </div>
@@ -561,11 +561,11 @@
         <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
             <div class="container mx-auto px-4 py-4">
                 <nav class="flex flex-col space-y-4">
-                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
-                    <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
-                    <a href="{% url 'about' %}" class="text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
-                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
-                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
                 </nav>
             </div>
         </div>
@@ -790,12 +790,12 @@
                 <h2 class="text-3xl font-bold mb-4">Join the ShopHub Family</h2>
                 <p class="text-orange-100 mb-8 text-lg">Experience the difference of shopping with a platform that truly cares about you.</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                     <a href="{% url 'products_list' %}">
+                     <a href="{% url 'user:products_list' %}">
                             <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
                                 Start Shopping Now
                             </button>
                         </a>
-                    <a href="{% url 'contact' %}">
+                    <a href="{% url 'user:contact' %}">
                             <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
                                 Contact Us
                             </button>
@@ -826,20 +826,20 @@
                 <div class="animate-on-scroll">
                     <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
                     <ul class="space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
-                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="animate-on-scroll">
                     <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
                     <ul class="space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
-                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
-                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
-                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
 

@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Category,SubCategory
+from .decorators import user_required
+
 User = get_user_model()
 from seller.models import Product
 from user.models import Cart, Wishlist, Review
@@ -17,6 +19,7 @@ from django.contrib.auth import update_session_auth_hash
 import razorpay
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
 
 def products(request):
     bestseller_products = Product.objects.filter(is_featured=True)[:4]
@@ -235,7 +238,7 @@ def add_to_cart(request, slug):
         product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
         messages.error(request, "Product not found")
-        return redirect("user/user_home")
+        return redirect("user_home")
 
     quantity = int(request.GET.get("quantity", 1))
 
@@ -367,79 +370,9 @@ def add_review(request, slug):
 
     return redirect('product_detail', slug=slug)
 
-def user_login(request):
-    if request.user.is_authenticated:
-        return redirect("user_home")
-
-
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            # messages.info(request, "Login successful!")
-
-            if user.role == "seller":
-                return redirect("seller_dashboard")
-
-            return redirect("user_home")
-
-        messages.error(request, "Invalid username or password")
-        return redirect("login")
-
-    return render(request, "user/login.html")
 
 
 
-
-def user_logout(request):
-    logout(request)
-    messages.success(request, "Logged out successfully!")
-    return redirect("/user/home")
-
-
-def user_register(request):
-    if request.method == "POST":
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
-        role = request.POST.get("role")
-        username = request.POST.get("username")
-        phone = request.POST.get("phone")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already taken")
-            return redirect("register")
-
-        if password != confirm_password:
-            messages.error(request, "Password and Confirm Password do not match")
-            return redirect("register")
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already registered")
-            return redirect("register")
-
-
-
-        User.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            role=role,
-            username=username,
-            phone_number=phone,
-            password=make_password(password),
-        )
-
-        messages.success(request, "Registration successful! Please login.")
-        return redirect("login")
-
-    return render(request, "user/register.html")
 
 def category_products(request, slug):
     category = get_object_or_404(Category, slug=slug)
@@ -513,7 +446,7 @@ def add_to_wishlist(request, slug):
 
     return redirect(request.META.get("HTTP_REFERER", "user_home"))
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def wishlist_page(request):
     search = request.GET.get("search", "")
 
@@ -528,7 +461,7 @@ def wishlist_page(request):
         "wishlist_items": wishlist_items,
         "search": search,
     })
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def checkout(request):
     buy_slug = request.GET.get("buy")
     quantity = request.GET.get("quantity", 1)
@@ -584,7 +517,7 @@ def checkout(request):
     })
 
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def create_order(request):
     if request.method == "POST":
         try:
@@ -798,12 +731,12 @@ def payment_verify(request):
             return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Invalid request"})
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def clear_wishlist(request):
     Wishlist.objects.filter(user=request.user).delete()
     return redirect('wishlist_page')   # change to your wishlist page URL name
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def place_order(request):
     if request.method == "POST":
         # Handle saved address selection or new address
@@ -949,7 +882,7 @@ def privacy_policy(request):
     return render(request, "user/privacy_policy.html")
 
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-order_date')
 
@@ -964,7 +897,7 @@ def my_orders(request):
 
 
 # user/views.py
-
+@login_required(login_url="admin_panel:login")
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
@@ -980,7 +913,7 @@ def cancel_order(request, order_id):
 
 
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def manage_address(request):
     address, created = Address.objects.get_or_create(user=request.user)
 
@@ -999,7 +932,7 @@ def manage_address(request):
 
     return render(request, "user/profile.html", {"address": address})
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def update_profile(request):
     if request.method == "POST":
         full_name = request.POST.get("full_name")
@@ -1023,7 +956,7 @@ def update_profile(request):
 
     return redirect("profile")
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def change_password(request):
     if request.method == "POST":
         old = request.POST.get("old_password")

@@ -59,7 +59,7 @@
             <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {% for product in products %}
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
-                    <a href="{% url 'product_detail' product.slug %}">
+                    <a href="{% url 'user:product_detail' product.slug %}">
                         <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
                             <img src="{{ product.images.first.image.url }}"
                                  alt="{{ product.name }}"
@@ -118,7 +118,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Shop by Category</h2>
             <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-                <a href="{% url 'category_products' 'electronics' %}">
+                <a href="{% url 'user:category_products' 'electronics' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-purple-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             📱
@@ -126,7 +126,7 @@
                         <p class="font-semibold text-xs sm:text-sm lg:text-base">Electronics</p>
                     </div>
                 </a>
-                <a href="{% url 'category_products' 'fashion' %}">
+                <a href="{% url 'user:category_products' 'fashion' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             👗
@@ -134,7 +134,7 @@
                         <p class="font-semibold text-xs sm:text-sm lg:text-base">Fashion</p>
                     </div>
                 </a>
-                <a href="{% url 'category_products' 'cosmetics' %}">
+                <a href="{% url 'user:category_products' 'cosmetics' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             <img src="https://cdn-icons-png.flaticon.com/512/3050/3050159.png" alt="Cosmetic"
@@ -143,7 +143,7 @@
                         <p class="font-semibold text-xs sm:text-sm lg:text-base">Cosmetics</p>
                     </div>
                 </a>
-                <a href="{% url 'category_products' 'gaming' %}">
+                <a href="{% url 'user:category_products' 'gaming' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-green-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             🎮
@@ -151,7 +151,7 @@
                         <p class="font-semibold text-xs sm:text-sm lg:text-base">Gaming</p>
                     </div>
                 </a>
-                <a href="{% url 'category_products' 'books' %}">
+                <a href="{% url 'user:category_products' 'books' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-yellow-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             📚
@@ -159,7 +159,7 @@
                         <p class="font-semibold text-xs sm:text-sm lg:text-base">Books</p>
                     </div>
                 </a>
-                <a href="{% url 'category_products' 'wearables' %}">
+                <a href="{% url 'user:category_products' 'wearables' %}">
                     <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-red-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
                             ⌚
@@ -180,7 +180,7 @@
                     <p class="text-gray-600 text-sm sm:text-base">Popular items customers love</p>
                 </div>
 
-                <a href="{% url 'products_list' %}"
+                <a href="{% url 'user:products_list' %}"
                    class="text-orange-500 font-bold hover:text-orange-600 text-sm sm:text-base">
                    View All <i class="fas fa-arrow-right ml-2"></i>
                 </a>
@@ -188,7 +188,7 @@
 
             <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {% for product in bestseller_products %}
-                <a href="{% url 'product_detail' product.slug %}" class="block">
+                <a href="{% url 'user:product_detail' product.slug %}" class="block">
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
                         <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
                             {% if product.images.first %}
@@ -239,7 +239,7 @@
                             <p class="text-gray-600 text-sm sm:text-base">Products Available</p>
                         </div>
                     </div>
-                    <a href="{% url 'about' %}">
+                    <a href="{% url 'user:about' %}">
                         <button class="px-6 py-2 sm:px-8 sm:py-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition btn-animate text-sm sm:text-base">
                             Learn More
                         </button>
@@ -305,12 +305,12 @@
             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 animate-on-scroll">Ready to Start Shopping?</h2>
             <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-orange-100 animate-on-scroll">Join millions of happy customers and discover amazing deals today!</p>
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <a href="{% url 'products_list' %}">
+                <a href="{% url 'user:products_list' %}">
                     <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
                         Start Shopping Now
                     </button>
                 </a>
-                <a href="{% url 'products_list' %}">
+                <a href="{% url 'user:products_list' %}">
                     <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
                         View All Deals
                     </button>

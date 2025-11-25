@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     "user",
     "seller.apps.SellerConfig",
     "core",
-    "seller"
     ### SOCIAL AUTH  ######
     "allauth",
     "allauth.account",

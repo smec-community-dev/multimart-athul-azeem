@@ -859,7 +859,7 @@
                     <div class="dropdown-divider"></div>
                     <!-- Menu Items -->
                     <div class="dropdown-items">
-                        <a href="{% url 'profile' %}" class="dropdown-item">
+                        <a href="{% url 'seller:profile' %}" class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">My Profile</div>
@@ -878,7 +878,7 @@
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'help_support'  %}">
+                             <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -904,11 +904,11 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'seller_dashboard' %}" class="active"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:seller_dashboard' %}" class="active"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
 
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
 
             </ul>
         </div>
@@ -956,7 +956,7 @@
                             <button class="btn-secondary" onclick="changePhoto()" style="width: 100%;">Change Photo</button>
                         </div>
                     </div>
-                    <form id="profileForm" method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+                    <form id="profileForm" method="POST" action="{% url 'seller:profile' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="profile_info">
                         <div class="profile-details">
@@ -1000,7 +1000,7 @@
                 <div class="section-header">
                     <div class="section-title">Business Information</div>
                 </div>
-                <form method="POST" action="{% url 'profile' %}">
+                <form method="POST" action="{% url 'seller:profile' %}">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="business_info">
                     <div class="form-grid">
@@ -1046,7 +1046,7 @@
                 <div class="section-header">
                     <div class="section-title">Change Password</div>
                 </div>
-                <form method="POST" action="{% url 'profile' %}">
+                <form method="POST" action="{% url 'seller:profile' %}">
                     {% csrf_token %}
                     <input type="hidden" name="form_type" value="change_password">
                     <div class="form-grid">

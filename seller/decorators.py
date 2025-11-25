@@ -10,7 +10,7 @@ def seller_required(view_func):
 
         # Check if user has seller_details
         if not hasattr(request.user, "seller_details"):
-            return redirect("not_seller")  # or show error page
+            return redirect("seller:not_seller")  # or show error page
 
         return view_func(request, *args, **kwargs)
     return wrapper
