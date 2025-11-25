@@ -91,15 +91,16 @@ def registration_view(request):
         # ---- validations ----
         if password != password_confirm:
             messages.error(request, "Passwords do not match.")
-            return render(request, "registration.html")
+            return render(request, "auth/registration.html")
+            return render(request, "auth/registration.html")
 
         if User.objects.filter(username=username).exists():
             messages.error(request, f"Username '{username}' already exists.")
-            return render(request, "registration.html")
+            return render(request, "auth/registration.html")
 
         if User.objects.filter(email=email).exists():
             messages.error(request, f"Email '{email}' is already registered.")
-            return render(request, "registration.html")
+            return render(request, "auth/registration.html")
 
         if role not in ["user", "seller", "admin"]:
             messages.error(request, "Please select a valid account type.")
@@ -133,7 +134,7 @@ def registration_view(request):
         # admin extra fields you can handle here if needed
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect("core:login")
+        return redirect("admin_panel:login")
 
     # GET
     return render(request, "auth/registration.html")
@@ -160,18 +161,18 @@ def normal_login_view(request):
             if hasattr(user, 'is_blocked') and user.is_blocked:
                 logout(request)
                 messages.error(request, "Your account has been blocked. Please contact support.")
-                return redirect("core:login")
+                return redirect("admin_panel:login")
 
             # Redirect based on role
             if user.role == "seller":
-                return redirect("seller_dashboard")
+                return redirect("seller:seller_dashboard")
             elif user.role == "admin":
-                return redirect("core:admin_dashboard")
+                return redirect("admin_panel:admin_dashboard")
             else:  # user
-                return redirect("user_home")
+                return redirect("user:user_home")
         else:
             messages.error(request, "Invalid username or password.")
-            return render(request, "login.html")
+            return render(request, "auth/login.html")
 
     return render(request, "auth/login.html")
 
@@ -194,13 +195,13 @@ def choose_role(request):
 
         if selected_role not in ["user", "seller", "admin"]:
             messages.error(request, "Invalid role selected.")
-            return redirect("core:choose_role")
+            return redirect("admin_panel:choose_role")
 
         request.user.role = selected_role
         request.user.save()
 
         # If seller, we need extra details
-        return redirect("core:complete_registration")
+        return redirect("admin_panel:complete_registration")
 
     # Initial render
     return render(request, "auth/choose_role.html", {"current_role": request.user.role})
@@ -1336,7 +1337,7 @@ def admin_logout(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully!')
 
-    return redirect('login')  # Redirect to login page
+    return redirect('admin_panel:login')  # Redirect to login page
 
 
 

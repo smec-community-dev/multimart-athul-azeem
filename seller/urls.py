@@ -2,7 +2,9 @@ from django.urls import path
 from zope.interface import named
 
 from seller import views
+from user.urls import app_name
 
+app_name='seller'
 urlpatterns = [
     # ==================== SELLER DASHBOARD ====================
     path("seller_dashboard/", views.view_product, name="seller_dashboard"),
@@ -25,8 +27,10 @@ urlpatterns = [
 
     # Not seller page
     path("not-seller/", views.not_seller, name="not_seller"),
-    path('seller_dashboar/privacypolicy/',views.privacypolicy,name='privacy'),
-path('seller_dashboar/Contact Us/',views.contact,name='contact'),
-path('seller_dashboar/Terms of /',views.service,name='service'),
-    path('seller_dashboar/Feedback/', views.feedback, name='feedback'),
+    path('seller_dashboard/privacypolicy/',views.privacypolicy,name='privacy'),
+path('seller_dashboard/Contact Us/',views.contact,name='contact'),
+path('seller_dashboard/Terms of /',views.service,name='service'),
+    path('seller_dashboard/Feedback/', views.feedback, name='feedback'),
+    path('seller_dashboard/complete_customer/',views.complete_customer,name='complete_customer'),
+    path('seller_dashboard/complete_seller/',views.complete_seller,name='complete_seller')
 ]

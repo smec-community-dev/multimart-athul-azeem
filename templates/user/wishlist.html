@@ -540,25 +540,25 @@
             </div>
 
             <nav class="nav-center">
-                <a href="{% url 'user_home' %}">Home</a>
-                <a href="{% url 'products_list' %}">Products</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
-                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
             </nav>
 
-            <form action="{% url 'wishlist_page' %}" method="get" class="search-box">
+            <form action="{% url 'user:wishlist_page' %}" method="get" class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" name="search" placeholder="Search saved items..." value="{{ search }}">
             </form>
 
             <div class="header-right">
-                <a href="{% url 'wishlist_page' %}" class="icon-btn" style="color: #ff8c00;">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn" style="color: #ff8c00;">
                     <i class="fas fa-heart"></i>
                     <span class="badge">{{ wishlist_count }}</span>
                 </a>
 
-                <a href="{% url 'cart_page' %}" class="icon-btn">
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge">{{ cart_count }}</span>
                 </a>
@@ -583,14 +583,14 @@
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'profile' %}" class="dropdown-item">
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <span class="dropdown-item-label">My Profile</span>
                         </a>
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <span class="dropdown-item-label">Logout</span>
                         </a>
@@ -598,10 +598,10 @@
                 </div>
                 {% else %}
                 <div class="auth-buttons">
-                    <a href="{% url 'login' %}">
+                    <a href="{% url 'admin_panel:login' %}">
                         <button class="login-btn">Login</button>
                     </a>
-                    <a href="{% url 'register' %}">
+                    <a href="{% url 'admin_panel:registration' %}">
                         <button class="register-btn">Register</button>
                     </a>
                 </div>
@@ -611,14 +611,14 @@
 
         <!-- Mobile Navigation -->
         <div class="mobile-nav" id="mobileNav">
-            <a href="{% url 'user_home' %}">Home</a>
-            <a href="{% url 'products_list' %}">Products</a>
-            <a href="{% url 'about' %}">About</a>
-            <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
-            <a href="{% url 'contact' %}">Contact</a>
+            <a href="{% url 'user:user_home' %}">Home</a>
+            <a href="{% url 'user:products_list' %}">Products</a>
+            <a href="{% url 'user:about' %}">About</a>
+            <a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
+            <a href="{% url 'user:contact' %}">Contact</a>
 
             <!-- Mobile search box -->
-            <form action="{% url 'wishlist_page' %}" method="get" class="pt-4">
+            <form action="{% url 'user:wishlist_page' %}" method="get" class="pt-4">
                 <div class="flex">
                     <input type="text" name="search" placeholder="Search saved items..." value="{{ search }}"
                            class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
@@ -645,7 +645,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Saved Items</h2>
                 <div class="flex space-x-3 sm:space-x-4 w-full sm:w-auto">
-                   <a href="{% url 'clear_wishlist' %}"
+                   <a href="{% url 'user:clear_wishlist' %}"
                        class="px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg text-sm sm:text-base w-full sm:w-auto text-center">
                         Clear All
                     </a>
@@ -662,7 +662,7 @@
                                  alt="{{ item.product.name }}">
                         </div>
 
-                        <a href="{% url 'add_to_wishlist' item.product.slug %}"
+                        <a href="{% url 'user:add_to_wishlist' item.product.slug %}"
                            class="absolute top-3 sm:top-4 right-3 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full shadow-md flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors text-sm sm:text-base">
                             <i class="fas fa-heart"></i>
                         </a>
@@ -679,12 +679,12 @@
                             <span class="text-xl sm:text-2xl font-bold text-gray-900">₹{{ item.product.price }}</span>
 
                             <div class="flex space-x-2">
-                                <a href="{% url 'add_to_cart' item.product.slug %}"
+                                <a href="{% url 'user:add_to_cart' item.product.slug %}"
                                    class="px-3 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm sm:text-base">
                                    <i class="fas fa-shopping-cart"></i>
                                 </a>
 
-                                <a href="{% url 'product_detail' item.product.slug %}"
+                                <a href="{% url 'user:product_detail' item.product.slug %}"
                                    class="px-3 sm:px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium text-sm sm:text-base">
                                    Buy Now
                                 </a>
@@ -723,20 +723,20 @@
                 <div class="animate-on-scroll">
                     <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
                     <ul class="space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
-                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="animate-on-scroll">
                     <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
                     <ul class="space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
-                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
-                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
-                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
 

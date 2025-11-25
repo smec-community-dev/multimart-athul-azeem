@@ -12,19 +12,19 @@
 
         <!-- Navigation for medium screens and up -->
         <nav class="nav-center">
-            <a href="{% url 'user_home' %}">Home</a>
-            <a href="{% url 'products_list' %}">Products</a>
-            <a href="{% url 'about' %}">About</a>
-            <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>
-            <a href="{% url 'contact' %}">Contact</a>
+            <a href="{% url 'user:user_home' %}">Home</a>
+            <a href="{% url 'user:products_list' %}">Products</a>
+            <a href="{% url 'user:about' %}">About</a>
+            <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
+            <a href="{% url 'user:contact' %}">Contact</a>
         </nav>
 
         <!-- Search box -->
         <form method="GET"
       action="{% if request.resolver_match.url_name == 'products_list' %}
-                  {% url 'products_list' %}
+                  {% url 'user:products_list' %}
               {% else %}
-                  {% url 'user_home' %}
+                  {% url 'user:user_home' %}
               {% endif %}"
               class="search-box">
 
@@ -34,12 +34,12 @@
 
         <div class="header-right">
 
-            <a href="{% url 'wishlist_page' %}" class="icon-btn">
+            <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
                 <i class="fas fa-heart"></i>
                 <span class="badge">{{ wishlist_count }}</span>
             </a>
 
-            <a href="{% url 'cart_page' %}" class="icon-btn">
+            <a href="{% url 'user:cart_page' %}" class="icon-btn">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="badge">{{ cart_count }}</span>
             </a>
@@ -64,14 +64,14 @@
 
                     <div class="dropdown-divider"></div>
 
-                    <a href="{% url 'profile' %}" class="dropdown-item">
+                    <a href="{% url 'user:profile' %}" class="dropdown-item">
                         <span class="dropdown-item-icon">👤</span>
                         <span class="dropdown-item-label">My Profile</span>
                     </a>
 
                     <div class="dropdown-divider"></div>
 
-                    <a href="{% url 'logout' %}" class="dropdown-item logout">
+                    <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
                         <span class="dropdown-item-icon">🚪</span>
                         <span class="dropdown-item-label">Logout</span>
                     </a>
@@ -95,18 +95,18 @@
     <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
         <div class="container mx-auto px-3 xs:px-4 py-3 xs:py-4">
             <nav class="flex flex-col space-y-3 xs:space-y-4">
-                <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Home</a>
-                <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Products</a>
-                <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">About</a>
-                <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Deals & Offers</a>
-                <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 text-sm xs:text-base">Contact</a>
+                <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Home</a>
+                <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Products</a>
+                <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">About</a>
+                <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Deals & Offers</a>
+                <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 text-sm xs:text-base">Contact</a>
 
                 <!-- Mobile search box -->
                 <form method="GET"
                   action="{% if request.resolver_match.url_name == 'products_list' %}
-                              {% url 'products_list' %}
+                              {% url 'user:products_list' %}
                           {% else %}
-                              {% url 'user_home' %}
+                              {% url 'user:user_home' %}
                           {% endif %}"
                   class="pt-3 xs:pt-4">
 

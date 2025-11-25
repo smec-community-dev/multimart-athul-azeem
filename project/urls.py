@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 def redirect_to_user_home(request):
-    return redirect("user_home")   # USER HOME
+    return redirect("user:user_home")   # USER HOME
 
 urlpatterns = [
     path('admin/', admin.site.urls),
