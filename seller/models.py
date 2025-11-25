@@ -14,6 +14,7 @@ class SellerDetails(models.Model):
     gst_number = models.CharField(max_length=20, blank=True, null=True)
     bank_account = models.CharField(max_length=50, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
+    is_blocked=models.BooleanField(default=False)
 
     def __str__(self):
         return self.shop_name

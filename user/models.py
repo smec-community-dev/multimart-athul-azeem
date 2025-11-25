@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from core.models import  User
 from seller.models import SellerDetails, Product
 from django.conf import settings
-
+from django.utils import timezone
 # ------------------ CUSTOM USER ------------------
 
 
@@ -47,7 +47,10 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     order_date = models.DateTimeField(auto_now_add=True)
     delivery_date = models.DateTimeField(null=True, blank=True)
-
+    pending_date = models.DateTimeField(default=timezone.now)
+    processing_date = models.DateTimeField(null=True, blank=True)
+    shipped_date = models.DateTimeField(null=True, blank=True)
+    delivered_date = models.DateTimeField(null=True, blank=True)
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
     razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
@@ -73,6 +76,7 @@ class Review(models.Model):
     rating = models.PositiveIntegerField(default=0)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_approved=models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.product.name} - {self.rating}⭐"
