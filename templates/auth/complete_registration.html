@@ -1,0 +1,406 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Registration - ShopHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-bg: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .registration-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .registration-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .registration-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .registration-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .registration-body {
+            padding: 40px 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-group-text {
+            background: var(--light-bg);
+            border: 2px solid #e5e7eb;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            color: #6b7280;
+        }
+
+        .input-group .form-control {
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .input-group .form-control:focus {
+            border-left: none;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 14px 30px;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .required-text {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-box i {
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #1e40af;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .user-redirect {
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .user-redirect i {
+            font-size: 64px;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        .user-redirect h3 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .user-redirect p {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .btn-dashboard {
+            background: var(--success-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-dashboard:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        @media (max-width: 576px) {
+            .registration-header {
+                padding: 30px 20px;
+            }
+
+            .registration-header h2 {
+                font-size: 24px;
+            }
+
+            .registration-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        {% if role == "user" %}
+            <!-- User Role - No extra details needed -->
+            <div class="registration-header">
+                <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <h2>Welcome to ShopHub!</h2>
+                <p>Your account is ready</p>
+                <span class="role-badge">
+                    <i class="fas fa-user"></i> User Account
+                </span>
+            </div>
+
+            <div class="user-redirect">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>You're All Set!</h3>
+                <p>Your account has been successfully created. Start exploring our products now!</p>
+                <a href="{% url 'user_home' %}" class="btn-dashboard">
+                    <i class="fas fa-home me-2"></i>Go to Home
+                </a>
+            </div>
+
+        {% elif role == "seller" %}
+            <!-- Seller Role - Business Details Form -->
+            <div class="registration-header">
+                <i class="fas fa-store" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <h2>Complete Your Seller Profile</h2>
+                <p>Just a few more details to start selling</p>
+                <span class="role-badge">
+                    <i class="fas fa-store"></i> Seller Account
+                </span>
+            </div>
+
+            <div class="registration-body">
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <p><strong>Complete your business profile to start selling on ShopHub.</strong> This information helps buyers trust your store.</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="shop_name" class="form-label">
+                            <i class="fas fa-store text-primary me-2"></i>Shop Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="shop_name" name="shop_name" required placeholder="Enter your shop name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="shop_address" class="form-label">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>Shop Address <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="shop_address" name="shop_address" required placeholder="Enter your complete shop address"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="business_type" class="form-label">
+                            <i class="fas fa-briefcase text-primary me-2"></i>Business Type <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-select" id="business_type" name="business_type" required>
+                            <option value="" selected disabled>Select business type</option>
+                            <option value="Sole Proprietorship">Sole Proprietorship</option>
+                            <option value="Partnership">Partnership</option>
+                            <option value="Private Limited">Private Limited Company</option>
+                            <option value="Public Limited">Public Limited Company</option>
+                            <option value="LLP">Limited Liability Partnership (LLP)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gst" class="form-label">
+                            <i class="fas fa-file-invoice text-primary me-2"></i>GST Number (Optional)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                            <input type="text" class="form-control" id="gst" name="gst" placeholder="Enter GST number if available">
+                        </div>
+                        <small class="text-muted">Format: 22AAAAA0000A1Z5</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bank_account" class="form-label">
+                            <i class="fas fa-university text-primary me-2"></i>Bank Account Number <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                            <input type="text" class="form-control" id="bank_account" name="bank_account" required placeholder="Enter bank account number">
+                        </div>
+                        <small class="text-muted">For receiving payments from sales</small>
+                    </div>
+
+                    <p class="required-text">
+                        <i class="fas fa-asterisk me-1" style="font-size: 8px;"></i>
+                        Fields marked with * are required
+                    </p>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-check-circle me-2"></i>Complete Registration
+                    </button>
+                </form>
+            </div>
+
+        {% elif role == "admin" %}
+            <!-- Admin Role - No extra details needed (or add if required) -->
+            <div class="registration-header">
+                <i class="fas fa-shield-alt" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <h2>Admin Access Granted</h2>
+                <p>Welcome to the admin panel</p>
+                <span class="role-badge">
+                    <i class="fas fa-user-shield"></i> Admin Account
+                </span>
+            </div>
+
+            <div class="user-redirect">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>You're All Set!</h3>
+                <p>Your admin account is ready. Access the dashboard to manage the platform.</p>
+                <a href="{% url 'core:admin_dashboard' %}" class="btn-dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                </a>
+            </div>
+
+        {% else %}
+            <!-- Fallback for unknown role -->
+            <div class="registration-header">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <h2>Unknown Role</h2>
+                <p>Please contact support</p>
+            </div>
+
+            <div class="user-redirect">
+                <i class="fas fa-question-circle" style="color: #ef4444;"></i>
+                <h3>Role Not Recognized</h3>
+                <p>There seems to be an issue with your account role. Please contact support.</p>
+                <a href="{% url 'core:login' %}" class="btn-dashboard" style="background: #6b7280;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Login
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+
+        // GST number formatting
+        const gstInput = document.getElementById('gst');
+        if (gstInput) {
+            gstInput.addEventListener('input', function(e) {
+                this.value = this.value.toUpperCase();
+            });
+        }
+
+        // Bank account number validation (numbers only)
+        const bankInput = document.getElementById('bank_account');
+        if (bankInput) {
+            bankInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+    </script>
+</body>
+</html>

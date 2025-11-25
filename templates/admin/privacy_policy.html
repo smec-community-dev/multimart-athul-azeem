@@ -1,0 +1,1382 @@
+<!-- admin/templates/admin/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel - ShopHub{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        a { text-decoration: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            gap: 12px;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            animation: pulse 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .notification-bell:hover { transform: scale(1.1); }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .profile-dropdown {
+            position: relative;
+            flex-shrink: 0;
+            z-index: 1001;
+        }
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+      .profile-avatar {
+    width: 45px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    border: 3px solid white;
+}
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            display: none;
+        }
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
+        }
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+        .profile-role {
+            font-size: 0.7rem;
+            color: var(--light-text);
+        }
+        .dropdown-arrow {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            max-width: 90vw;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .dropdown-header-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+        .dropdown-header-info p {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        .dropdown-items { padding: 8px 0; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
+        }
+        .dropdown-item-text { flex: 1; }
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dropdown-item-desc {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+        .dropdown-item.logout { color: var(--danger-color); }
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+        /* ======================== MAIN LAYOUT ======================== */
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+            border-right: 2px solid var(--border-color);
+            padding: 24px 0;
+            animation: slideInLeft 0.5s ease;
+            overflow-y: auto;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-light);
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--light-text);
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li { margin: 0; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 24px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: top;
+        }
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 127, 50, 0.08);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+        .sidebar-menu a:hover::before {
+            transform: scaleY(1);
+        }
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.15);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: inset 0 2px 8px rgba(255, 127, 50, 0.1);
+        }
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+        .sidebar-menu i {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            line-height: 1;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            transform: scale(1.15);
+        }
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+        /* ======================== STATS GRID ======================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .stat-card:nth-child(2) { border-left-color: var(--success-color); }
+        .stat-card:nth-child(3) { border-left-color: var(--warning-color); }
+        .stat-card:nth-child(4) { border-left-color: var(--accent-color); }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+        .stat-label {
+            color: var(--light-text);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        .stat-change.negative { color: var(--danger-color); }
+        /* ======================== SECTION ======================== */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== TABLE ======================== */
+        .responsive-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+        }
+        .responsive-table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+        .responsive-table-wrapper th,
+        .responsive-table-wrapper td {
+            white-space: nowrap;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        thead { background-color: rgba(255, 127, 50, 0.05); }
+        th {
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        td {
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+        .product-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .product-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        .status-inactive {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+        }
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        /* ======================== PAGINATION ======================== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 24px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+        .pagination a:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        .pagination .active a {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .pagination .disabled a {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .pagination .page-info {
+            padding: 0 16px;
+            border: none;
+            background: none;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        /* ======================== CHART ======================== */
+        .chart-container {
+            height: 280px;
+            background: linear-gradient(135deg, rgba(255, 127, 50, 0.05), rgba(255, 178, 115, 0.05));
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 16px 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 8px;
+            position: relative;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-logo i { font-size: 2rem; color: var(--primary-color); }
+        .footer-logo span {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+        }
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 1024px) {
+            .sidebar { width: 260px; }
+            .sidebar-menu a { padding: 14px 20px; font-size: 1rem; }
+            .main-content { padding: 20px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 18px; }
+            .header h1 { font-size: 1.8rem; }
+            .pagination { gap: 6px; }
+            .pagination a, .pagination span { min-width: 40px; height: 40px; font-size: 0.9rem; }
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .navbar-title {
+                display: none !important;
+            }
+            .container {
+                flex-direction: column;
+            }
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .header h1 { font-size: 1.5rem; }
+            .header p { font-size: 0.9rem; }
+            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+            .stat-card { padding: 16px; }
+            .stat-value { font-size: 1.5rem; }
+            .section { padding: 16px; margin-bottom: 20px; }
+            .section-title { font-size: 1.1rem; }
+            .section-header { gap: 10px; }
+            .btn-primary { padding: 7px 14px; font-size: 0.8rem; }
+            .responsive-table-wrapper table { font-size: 0.85rem; min-width: 500px; }
+            .responsive-table-wrapper th, .responsive-table-wrapper td { padding: 6px 4px; }
+            .product-icon { width: 28px; height: 28px; font-size: 0.9rem; }
+            .chart-container { height: 240px; padding: 12px 8px; }
+            .pagination { justify-content: flex-start; gap: 4px; margin-top: 16px; }
+            .pagination a, .pagination span { min-width: 36px; height: 36px; padding: 0 8px; font-size: 0.85rem; }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dropdown-menu {
+                min-width: 240px;
+                max-width: 85vw;
+                right: -20px;
+            }
+            .profile-toggle {
+                padding: 4px 8px;
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar { padding: 8px 12px; }
+            .logo { font-size: 1.3rem; }
+            .navbar-right { gap: 10px; }
+            .notification-badge { width: 16px; height: 16px; font-size: 0.6rem; }
+            .profile-toggle { padding: 5px 8px; }
+            .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
+            .dropdown-arrow { font-size: 0.9rem; }
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+            .main-content { padding: 12px; }
+            .header { margin-bottom: 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .header p { font-size: 0.85rem; }
+            .stats-grid { gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-label { font-size: 0.7rem; }
+            .stat-value { font-size: 1.4rem; margin-bottom: 6px; }
+            .stat-change { font-size: 0.75rem; }
+            .section { padding: 14px; margin-bottom: 16px; }
+            .section-header { flex-direction: column; align-items: flex-start; padding-bottom: 10px; }
+            .section-title { font-size: 1rem; }
+            .btn-primary { width: 100%; padding: 8px 12px; }
+            .responsive-table-wrapper table { font-size: 0.8rem; min-width: 400px; }
+            .responsive-table-wrapper th, .responsive-table-wrapper td { padding: 4px 2px; }
+            .product-icon { width: 24px; height: 24px; font-size: 0.8rem; }
+            .pagination { gap: 2px; }
+            .pagination a, .pagination span { min-width: 32px; height: 32px; padding: 0 6px; font-size: 0.8rem; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .dropdown-menu {
+                min-width: 200px;
+                max-width: 95vw;
+                right: -10px;
+                border-radius: 0 0 12px 12px;
+            }
+            .profile-toggle {
+                padding: 4px 8px;
+            }
+        }
+        @media (max-width: 360px) {
+            .logo { font-size: 1.2rem; }
+            .navbar { padding: 8px 10px; gap: 6px; }
+            .navbar-left { gap: 8px; }
+            .navbar-right { gap: 8px; }
+            .header h1 { font-size: 1.1rem; }
+            .main-content { padding: 10px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 8px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 1.3rem; }
+            .section { padding: 12px; margin-bottom: 14px; }
+            .section-title { font-size: 0.95rem; }
+            .btn-primary { font-size: 0.75rem; padding: 6px 10px; }
+            .responsive-table-wrapper table { font-size: 0.75rem; min-width: 300px; }
+            .responsive-table-wrapper th, .responsive-table-wrapper td { padding: 3px 1px; }
+            .product-icon { width: 20px; height: 20px; font-size: 0.7rem; }
+            .pagination a, .pagination span { min-width: 28px; height: 28px; padding: 0 4px; font-size: 0.75rem; }
+        }
+
+        /* Privacy Policy Specific Styles */
+        .privacy-gradient {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            padding: 3rem 0;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .privacy-content {
+            max-width: none;
+        }
+
+        .privacy-content h2 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .privacy-content h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .privacy-content p {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .privacy-content ul {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .privacy-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .privacy-card {
+            background: var(--bg-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .privacy-card h4 {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .privacy-card ul {
+            margin-bottom: 0;
+            padding-left: 1rem;
+        }
+
+        .privacy-card li {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .security-alert {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .contact-item h4 {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Admin Panel</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                <i class="fas fa-bell"></i>
+                <div class="notification-badge">3</div>
+            </div>
+            <!-- Profile dropdown section -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+                        <div class="profile-role">Super Admin</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ request.user.username|first|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
+                                    <p>{{ request.user.email }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <!-- My Profile -->
+                        <a href="{% url 'admin_panel:admin_profile' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-item">
+                                <i class="fas fa-user dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">My Profile</div>
+                                    <div class="dropdown-item-desc">View & edit profile</div>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- Settings -->
+                        <a href="{% url 'admin_panel:admin_settings' %}" style="text-decoration: none; color: inherit;">
+                            <div class="dropdown-item">
+                                <i class="fas fa-cog dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">Settings</div>
+                                    <div class="dropdown-item-desc">Admin settings</div>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <!-- Logout -->
+                        <a href="{% url 'admin_panel:admin_logout' %}" style="text-decoration: none; color: inherit;" onclick="return confirm('Are you sure you want to logout?');">
+                            <div class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt dropdown-item-icon"></i>
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">Logout</div>
+                                    <div class="dropdown-item-desc">Sign out</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <!-- Dashboard -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <!-- Users -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_users' %}">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                </li>
+                <!-- Sellers -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_sellers' %}">
+                        <i class="fas fa-store"></i> Sellers
+                    </a>
+                </li>
+                <!-- Products -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_products' %}">
+                        <i class="fas fa-box"></i> Products
+                    </a>
+                </li>
+                <!-- Orders -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_orders' %}">
+                        <i class="fas fa-shopping-cart"></i> Orders
+                    </a>
+                </li>
+                <!-- Reviews -->
+                <li>
+                    <a href="{% url 'admin_panel:admin_reviews' %}">
+                        <i class="fas fa-star"></i> Reviews
+                    </a>
+                </li>
+                <!-- Settings -->
+            </ul>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            {% block content %}
+            <!-- Privacy Policy Content -->
+            <div class="privacy-content">
+                <!-- Hero Section -->
+                <div class="privacy-gradient">
+                    <div class="text-center">
+                        <h1 class="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
+                        <p class="text-lg text-gray-700">Last updated: December 1, 2023</p>
+                    </div>
+                </div>
+
+                <!-- Privacy Content -->
+                <div class="section">
+                    <div class="privacy-content">
+                        <!-- Introduction -->
+                        <div class="mb-8">
+                            <h2>1. Introduction</h2>
+                            <p>
+                                Welcome to ShopHub. We are committed to protecting your privacy and ensuring the security of your personal information.
+                                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website
+                                and use our services.
+                            </p>
+                            <p>
+                                By using ShopHub, you consent to the data practices described in this policy. If you do not agree with the data practices
+                                described in this policy, you should not use our website or services.
+                            </p>
+                        </div>
+
+                        <!-- Information We Collect -->
+                        <div class="mb-8">
+                            <h2>2. Information We Collect</h2>
+
+                            <h3>Personal Information</h3>
+                            <ul>
+                                <li>• Name, email address, phone number</li>
+                                <li>• Shipping and billing addresses</li>
+                                <li>• Payment information (processed securely by our payment partners)</li>
+                                <li>• Order history and preferences</li>
+                                <li>• Account credentials</li>
+                            </ul>
+
+                            <h3>Automatically Collected Information</h3>
+                            <ul>
+                                <li>• IP address and device information</li>
+                                <li>• Browser type and version</li>
+                                <li>• Pages visited and time spent on site</li>
+                                <li>• Clickstream data and browsing patterns</li>
+                                <li>• Cookies and similar technologies</li>
+                            </ul>
+                        </div>
+
+                        <!-- How We Use Your Information -->
+                        <div class="mb-8">
+                            <h2>3. How We Use Your Information</h2>
+                            <div class="privacy-grid">
+                                <div class="privacy-card">
+                                    <h4>Service Delivery</h4>
+                                    <ul>
+                                        <li>• Process orders and payments</li>
+                                        <li>• Deliver products and services</li>
+                                        <li>• Provide customer support</li>
+                                        <li>• Send order confirmations</li>
+                                    </ul>
+                                </div>
+                                <div class="privacy-card">
+                                    <h4>Personalization</h4>
+                                    <ul>
+                                        <li>• Customize shopping experience</li>
+                                        <li>• Show relevant products</li>
+                                        <li>• Remember preferences</li>
+                                        <li>• Improve website functionality</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Sharing -->
+                        <div class="mb-8">
+                            <h2>4. Data Sharing and Disclosure</h2>
+                            <p>
+                                We do not sell your personal information to third parties. We may share your information with:
+                            </p>
+                            <ul>
+                                <li>• <strong>Service Providers:</strong> Payment processors, shipping carriers, and IT service providers</li>
+                                <li>• <strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                                <li>• <strong>Business Transfers:</strong> In connection with mergers or acquisitions</li>
+                                <li>• <strong>With Your Consent:</strong> When you explicitly agree to share your information</li>
+                            </ul>
+                        </div>
+
+                        <!-- Data Security -->
+                        <div class="mb-8">
+                            <h2>5. Data Security</h2>
+                            <p>
+                                We implement appropriate technical and organizational security measures to protect your personal information
+                                against unauthorized access, alteration, disclosure, or destruction.
+                            </p>
+                            <div class="security-alert">
+                                <div class="flex items-center">
+                                    <i class="fas fa-shield-alt text-green-500 text-2xl mr-4"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-green-800">Security Measures</h4>
+                                        <ul class="text-green-700 mt-2 space-y-1">
+                                            <li>• SSL encryption for data transmission</li>
+                                            <li>• PCI-DSS compliance for payment processing</li>
+                                            <li>• Regular security audits and monitoring</li>
+                                            <li>• Access controls and authentication</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Your Rights -->
+                        <div class="mb-8">
+                            <h2>6. Your Rights</h2>
+                            <div class="privacy-grid">
+                                <div class="privacy-card">
+                                    <h4>Access and Control</h4>
+                                    <ul>
+                                        <li>• Access your personal information</li>
+                                        <li>• Correct inaccurate data</li>
+                                        <li>• Delete your personal data</li>
+                                        <li>• Object to data processing</li>
+                                    </ul>
+                                </div>
+                                <div class="privacy-card">
+                                    <h4>Communication Preferences</h4>
+                                    <ul>
+                                        <li>• Opt-out of marketing communications</li>
+                                        <li>• Manage notification settings</li>
+                                        <li>• Control cookie preferences</li>
+                                        <li>• Withdraw consent at any time</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="section">
+                            <h2>Contact Us</h2>
+                            <p>
+                                If you have any questions about this Privacy Policy or our data practices, please contact us:
+                            </p>
+                            <div class="contact-grid">
+                                <div class="contact-item">
+                                    <h4>Email</h4>
+                                    <p class="text-orange-500">privacy@shophub.com</p>
+                                </div>
+                                <div class="contact-item">
+                                    <h4>Phone</h4>
+                                    <p>+91 98765 43210</p>
+                                </div>
+                                <div class="contact-item">
+                                    <h4>Address</h4>
+                                    <p>123 Shopping Street, Retail District</p>
+                                </div>
+                                <div class="contact-item">
+                                    <h4>Data Protection Officer</h4>
+                                    <p>dpo@shophub.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+    <!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">
+                    <i class="fas fa-crown"></i>
+                    <span>ShopHub Admin</span>
+                </div>
+                <p class="footer-description">Premium admin dashboard for managing e-commerce operations.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/shophub" title="Facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.twitter.com/shophub" title="Twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/shophub" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/shophub" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'admin_panel:admin_users' %}">Users</a></li>
+                    <li><a href="{% url 'admin_panel:admin_sellers' %}">Sellers</a></li>
+                    <li><a href="{% url 'admin_panel:admin_products' %}">Products</a></li>
+                    <li><a href="{% url 'admin_panel:admin_orders' %}">Orders</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="{% url 'admin_panel:help_center' %}">Help Center</a></li>
+                    <li><a href="{% url 'admin_panel:contact_us' %}">Contact Us</a></li>
+                    <li><a href="{% url 'admin_panel:privacy_policy' %}">Privacy Policy</a></li>
+                    <li><a href="{% url 'admin_panel:terms_of_service' %}">Terms of Service</a></li>
+                    <li><a href="{% url 'admin_panel:feedback' %}">Feedback</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li>
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        Mumbai, India
+                    </li>
+                    <li>
+                        <i class="fas fa-phone" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        +91 98765 43210
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                        <a href="mailto:admin@shophub.com">admin@shophub.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ShopHub Admin. All rights reserved.</p>
+            <p>Made with ❤️ for Efficient Management</p>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Set active link based on current URL
+        function setActiveSidebarLink() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+            const currentURL = window.location.href;
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.href === currentURL) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', setActiveSidebarLink);
+        // Handle sidebar link clicks
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                closeSidebar();
+            });
+        });
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const dropdown = document.getElementById("profileDropdown");
+            menu.classList.toggle("show");
+            dropdown.classList.toggle("active");
+        }
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.querySelector(".sidebar-overlay");
+            const menu = document.querySelector(".hamburger");
+            sidebar.classList.toggle("show");
+            overlay.classList.toggle("show");
+            menu.classList.toggle("active");
+            document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
+        }
+        function closeSidebar() {
+            document.getElementById("sidebar").classList.remove("show");
+            document.querySelector(".sidebar-overlay").classList.remove("show");
+            document.querySelector(".hamburger").classList.remove("active");
+            document.body.style.overflow = "";
+        }
+        function showNotifications() {
+            alert("Notifications coming soon!");
+        }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            if (!profileDropdown.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                profileDropdown.classList.remove('active');
+            }
+        });
+    </script>
+    {% block extra_script %}{% endblock %}
+</body>
+</html>

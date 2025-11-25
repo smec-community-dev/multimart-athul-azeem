@@ -1,0 +1,1980 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews Dashboard - ShopHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.15);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; }
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(to bottom, var(--bg-color), #f0f2f5);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 0;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: auto;
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            padding: 0 8px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+            padding-right: 8px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 8px;
+        }
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--primary-color);
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin: 0 4px;
+        }
+        .notification-bell:hover {
+            background: rgba(255,127,50,0.1);
+            transform: scale(1.05);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(244,67,54,0.3);
+        }
+        .profile-dropdown {
+            position: relative;
+            margin-left: 8px;
+        }
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .profile-toggle:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-light);
+        }
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .profile-role {
+            font-size: 0.75rem;
+            color: var(--light-text);
+        }
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 280px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 100;
+            display: none;
+            margin-top: 8px;
+        }
+        .profile-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            display: block;
+        }
+        .dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .dropdown-header-info h3 {
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        .dropdown-header-info p {
+            color: var(--light-text);
+            font-size: 0.85rem;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+        }
+        .dropdown-items {
+            padding: 8px 0;
+        }
+        .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid transparent;
+        }
+        .dropdown-item:hover {
+            background: rgba(255,127,50,0.05);
+            transform: translateX(4px);
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .dropdown-item-text {
+            flex: 1;
+        }
+        .dropdown-item-label {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .dropdown-item-desc {
+            color: var(--light-text);
+            font-size: 0.8rem;
+        }
+        .logout {
+            color: var(--danger-color);
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+            box-shadow: var(--shadow-light);
+        }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+            border-radius: 0 8px 8px 0;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,127,50,0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: inset 4px 0 0 var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            min-width: 0;
+        }
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p {
+            color: var(--light-text);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        .review-summary {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 127, 50, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .review-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        .summary-top {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+            align-items: end;
+        }
+        .average-rating-box {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-radius: 20px;
+            padding: 40px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-hover);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            background-size: 300% 300%;
+            animation: gradientShift 4s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .average-rating-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+        }
+        .average-rating-box:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(255,127,50,0.3);
+        }
+        .rating-value {
+            font-family: var(--font-heading);
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+        .average-rating-box div:nth-child(2) {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+        #avgStars {
+            font-size: 1.4rem;
+            margin-top: 8px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+            position: relative;
+            z-index: 1;
+        }
+        .summary-stat {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 28px 16px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .summary-stat:hover::before {
+            opacity: 1;
+        }
+        .summary-stat:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        .summary-stat-label {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        .summary-stat-value {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .star-distribution {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border-color);
+            background: rgba(255, 127, 50, 0.02);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .star-distribution-title {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            margin-bottom: 28px;
+            color: var(--text-color);
+            text-align: center;
+            position: relative;
+        }
+        .star-distribution-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--primary-color);
+            border-radius: 1px;
+        }
+        .star-distribution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        .star-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .star-row:hover {
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-2px);
+        }
+        .star-label {
+            min-width: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-align: right;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+        }
+        .star-bar-container {
+            flex: 1;
+            height: 14px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 7px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .star-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            min-width: 0;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+        }
+        .star-count {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+        .chart-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            padding: 28px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 127, 50, 0.1);
+        }
+        .chart-section:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+        .chart-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: 600;
+        }
+        .chart-container {
+            height: 320px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+        .insight-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-light);
+            padding: 28px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .insight-card:hover {
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-2px);
+        }
+        .insight-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .insight-list { list-style: none; }
+        .insight-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .insight-list li:hover {
+            background: rgba(255,127,50,0.02);
+            padding-left: 8px;
+        }
+        .insight-list li:last-child { border-bottom: none; }
+        .insight-metric {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            padding: 32px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 127, 50, 0.1);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            align-items: center;
+            background: rgba(0,0,0,0.02);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .filter-input, .filter-select {
+            padding: 10px 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: var(--font-body);
+            transition: all 0.3s;
+            background: var(--card-bg);
+        }
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255,127,50,0.1);
+            transform: scale(1.02);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+        }
+        thead {
+            background: linear-gradient(135deg, rgba(255,127,50,0.08), rgba(255,127,50,0.04));
+        }
+        th {
+            padding: 18px 14px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 18px 14px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        tr:hover {
+            background: rgba(255,127,50,0.04);
+            transform: scale(1.01);
+        }
+        .customer-name { font-weight: 600; color: var(--primary-color); }
+        .regular-badge {
+            background: linear-gradient(135deg, var(--success-color), #45a049);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 8px;
+            box-shadow: var(--shadow-light);
+        }
+        .review-stars { display: inline-flex; gap: 2px; }
+        .star-filled { color: var(--warning-color); font-size: 1.2rem; filter: drop-shadow(0 1px 1px rgba(255,193,7,0.3)); }
+        .star-empty { color: #e0e0e0; font-size: 1.2rem; }
+        .review-comment {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--light-text);
+            font-style: italic;
+        }
+        .review-date {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            background: rgba(0,0,0,0.02);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-light);
+        }
+        .btn-delete {
+            background: rgba(244,67,54,0.1);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+        .btn-delete:hover {
+            background: rgba(244,67,54,0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .pagination a, .pagination span {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            background: var(--card-bg);
+        }
+        .pagination a:hover {
+            background: rgba(255,127,50,0.1);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-color);
+        }
+        .pagination .current {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-medium);
+        }
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
+            background: rgba(0,0,0,0.03);
+        }
+
+        .behavior-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+        .behavior-card {
+            padding: 24px;
+            border-radius: 16px;
+            border-left: 5px solid;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .behavior-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .behavior-card:hover::before {
+            opacity: 1;
+        }
+        .behavior-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+        .behavior-card.orange { background: rgba(255,127,50,0.05); border-color: var(--primary-color); }
+        .behavior-card.green { background: rgba(76,175,80,0.05); border-color: var(--success-color); }
+        .behavior-card.red { background: rgba(244,67,54,0.05); border-color: var(--danger-color); }
+        .behavior-label {
+            font-size: 1rem;
+            color: var(--light-text);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .behavior-value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: auto;
+            border-top: 2px solid var(--primary-color);
+            flex-shrink: 0;
+            width: 100%;
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-logo span:first-child {
+            font-size: 2rem;
+        }
+        .footer-logo span:last-child {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 99;
+                overflow-y: auto;
+                width: 280px;
+            }
+            .sidebar.active { display: block; }
+            .navbar {
+                padding: 8px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .navbar-left {
+                gap: 8px;
+                flex: 1;
+            }
+            .logo {
+                font-size: 1.4rem;
+                padding: 0 4px;
+            }
+            .navbar-title {
+                font-size: 0.8rem;
+                padding-left: 8px;
+                padding-right: 4px;
+            }
+            .navbar-right {
+                gap: 8px;
+                flex-shrink: 0;
+            }
+            .profile-toggle {
+                padding: 4px;
+                gap: 4px;
+            }
+            .profile-info-text {
+                display: none;
+            }
+            .dropdown-menu {
+                min-width: 250px;
+                right: -16px;
+            }
+            .main-content { padding: 20px; }
+            .header h1 { font-size: 1.8rem; }
+            .header p { margin-bottom: 24px; }
+            .summary-top { grid-template-columns: 1fr; gap: 24px; align-items: stretch; }
+            .review-summary { padding: 24px; margin-bottom: 24px; }
+            .average-rating-box { padding: 24px 20px; }
+            .summary-stat { padding: 20px 12px; }
+            .summary-stat-label { margin-bottom: 8px; }
+            .star-distribution { margin-top: 24px; padding-top: 24px; padding: 20px; }
+            .star-distribution-title { margin-bottom: 16px; }
+            .star-distribution-grid { gap: 16px; }
+            .star-row { gap: 12px; padding: 10px 12px; }
+            .charts-grid, .insights-grid { grid-template-columns: 1fr; gap: 24px; }
+            .chart-section { padding: 20px; }
+            .chart-title { margin-bottom: 16px; }
+            .insight-card { padding: 20px; }
+            .insight-title { margin-bottom: 12px; }
+            .insight-list li { padding: 10px 0; }
+            .section { padding: 20px; margin-bottom: 24px; }
+            .section-header { margin-bottom: 20px; }
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 20px; }
+            .filter-group { width: 100%; }
+            .filter-input, .filter-select { flex: 1; }
+            th, td { padding: 12px 8px; }
+            .behavior-grid { gap: 20px; }
+            .behavior-card { padding: 16px; }
+            .behavior-label { margin-bottom: 6px; }
+            .footer { padding: 2rem 1rem 1rem; }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .container { overflow: hidden; }
+            .main-content { overflow-y: auto; padding-bottom: 1rem; }
+        }
+        @media (max-width: 480px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .charts-grid .chart-container,
+            .insights-grid .insight-card,
+            .review-summary,
+            .section { padding: 16px; }
+            .chart-container { height: 250px; }
+            .pagination { gap: 4px; }
+            .pagination a, .pagination span { padding: 6px 8px; font-size: 0.8rem; }
+            .table-container { margin: 0 -8px; }
+            table { font-size: 0.85rem; min-width: 600px; }
+            th, td { padding: 8px 4px; }
+            .review-comment { max-width: 200px; }
+            .sidebar { width: 260px; }
+            .main-content { padding: 16px; }
+            .header h1 { font-size: 1.6rem; }
+            .header p { margin-bottom: 20px; }
+            .rating-value { font-size: 3rem; }
+            .summary-stat-value { font-size: 1.8rem; }
+        }
+        @media (max-width: 360px) {
+            .navbar { padding: 6px 12px; }
+            .navbar-left { gap: 4px; }
+            .logo { font-size: 1.2rem; }
+            .navbar-title { display: none; }
+            .navbar-right { gap: 4px; }
+            .notification-bell { font-size: 1rem; padding: 6px; }
+            .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
+            .main-content { padding: 12px; }
+            .header h1 { font-size: 1.4rem; }
+            .header p { margin-bottom: 16px; }
+            .summary-top { gap: 16px; }
+            .rating-value { font-size: 2.5rem; }
+            .summary-stat-value { font-size: 1.5rem; }
+            .chart-container { height: 200px; }
+            .filter-bar { gap: 8px; }
+            .filter-input, .filter-select { padding: 10px; }
+            table { min-width: 500px; font-size: 0.8rem; }
+            th, td { padding: 6px 2px; }
+            .review-comment { max-width: 150px; }
+            .pagination a, .pagination span { padding: 4px 6px; font-size: 0.75rem; }
+            .footer { padding: 1.5rem 0.5rem 1rem; }
+            .social-links { gap: 0.5rem; }
+            .social-links a { width: 35px; height: 35px; font-size: 0.9rem; }
+            .sidebar { width: 240px; }
+        }
+    </style>
+</head>
+<body>
+      <!-- NAVBAR -->
+     <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Dashboard</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ user.username|first|upper}}</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
+                        <div class="profile-role">Seller</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <!-- PROFILE -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
+                            </div>
+                        </div>
+                        <!-- STORE SETTINGS -->
+    <div class="dropdown-divider"></div>
+                        <!-- NOTIFICATIONS -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">🔔</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+
+                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
+                            <span class="dropdown-item-icon">❓</span>
+                             <a href="{% url 'help_support'  %}">
+                                    <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & contact support</div>
+                            </div>
+                            </a>
+                        </div>
+                        <!-- HELP -->
+
+                        <div class="dropdown-divider"></div>
+                        <!-- LOGOUT -->
+                        <div class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'admin_panel:logout' %}">Logout</a>
+                                </div>
+                                <div class="dropdown-item-desc">Sign out</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}" class="{% if request.resolver_match.url_name == 'orders' %}active{% endif %}"><span>🛒</span> Orders</a></li>
+
+                <li><a href="{% url 'review' %}" class="active"><span>⭐</span> Reviews</a></li>
+
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <h1>Reviews & Ratings 📝</h1>
+                <p>Manage customer reviews and monitor your reputation</p>
+            </div>
+
+            <!-- SUMMARY -->
+            <div class="review-summary">
+                <div class="summary-top">
+                    <div class="average-rating-box">
+                        <div class="rating-value">{{ rating_avg|default:"0.0" }}</div>
+                        <div>Average Rating</div>
+                        <div id="avgStars">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-label">📊 Total Reviews</div>
+                        <div class="summary-stat-value">{{ total_reviews|default:"0" }}</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-label">👥 Reviewers</div>
+                        <div class="summary-stat-value">{{ unique_reviewers|default:"0" }}</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-label">📦 Products Reviewed</div>
+                        <div class="summary-stat-value">{{ products_reviewed|default:"0" }}</div>
+                    </div>
+                </div>
+
+                <div class="star-distribution">
+                    <div class="star-distribution-title">Rating Distribution</div>
+                    <div class="star-distribution-grid">
+                        {% for star, data in star_distribution.items %}
+                        <div class="star-row">
+                            <div class="star-label">{{ star }}★</div>
+                            <div class="star-bar-container">
+                                <div class="star-bar" style="width: {% if data.percentage > 0 %}{{ data.percentage }}%{% else %}0%{% endif %};">
+                                    {% if data.percentage > 15 %}<span class="star-count">{{ data.count }}</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHARTS -->
+            <div class="charts-grid">
+                <div class="chart-section">
+                    <div class="chart-title">📊 Most Reviewed Products</div>
+                    <div class="chart-container"><canvas id="mostReviewedChart"></canvas></div>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-title">📈 Monthly Review Trend</div>
+                    <div class="chart-container"><canvas id="monthlyTrendChart"></canvas></div>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-title">🥧 Rating Distribution</div>
+                    <div class="chart-container"><canvas id="ratingDistributionChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- INSIGHTS -->
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-title">🌟 Top Highest-Rated</div>
+                    <ul class="insight-list">
+                        {% for product in top_highest_rated %}
+                        <li><span>{{ product.name }}</span><span class="insight-metric">{{ product.rating }}/5</span></li>
+                        {% empty %}<li style="justify-content:center;color:var(--light-text);">No data available</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">🔥 Most Reviewed</div>
+                    <ul class="insight-list">
+                        {% for product in top_most_reviewed %}
+                        <li><span>{{ product.name }}</span><span class="insight-metric">{{ product.count }} reviews</span></li>
+                        {% empty %}<li style="justify-content:center;color:var(--light-text);">No data available</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">📉 Needs Improvement</div>
+                    <ul class="insight-list">
+                        {% for product in lowest_rated %}
+                        <li><span>{{ product.name }}</span><span class="insight-metric">{{ product.rating }}/5</span></li>
+                        {% empty %}<li style="justify-content:center;color:var(--light-text);">No data available</li>{% endfor %}
+                    </ul>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">📊 Review Impact</div>
+                    <ul class="insight-list">
+                        <li><span>Positive Impact</span><span class="insight-metric">{{ positive_impact|default:"0" }}%</span></li>
+                        <li><span>Sales Influenced</span><span class="insight-metric">{{ influenced_sales|default:"0" }}</span></li>
+                        <li><span>Avg Response Time</span><span class="insight-metric">{{ response_time|default:"N/A" }}</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- REVIEWS TABLE -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Customer Reviews</div>
+                    <a href="{% url 'download_reviews_csv' %}" class="btn-primary">⬇️ Download CSV</a>
+                </div>
+
+                <!-- FILTER FORM -->
+                <form method="GET" action="">
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label class="filter-label">🔍</label>
+                            <input type="text" name="search" class="filter-input" placeholder="Search reviews..." value="{{ search_query|default:'' }}">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">⭐</label>
+                            <select name="rating" class="filter-select">
+                                <option value="">All Stars</option>
+                                <option value="5" {% if rating_filter == 5 %}selected{% endif %}>5 Stars</option>
+                                <option value="4" {% if rating_filter == 4 %}selected{% endif %}>4 Stars</option>
+                                <option value="3" {% if rating_filter == 3 %}selected{% endif %}>3 Stars</option>
+                                <option value="2" {% if rating_filter == 2 %}selected{% endif %}>2 Stars</option>
+                                <option value="1" {% if rating_filter == 1 %}selected{% endif %}>1 Star</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">📦</label>
+                            <select name="product" class="filter-select">
+                                <option value="">All Products</option>
+                                {% for p in products %}
+                                <option value="{{ p.id }}" {% if product_filter == p.id %}selected{% endif %}>{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">📅</label>
+                            <select name="sort" class="filter-select">
+                                <option value="newest" {% if sort_by == "newest" %}selected{% endif %}>Newest</option>
+                                <option value="oldest" {% if sort_by == "oldest" %}selected{% endif %}>Oldest</option>
+                                <option value="highest" {% if sort_by == "highest" %}selected{% endif %}>Highest Rated</option>
+                                <option value="lowest" {% if sort_by == "lowest" %}selected{% endif %}>Lowest Rated</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Apply Filter</button>
+                        {% if search_query or rating_filter or product_filter or sort_by != "newest" %}
+                        <a href="{% url 'review' %}" class="btn-small" style="background:#eee;color:#666;padding:10px 18px;border-radius:8px;">Clear</a>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Rating</th>
+                                <th>Review</th>
+                                <th>Product</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in reviews %}
+                            <tr>
+                                <td>
+                                    <span class="customer-name">
+                                        {{ review.customer_name }}
+                                        {% if review.is_repeat_customer %}<span class="regular-badge">Regular</span>{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="review-stars">
+                                        {% for i in review.times_range %}<span class="star-filled">★</span>{% endfor %}
+                                        {% for i in review.empty_stars_range %}<span class="star-empty">★</span>{% endfor %}
+                                    </div>
+                                </td>
+                                <td><div class="review-comment" title="{{ review.comment_full }}">{{ review.comment }}</div></td>
+                                <td>{{ review.product_name }}</td>
+                                <td><div class="review-date">{{ review.date|date:"M d, Y" }}</div></td>
+                                <td>
+                                    <button class="btn-small btn-delete" onclick="deleteReview({{ review.id }}, this)">🗑️ Delete</button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:40px;color:var(--light-text);">
+                                    {% if search_query or rating_filter or product_filter %}
+                                        No reviews match your filters. <a href="{% url 'review' %}" style="color:var(--primary-color);">Clear filters</a>
+                                    {% else %}
+                                        No reviews yet.
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION -->
+                {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}{% if product_filter %}&product={{ product_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">« First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}{% if product_filter %}&product={{ product_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">‹ Prev</a>
+                    {% else %}
+                        <span class="disabled">« First</span>
+                        <span class="disabled">‹ Prev</span>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="current">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}{% if product_filter %}&product={{ product_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}{% if product_filter %}&product={{ product_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next ›</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}{% if product_filter %}&product={{ product_filter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Last »</a>
+                    {% else %}
+                        <span class="disabled">Next ›</span>
+                        <span class="disabled">Last »</span>
+                    {% endif %}
+                </div>
+                <p style="text-align:center;margin-top:10px;color:var(--light-text);font-size:0.85rem;">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} ({{ paginator.count }} reviews)
+                </p>
+                {% endif %}
+            </div>
+
+    <!-- BEHAVIOR INSIGHTS -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-title">💡 Customer Behavior</div>
+    </div>
+
+    <div class="behavior-grid">
+
+        <!-- Repeat Reviewers -->
+        <div class="behavior-card orange">
+            <div class="behavior-label">👥 Repeat Reviewers</div>
+            <div class="behavior-value">{{ also_ordered_count|default:"0" }}</div>
+
+            {% if repeat_reviewer_names %}
+            <ul style="margin-top:8px; padding-left:18px; color:var(--light-text); font-size:0.85rem; line-height:1.4;">
+                {% for name in repeat_reviewer_names %}
+                <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+        <!-- Positive Sentiment -->
+        <div class="behavior-card green">
+            <div class="behavior-label">😊 Positive Sentiment</div>
+            <div class="behavior-value" style="color:var(--success-color)">{{ positive_sentiment }}%</div>
+
+            {% if positive_customers %}
+            <ul style="margin-top:8px; padding-left:18px; color:var(--light-text); font-size:0.85rem; line-height:1.4;">
+                {% for name in positive_customers %}
+                <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+        <!-- Negative Sentiment -->
+        <div class="behavior-card red">
+            <div class="behavior-label">⚠️ Negative Sentiment</div>
+            <div class="behavior-value" style="color:var(--danger-color)">{{ negative_sentiment }}%</div>
+
+
+            {% if negative_customers %}
+            <ul style="margin-top:8px; padding-left:18px; color:var(--light-text); font-size:0.85rem; line-height:1.4;">
+                {% for name in negative_customers %}
+                <li>{{ name }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+
+    </div> <!-- closes behavior-grid -->
+
+</div> <!-- closes section -->
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+        <div class="footer-grid">
+
+            <!-- Logo Section -->
+            <div>
+                <div class="footer-logo">
+                    <span>🛍️</span>
+                    <span>ShopHub</span>
+                </div>
+                <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                <div class="social-links">
+             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                                   <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                </ul>
+            </div>
+
+            <!-- Customer Service -->
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#">Shipping Policy</a></li>
+                    <li><a href="#">Returns & Refunds</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Track Your Order</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Us -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>
+                        <span style="color: var(--primary-color); margin-right: 0.5rem;">📍</span>
+                        123 Shopping Street, Mumbai, India
+                    </li>
+                    <li>
+                        <span style="color: var(--primary-color); margin-right: 0.5rem;">📞</span>
+                        +91 98765 43210
+                    </li>
+                    <li>
+                        <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                        support@shophub.com
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+            <p>Made with ❤️ for Sellers & Shoppers</p>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Sidebar toggle function
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Profile dropdown toggle
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Render dynamic stars for average rating
+        document.addEventListener('DOMContentLoaded', function() {
+            const avgRating = parseFloat({{ rating_avg|default:0 }});
+            const starsDiv = document.getElementById('avgStars');
+            let stars = '';
+            const fullStars = Math.floor(avgRating);
+            const hasDecimal = avgRating % 1 !== 0;
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    stars += '⭐';
+                } else if (i === fullStars + 1 && hasDecimal) {
+                    stars += '🌟'; // Half star approximation
+                } else {
+                    stars += '☆';
+                }
+            }
+            starsDiv.innerHTML = stars;
+
+            // Add some interactive effects to table rows
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function(e) {
+                    if (!e.target.closest('button')) {
+                        this.style.backgroundColor = 'rgba(255,127,50,0.05)';
+                        setTimeout(() => {
+                            this.style.backgroundColor = '';
+                        }, 200);
+                    }
+                });
+            });
+
+            // Add hover effect to pagination
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                });
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+
+        // Chart data from backend
+        const mostReviewedLabels = {{ most_reviewed_chart_labels|safe|default:'[]' }};
+        const mostReviewedData = {{ most_reviewed_chart_data|safe|default:'[]' }};
+        const monthlyLabels = {{ monthly_labels|safe|default:'[]' }};
+        const monthlyValues = {{ monthly_values|safe|default:'[]' }};
+        const ratingLabels = {{ rating_dist_labels|safe|default:'[]' }};
+        const ratingData = {{ rating_dist_data|safe|default:'[]' }};
+
+        // Most Reviewed Products - Horizontal Bar Chart
+        if (mostReviewedLabels.length > 0 && mostReviewedData.length > 0) {
+            const mostReviewedCtx = document.getElementById('mostReviewedChart').getContext('2d');
+            new Chart(mostReviewedCtx, {
+                type: 'bar',
+                data: {
+                    labels: mostReviewedLabels,
+                    datasets: [{
+                        label: 'Number of Reviews',
+                        data: mostReviewedData,
+                        backgroundColor: '#FFB273',
+                        borderColor: '#FF7F32',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#3A3A3A',
+                            bodyColor: '#3A3A3A',
+                            borderColor: '#FF7F32',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Reviews: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#3A3A3A',
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('mostReviewedChart').innerHTML =
+                '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--light-text); font-size: 0.9rem;">No review data available</div>';
+        }
+
+        // Monthly Trend - Line Chart
+        if (monthlyLabels.length > 0 && monthlyValues.length > 0) {
+            const monthlyTrendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            new Chart(monthlyTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: monthlyLabels,
+                    datasets: [{
+                        label: 'Reviews per Month',
+                        data: monthlyValues,
+                        borderColor: '#FF7F32',
+                        backgroundColor: 'rgba(255, 127, 50, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#FF7F32',
+                        pointBorderColor: '#FFFFFF',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#3A3A3A',
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#3A3A3A',
+                            bodyColor: '#3A3A3A',
+                            borderColor: '#FF7F32',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Reviews: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#666',
+                                font: {
+                                    size: 11
+                                },
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            document.getElementById('monthlyTrendChart').innerHTML =
+                '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--light-text); font-size: 0.9rem;">No monthly trend data available</div>';
+        }
+
+        // Rating Distribution - Pie Chart
+        if (ratingData.length > 0 && ratingData.some(value => value > 0)) {
+            const ratingDistCtx = document.getElementById('ratingDistributionChart').getContext('2d');
+            new Chart(ratingDistCtx, {
+                type: 'pie',
+                data: {
+                    labels: ratingLabels,
+                    datasets: [{
+                        data: ratingData,
+                        backgroundColor: [
+                            '#4CAF50', // 5 stars - green
+                            '#8BC34A', // 4 stars - light green
+                            '#FFC107', // 3 stars - yellow
+                            '#FF9800', // 2 stars - orange
+                            '#F44336'  // 1 star - red
+                        ],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 3,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#3A3A3A',
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#3A3A3A',
+                            bodyColor: '#3A3A3A',
+                            borderColor: '#FF7F32',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '0%'
+                }
+            });
+        } else {
+            document.getElementById('ratingDistributionChart').innerHTML =
+                '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--light-text); font-size: 0.9rem;">No rating distribution data available</div>';
+        }
+
+        // Delete review function (fixed with button reference)
+        function deleteReview(reviewId, button) {
+            if (confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
+                // Show loading state
+                const originalText = button.innerHTML;
+                button.innerHTML = 'Deleting...';
+                button.disabled = true;
+
+                fetch(`/seller/reviews/delete/${reviewId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showNotification('✅ Review deleted successfully', 'success');
+                        // Remove the row from the table
+                        const row = button.closest('tr');
+                        row.style.opacity = '0';
+                        setTimeout(() => {
+                            row.remove();
+                            // If no reviews left, show empty message
+                            if (document.querySelectorAll('tbody tr').length === 0) {
+                                const tbody = document.querySelector('tbody');
+                                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--light-text);">No reviews found.</td></tr>';
+                            }
+                        }, 300);
+                    } else {
+                        throw new Error(data.error || 'Unknown error occurred');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('❌ Error deleting review: ' + error.message, 'error');
+                    // Reset button
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                });
+            }
+        }
+
+        // Notification function
+        function showNotification(message, type) {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.custom-notification');
+            existingNotifications.forEach(notif => notif.remove());
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'custom-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+                transform: translateX(100px);
+                opacity: 0;
+                max-width: 300px;
+                font-size: 0.9rem;
+            `;
+
+            if (type === 'success') {
+                notification.style.backgroundColor = 'var(--success-color)';
+            } else {
+                notification.style.backgroundColor = 'var(--danger-color)';
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+                notification.style.opacity = '1';
+            }, 100);
+
+            // Remove notification after 4 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // CSRF token helper function
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Auto-refresh charts on window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                // Charts automatically resize due to responsive: true
+                console.log('Window resized - charts updated');
+            }, 250);
+        });
+    </script>
+</body>
+</html>

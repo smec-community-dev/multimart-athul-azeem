@@ -1,0 +1,163 @@
+
+<!-- admin/templates/admin/delete_review_confirm.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Delete Review - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Delete Review</h1>
+    <p>Confirm review deletion</p>
+</div>
+
+<div class="section">
+    <div class="delete-confirmation">
+        <div class="warning-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <h2>Are you sure you want to delete this review?</h2>
+
+        <div class="review-details">
+            <p><strong>Product:</strong> {{ review.product.name }}</p>
+            <p><strong>Reviewer:</strong> {{ review.user.username }}</p>
+            <p><strong>Rating:</strong>
+                {% for i in "12345"|make_list %}
+                    <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% else %}text-muted{% endif %}"></i>
+                {% endfor %}
+                {{ review.rating }}/5
+            </p>
+            <p><strong>Review Date:</strong> {{ review.created_at|date:"M d, Y" }}</p>
+            <p><strong>Comment:</strong></p>
+            <div class="comment-preview">
+                {{ review.comment|truncatewords:20 }}
+            </div>
+        </div>
+
+        <p class="warning-text">This action cannot be undone. The review will be permanently deleted.</p>
+
+        <div class="confirmation-actions">
+            <form method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="search_query" value="{{ search_query }}">
+                <input type="hidden" name="current_rating" value="{{ current_rating }}">
+                <input type="hidden" name="current_status" value="{{ current_status }}">
+                <button type="submit" class="btn-danger">Yes, Delete Review</button>
+            </form>
+            <a href="{% url 'admin_panel:admin_reviews' %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_rating %}&rating={{ current_rating }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}"
+               class="btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .delete-confirmation {
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 2rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+    }
+
+    .warning-icon {
+        font-size: 3rem;
+        color: #dc3545;
+        margin-bottom: 1rem;
+    }
+
+    .review-details {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+
+    .review-details p {
+        margin: 0.75rem 0;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .review-details p:last-child {
+        border-bottom: none;
+    }
+
+    .comment-preview {
+        background: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        text-align: left;
+        font-style: italic;
+        margin-top: 0.5rem;
+    }
+
+    .warning-text {
+        color: #dc3545;
+        font-weight: 500;
+        margin: 1rem 0;
+    }
+
+    .confirmation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-danger, .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .text-warning {
+        color: #ffc107;
+    }
+
+    .text-muted {
+        color: #ddd;
+    }
+
+    @media (max-width: 480px) {
+        .delete-confirmation {
+            padding: 1.5rem;
+        }
+
+        .confirmation-actions {
+            flex-direction: column;
+        }
+
+        .btn-danger, .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

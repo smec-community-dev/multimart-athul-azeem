@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - ShopHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        a { text-decoration: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            gap: 12px;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            animation: pulse 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .notification-bell:hover { transform: scale(1.1); }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .profile-dropdown { position: relative; }
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            display: none;
+        }
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
+        }
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+        .profile-role {
+            font-size: 0.7rem;
+            color: var(--light-text);
+        }
+        .dropdown-arrow {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .dropdown-header-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+        .dropdown-header-info p {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        .dropdown-items { padding: 8px 0; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
+        }
+        .dropdown-item-text { flex: 1; }
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dropdown-item-desc {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+        .dropdown-item.logout { color: var(--danger-color); }
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+        /* ======================== MAIN LAYOUT ======================== */
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+        .sidebar {
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            animation: slideInLeft 0.5s ease;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li { margin: 0; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        .sidebar-menu span {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
+        }
+        .header {
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+        /* ======================== STATS GRID ======================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .stat-card:nth-child(2) { border-left-color: var(--success-color); }
+        .stat-card:nth-child(3) { border-left-color: var(--warning-color); }
+        .stat-card:nth-child(4) { border-left-color: var(--accent-color); }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+        .stat-label {
+            color: var(--light-text);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        .stat-change.negative { color: var(--danger-color); }
+        /* ======================== SECTION ======================== */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== TABLE ======================== */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: -5px;
+            padding: 5px;
+        }
+        table {
+            width: auto;
+            min-width: 600px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        thead { background-color: rgba(255, 127, 50, 0.05); }
+        th {
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+        .product-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .product-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        .status-inactive {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+        }
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        /* ======================== CHART ======================== */
+        .chart-container {
+            height: 280px;
+            background: linear-gradient(135deg, rgba(255, 127, 50, 0.05), rgba(255, 178, 115, 0.05));
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 16px 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 8px;
+            position: relative;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .chart-bar {
+            width: 28px;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 20px;
+            flex-shrink: 0;
+        }
+        .chart-bar:hover {
+            transform: scaleY(1.05);
+            filter: brightness(1.08);
+        }
+        .chart-label {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: var(--light-text);
+            white-space: nowrap;
+        }
+        .chart-value {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        /* ======================== ORDER ITEMS ======================== */
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .order-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 3px 10px rgba(255, 127, 50, 0.1);
+        }
+        .order-info {
+            flex: 1;
+            min-width: 160px;
+        }
+        .order-id {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+        .order-customer {
+            color: var(--light-text);
+            font-size: 0.85rem;
+        }
+        .order-amount {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .order-item-name {
+            color: var(--light-text);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        /* ======================== MODAL ======================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            animation: slideDown 0.3s ease;
+            box-shadow: var(--shadow-medium);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--light-text);
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .close-btn:hover { color: var(--text-color); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+        }
+        .btn-cancel {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-logo span:first-child {
+            font-size: 2rem;
+        }
+        .footer-logo span:last-child {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 1024px) {
+            .sidebar { width: 220px; }
+            .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
+            .main-content { padding: 20px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .section { padding: 18px; }
+            .header h1 { font-size: 1.8rem; }
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            .navbar-title {
+                display: none !important;
+            }
+            .container {
+                flex-direction: column;
+            }
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .main-content {
+                padding: 16px;
+            }
+            .header h1 { font-size: 1.5rem; }
+            .header p { font-size: 0.9rem; }
+            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
+            .stat-card { padding: 16px; }
+            .stat-value { font-size: 1.5rem; }
+            .section { padding: 16px; margin-bottom: 20px; }
+            .section-title { font-size: 1.1rem; }
+            .section-header { gap: 10px; }
+            .btn-primary { padding: 7px 14px; font-size: 0.8rem; }
+            table { font-size: 0.85rem; min-width: 500px; }
+            th { padding: 6px 4px; font-size: 0.75rem; }
+            td { padding: 6px 4px; }
+            .product-icon { width: 28px; height: 28px; font-size: 0.9rem; }
+            .product-name { gap: 4px; }
+            .chart-container { height: 240px; padding: 12px 8px; }
+            .chart-bar { width: 24px; }
+            .chart-value { font-size: 0.7rem; top: -18px; }
+            .chart-label { font-size: 0.65rem; bottom: -18px; }
+            .order-item { padding: 12px; gap: 8px; }
+            .order-id { font-size: 0.85rem; }
+            .order-customer { font-size: 0.8rem; }
+            .order-amount { font-size: 1rem; }
+            .modal-content { padding: 20px; }
+            .modal-title { font-size: 1.1rem; }
+            .form-group label { font-size: 0.85rem; }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .navbar { padding: 8px 12px; }
+            .logo { font-size: 1.3rem; }
+            .navbar-right { gap: 10px; }
+            .notification-badge { width: 16px; height: 16px; font-size: 0.6rem; }
+            .profile-toggle { padding: 5px 8px; }
+            .profile-avatar { width: 28px; height: 28px; font-size: 0.8rem; }
+            .dropdown-arrow { font-size: 0.9rem; }
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+            .main-content { padding: 12px; }
+            .header { margin-bottom: 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .header p { font-size: 0.85rem; }
+            .stats-grid { gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-label { font-size: 0.7rem; }
+            .stat-value { font-size: 1.4rem; margin-bottom: 6px; }
+            .stat-change { font-size: 0.75rem; }
+            .section { padding: 14px; margin-bottom: 16px; }
+            .section-header { flex-direction: column; align-items: flex-start; padding-bottom: 10px; }
+            .section-title { font-size: 1rem; }
+            .btn-primary { width: 100%; padding: 8px 12px; }
+            .table-container { margin: -3px; padding: 3px; }
+            table { font-size: 0.8rem; min-width: 400px; }
+            th { padding: 4px 2px; font-size: 0.7rem; }
+            td { padding: 4px 2px; }
+            .product-name { gap: 4px; }
+            .product-icon { width: 24px; height: 24px; font-size: 0.8rem; }
+            .chart-container { height: 200px; padding: 10px 6px; gap: 6px; }
+            .chart-bar { width: 20px; }
+            .chart-value { font-size: 0.65rem; top: -16px; }
+            .chart-label { font-size: 0.6rem; bottom: -16px; }
+            .order-item {
+                padding: 10px;
+                gap: 6px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .order-info {
+                min-width: 0;
+                width: 100%;
+                order: 1;
+            }
+            .order-amount {
+                order: 2;
+                font-size: 0.95rem;
+                align-self: flex-end;
+            }
+            .status-badge {
+                order: 3;
+                align-self: flex-end;
+                margin-top: 4px;
+            }
+            .order-id { font-size: 0.8rem; }
+            .order-customer { font-size: 0.75rem; }
+            .order-item-name { font-size: 0.75rem; }
+            .modal-content { padding: 16px; }
+            .modal-header { margin-bottom: 14px; padding-bottom: 10px; }
+            .modal-title { font-size: 1rem; }
+            .close-btn { font-size: 1.2rem; }
+            .form-group { margin-bottom: 12px; }
+            .form-group label { font-size: 0.8rem; margin-bottom: 4px; }
+            .form-group input,
+            .form-group select,
+            .form-group textarea { padding: 8px; font-size: 0.95rem; }
+            .modal-actions { gap: 8px; margin-top: 16px; padding-top: 12px; }
+            .modal-actions button { padding: 8px; font-size: 0.8rem; }
+            .sidebar-menu a { padding: 8px 10px; font-size: 0.8rem; }
+            .sidebar-menu span { font-size: 1rem; }
+            .dropdown-menu { min-width: 240px; }
+            .dropdown-header { padding: 10px 12px; }
+            .dropdown-header-avatar { width: 36px; height: 36px; font-size: 0.9rem; }
+            .dropdown-header-info h3 { font-size: 0.85rem; }
+            .dropdown-header-info p { font-size: 0.75rem; }
+            .dropdown-item { padding: 8px 12px; font-size: 0.8rem; }
+            .dropdown-item-icon { font-size: 1rem; }
+            .dropdown-item-label { font-size: 0.8rem; }
+            .dropdown-item-desc { font-size: 0.65rem; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 360px) {
+            .logo { font-size: 1.2rem; }
+            .navbar { padding: 8px 10px; gap: 6px; }
+            .navbar-left { gap: 8px; }
+            .navbar-right { gap: 8px; }
+            .header h1 { font-size: 1.1rem; }
+            .main-content { padding: 10px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 8px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 1.3rem; }
+            .section { padding: 12px; margin-bottom: 14px; }
+            .section-title { font-size: 0.95rem; }
+            .btn-primary { font-size: 0.75rem; padding: 6px 10px; }
+            .chart-bar { width: 18px; }
+            table { font-size: 0.75rem; min-width: 300px; }
+            th, td { padding: 3px 1px; }
+            .order-item { padding: 8px; gap: 4px; }
+            .order-info { width: 100%; }
+        }
+        /* ======================== RESPONSIVE TABLE ======================== */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* desktop */
+}
+
+@media (max-width: 768px) {
+    table {
+        min-width: 500px;
+        font-size: 0.85rem;
+    }
+    th, td {
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+    .product-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    table {
+        min-width: 420px;
+        font-size: 0.8rem;
+    }
+    th, td {
+        padding: 5px 3px;
+        font-size: 0.75rem;
+    }
+    .product-name {
+        gap: 4px;
+    }
+    .product-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+    }
+    .status-badge {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    table {
+        min-width: 350px;
+        font-size: 0.75rem;
+    }
+    th, td {
+        padding: 3px 2px;
+    }
+    .product-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+}
+/* ============================================
+   FINAL RESPONSIVE TABLE FIX (Place at bottom)
+   ============================================ */
+.responsive-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+}
+
+.responsive-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px; /* Ensures columns don't squeeze */
+}
+
+.responsive-table-wrapper th,
+.responsive-table-wrapper td {
+    white-space: nowrap;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+/* Medium Devices */
+@media (max-width: 768px) {
+    .responsive-table-wrapper table {
+        min-width: 650px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Small Devices */
+@media (max-width: 480px) {
+    .responsive-table-wrapper table {
+        min-width: 550px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+    .product-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Very Small Phones */
+@media (max-width: 360px) {
+    .responsive-table-wrapper table {
+        min-width: 480px;
+    }
+    .responsive-table-wrapper th,
+    .responsive-table-wrapper td {
+        padding: 4px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+
+
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Dashboard</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">{{ user.username|first|upper}}</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
+                        <div class="profile-role">Seller</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">{{ user.username|first|upper}}</div>
+                            <div class="dropdown-header-info">
+                                <h3>{{ user.seller_details.shop_name|default:"Mobile Store" }}</h3>
+                                <p>{{ user.email|default:"Mobile Store" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <!-- PROFILE -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                </div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
+                            </div>
+                        </div>
+                        <!-- STORE SETTINGS -->
+    <div class="dropdown-divider"></div>
+                        <!-- NOTIFICATIONS -->
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">🔔</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+
+                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
+                            <span class="dropdown-item-icon">❓</span>
+                            <a href="{% url 'help_support'  %}">
+                                    <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & contact support</div>
+                            </div>
+                            </a>
+                        </div>
+                        <!-- HELP -->
+
+                        <div class="dropdown-divider"></div>
+                        <!-- LOGOUT -->
+                        <div class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'admin_panel:logout' %}">Logout</a>
+                                </div>
+                                <div class="dropdown-item-desc">Sign out</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+
+            </ul>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Welcome back! 👋</h1>
+                <p>Here's your store performance overview</p>
+            </div>
+            <!-- STATS GRID -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">📊 TOTAL REVENUE</div>
+                    <div class="stat-value">₹{{ total_revenue }}</div>
+                   <div class="stat-change">↑ {{ revenue_growth }}% from yesterday</div>
+                </div>
+                <a href="{% url 'order' %}">
+                          <div class="stat-card">
+                    <div class="stat-label">📦TOTAL ORDERS</div>
+                    <div class="stat-value">{{ total_orders }}</div>
+                    <div class="stat-change">↑ {{ new_orders_today }} new orders</div>
+
+
+                </div>
+                </a>
+                <a href="{% url 'add' %}">
+                       <div class="stat-card">
+                    <div class="stat-label">🛍️ PRODUCTS</div>
+                    <div class="stat-value">{{ products_count }}</div>
+                    <div class="stat-change">{{ pending_products }} pending approval</div>
+                </div>
+                </a>
+                <a href="{% url 'review' %}">
+                      <div class="stat-card">
+                    <div class="stat-label">⭐ Rating</div>
+                    <div class="stat-value">{{ avg_rating }}/</div>
+                    <div class="stat-change">{{ rating_count }} reviews</div>
+                </div>
+                </a>
+            </div>
+            <!-- SALES CHART -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Sales This Week</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="weeklySalesChart"></canvas>
+                </div>
+            </div>
+            <!-- TOP PRODUCTS -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Top Products</div>
+                    <button class="btn-primary"><a href="{% url 'add' %}">View All</a></button>
+                </div>
+                <div class="responsive-table-wrapper">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                  <th>Units Sold</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in top_products %}
+                            <tr>
+                                <td>
+                                    <div class="product-name">
+                                        <div class="product-icon">📱</div>
+                                        <span>{{ p.name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ p.subcategory.name}}</td>
+                                <td>₹{{ p.price }}</td>
+                               <td>{{ p.stock }}</td>
+
+<td>
+    <span class="status-badge status-active">
+        {{ p.total_sold }} Sold
+    </span>
+</td>
+
+<td>
+    {% if p.stock > low_stock_threshold %}
+        {% if p.stock > 0 %}
+            <span class="status-badge status-active">Active</span>
+        {% else %}
+            <span class="status-badge status-inactive">Out</span>
+        {% endif %}
+    {% else %}
+        <span class="status-badge status-warning">Low Stock ({{ p.stock }})</span>
+    {% endif %}
+</td>
+
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" style="text-align:center;">No products found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                    </div>
+            </div>
+            <!-- RECENT ORDERS -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">Recent Orders</div>
+                    <button class="btn-primary"><a href="{% url 'order' %}">View All</a></button>
+                </div>
+                {% for order in recent_orders %}
+                <div class="order-item">
+                    <div class="order-info">
+                        <!-- ORDER NUMBER -->
+                        <div class="order-id">Order #ORD-{{ order.id|stringformat:"03d" }}</div>
+                        <!-- CUSTOMER NAME -->
+                        <div class="order-customer">{{ order.user.username }}</div>
+                        <!-- ORDER ITEM NAME + STOCK -->
+                        {% with item=order.items.all.0 %}
+                            {% if item %}
+                                <div class="order-item-name">
+                                    {{ item.product.name }}
+                                    (Stock: {{ item.product.stock }})
+                                </div>
+                            {% else %}
+                                <div class="order-item-name">No items</div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <!-- ORDER AMOUNT -->
+                    <div class="order-amount">₹{{ order.total_amount }}</div>
+                    <!-- STATUS BADGE -->
+                    {% if order.status == "Delivered" %}
+                        <span class="status-badge status-active">Delivered</span>
+                    {% elif order.status == "Shipped" %}
+                        <span class="status-badge status-active">Shipped</span>
+                    {% elif order.status == "Processing" %}
+                        <span class="status-badge status-active">Processing</span>
+                    {% else %}
+                        <span class="status-badge status-pending">{{ order.status }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- STORE SETTINGS MODAL -->
+    <div id="storeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">🏪 Store Settings</h2>
+                <button class="close-btn" onclick="closeStoreModal()">✕</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label>Store Name</label>
+                    <input type="text" value="Mobile Store" placeholder="Enter store name">
+                </div>
+                <div class="form-group">
+                    <label>Store Address</label>
+                    <input type="text" value="MG Road, Thrissur" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" value="Thrissur" placeholder="Enter city">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" value="Kerala" placeholder="Enter state">
+                </div>
+                <div class="form-group">
+                    <label>Business Type</label>
+                    <select>
+                        <option selected>Electronics</option>
+                        <option>Clothing</option>
+                        <option>Food</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>GST Number</label>
+                    <input type="text" value="22AABCT1234H1Z0" placeholder="GST number">
+                </div>
+                <div class="form-group">
+                    <label>Store Description</label>
+                    <textarea placeholder="Describe your store">Authorized Mobile Store with genuine products.</textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeStoreModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Logo Section -->
+                <div>
+                    <div class="footer-logo">
+                        <span>🛍️</span>
+                        <span>ShopHub</span>
+                    </div>
+                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="social-links">
+                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+
+                <li><a href="#"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+
+                </div>
+                <!-- Customer Service -->
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'service' %}">Service</a></li>
+                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Us -->
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📍</span>
+                            123 Shopping Street, Mumbai, India
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📞</span>
+                            +91 98765 43210
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            support@shophub.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>Made with ❤️ for Sellers & Shoppers</p>
+            </div>
+        </div>
+    </footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* ========================================================
+   GLOBAL VARIABLES
+   ======================================================== */
+let chartInstance = null;
+
+const chartConfig = {
+    animationDuration: 1600,
+    animationEasing: 'easeOutQuart',
+    tension: 0.45,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    borderWidth: 3
+};
+
+/* ========================================================
+   DJANGO-CONNECTED DATASETS (FIXED)
+   ======================================================== */
+const salesDatasets = {
+    week: {
+        labels: {{ sales_labels|safe }},
+        values: {{ sales_values|safe }},
+        comparison: {{ sales_values|safe }}
+    },
+    month: {
+        labels: {{ month_labels|default:"[]"|safe }},
+        values: {{ month_values|default:"[]"|safe }},
+        comparison: {{ month_values|default:"[]"|safe }}
+    },
+    year: {
+        labels: {{ year_labels|default:"[]"|safe }},
+        values: {{ year_values|default:"[]"|safe }},
+        comparison: {{ year_values|default:"[]"|safe }}
+    }
+};
+
+/* ========================================================
+   ON PAGE LOAD
+   ======================================================== */
+document.addEventListener("DOMContentLoaded", function () {
+    initializeChart("week");
+    setupEventListeners();
+});
+
+/* ========================================================
+   INITIALIZE CHART (YOUR ORIGINAL CHART)
+   ======================================================== */
+function initializeChart(period = "week") {
+    const canvas = document.getElementById("weeklySalesChart");
+    if (!canvas) return;
+
+    const c = canvas.getContext("2d");
+    const data = salesDatasets[period];
+
+    if (chartInstance) chartInstance.destroy();
+
+    /* ---------- ORANGE GRADIENT ---------- */
+    const primaryGradient = c.createLinearGradient(0, 0, 0, 300);
+    primaryGradient.addColorStop(0, "rgba(255, 127, 50, 0.45)");
+    primaryGradient.addColorStop(0.5, "rgba(255, 127, 50, 0.15)");
+    primaryGradient.addColorStop(1, "rgba(255, 127, 50, 0.02)");
+
+    /* ---------- GREEN GRADIENT ---------- */
+    const secondaryGradient = c.createLinearGradient(0, 0, 0, 300);
+    secondaryGradient.addColorStop(0, "rgba(52, 211, 153, 0.3)");
+    secondaryGradient.addColorStop(1, "rgba(52, 211, 153, 0.01)");
+
+    /* ---------- CREATE CHART ---------- */
+    chartInstance = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: "Current Period",
+                    data: data.values,
+                    fill: true,
+                    backgroundColor: primaryGradient,
+                    borderColor: "#FF7F32",
+                    borderWidth: chartConfig.borderWidth,
+                    tension: chartConfig.tension,
+                    pointRadius: chartConfig.pointRadius,
+                    pointBackgroundColor: "#FF7F32",
+                    pointBorderColor: "#fff",
+                    pointBorderWidth: 2,
+                    pointHoverRadius: chartConfig.pointHoverRadius,
+                    pointHoverBackgroundColor: "#FFB366",
+                    pointHoverBorderWidth: 3,
+                    segment: {
+                        borderColor: ctx =>
+                            ctx.p0DataIndex % 2 === 0 ? "#FF7F32" : "#FFB366"
+                    }
+                },
+                {
+                    label: "Previous Period",
+                    data: data.comparison,
+                    fill: true,
+                    backgroundColor: secondaryGradient,
+                    borderColor: "#34D399",
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: chartConfig.tension,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#34D399",
+                    pointBorderColor: "#fff",
+                    pointBorderWidth: 1.5,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: "#6EE7B7",
+                    pointHoverBorderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "top",
+                    labels: {
+                        color: "#777",
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        padding: 20,
+                        font: { size: 12, weight: "600" }
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: "rgba(0,0,0,0.92)",
+                    titleColor: "#FF7F32",
+                    bodyColor: "#fff",
+                    borderColor: "rgba(255,127,50,0.5)",
+                    borderWidth: 1,
+                    padding: 14,
+                    cornerRadius: 12,
+                    displayColors: true,
+                    callbacks: {
+                        title: ctx => ctx[0].label,
+                        label: ctx => {
+                            const value = ctx.parsed.y;
+                            return `${ctx.dataset.label}: ₹${value.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
+                    ticks: { color: "#777", font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
+                    ticks: {
+                        color: "#777",
+                        font: { size: 11 },
+                        callback: value =>
+                            value >= 1000
+                                ? "₹" + (value / 1000).toFixed(0) + "K"
+                                : "₹" + value
+                    }
+                }
+            },
+
+            animation: {
+                duration: chartConfig.animationDuration,
+                easing: chartConfig.animationEasing,
+                delay: ctx =>
+                    ctx.type === "data" ? ctx.dataIndex * 60 : 0
+            }
+        }
+    });
+}
+
+/* ========================================================
+   PERIOD SWITCH BUTTONS
+   ======================================================== */
+function setPeriod(period) {
+    initializeChart(period);
+    updatePeriodButtons(period);
+}
+
+function updatePeriodButtons(activePeriod) {
+    document
+        .querySelectorAll("button[data-period]")
+        .forEach(btn =>
+            btn.classList.toggle("active", btn.dataset.period === activePeriod)
+        );
+}
+
+/* ========================================================
+   FORM HANDLERS
+   ======================================================== */
+function setupEventListeners() {
+    document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            alert("Changes saved successfully!");
+            const modal = this.closest(".modal");
+            if (modal) modal.classList.remove("show");
+        });
+    });
+}
+
+/* ========================================================
+   PROFILE MENU
+   ======================================================== */
+function toggleProfileMenu() {
+    document.getElementById("dropdownMenu").classList.toggle("show");
+}
+
+/* ========================================================
+   SIDEBAR
+   ======================================================== */
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.querySelector(".sidebar-overlay");
+    const menu = document.querySelector(".hamburger");
+
+    sidebar.classList.toggle("show");
+    overlay.classList.toggle("show");
+    menu.classList.toggle("active");
+
+    document.body.style.overflow =
+        sidebar.classList.contains("show") ? "hidden" : "";
+}
+
+function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("show");
+    document.querySelector(".sidebar-overlay").classList.remove("show");
+    document.querySelector(".hamburger").classList.remove("active");
+    document.body.style.overflow = "";
+}
+</script>
+
+
+
+</body>
+</html>

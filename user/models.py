@@ -56,7 +56,7 @@ class Order(models.Model):
     razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.status}"
+            return f"Order #{self.id} - {self.status}"
 
 
 class OrderItem(models.Model):
@@ -95,6 +95,5 @@ class Address(models.Model):
     pincode = models.CharField(max_length=10)
     landmark = models.CharField(max_length=255, blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.full_name} - {self.city}"
-

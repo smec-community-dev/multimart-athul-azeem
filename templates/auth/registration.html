@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+{% load socialaccount %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ShopHub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFFCF8;
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --hover-color: #FF9A52;
+            --input-bg: #FFF9F5;
+            --input-border: #FFD9C2;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --shadow-light: 0 8px 30px rgba(255, 127, 50, 0.08);
+            --shadow-medium: 0 15px 40px rgba(255, 127, 50, 0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                max-height: 1000px;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #FFFCF8 0%, #FFF5ED 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1100px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            min-height: auto;
+            animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            height: auto;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.9) 0%, rgba(255, 127, 50, 0.85) 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 50px 45px;
+            animation: fadeInLeft 1s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+            min-height: auto;
+            height: auto;
+        }
+
+        .welcome-content {
+            color: #ffffff;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .welcome-content .logo {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 25px;
+            color: #FFFFFF;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            word-wrap: break-word;
+        }
+
+        .welcome-content h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.3rem, 3.5vw, 2rem);
+            margin-bottom: 20px;
+            line-height: 1.3;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            word-wrap: break-word;
+        }
+
+        .welcome-content p {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            line-height: 1.6;
+            opacity: 0.95;
+            margin-bottom: 15px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-top: 30px;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+        }
+
+        .benefits-list li::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            border-radius: 50%;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .form-section {
+            padding: 40px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            animation: fadeInRight 1s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow-y: auto;
+            max-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .form-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-section::-webkit-scrollbar-track {
+            background: #f8f8f8;
+            border-radius: 10px;
+        }
+
+        .form-section::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 10px;
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+        }
+
+        .form-header h1 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: clamp(1.1rem, 3vw, 1.8rem);
+            font-weight: 700;
+            line-height: 1.3;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .form-header p {
+            color: var(--light-text);
+            margin: 0;
+            font-size: clamp(0.85rem, 2.2vw, 0.9rem);
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: clamp(0.8rem, 2vw, 0.85rem);
+            letter-spacing: 0.2px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 11px 16px 11px 44px;
+            border-radius: 8px;
+            border: 1.5px solid var(--input-border);
+            font-family: var(--font-body);
+            font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .input-group select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 42px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #bbb;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .role-fields {
+            display: none;
+            margin: 18px 0;
+            overflow: hidden;
+        }
+
+        .role-fields.active {
+            display: block;
+            animation: slideDown 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .role-fields.hidden {
+            animation: slideUp 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--light-text);
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .checkbox-group a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .checkbox-group a:hover {
+            color: var(--hover-color);
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: white;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 127, 50, 0.25);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+            color: var(--light-text);
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--input-border), transparent);
+        }
+
+        .divider::before {
+            margin-right: 12px;
+        }
+
+        .divider::after {
+            margin-left: 12px;
+        }
+
+        .social-login {
+            margin-bottom: 16px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            color: var(--text-color);
+            gap: 10px;
+            border: 1px solid #dadce0;
+            cursor: pointer;
+            background: #ffffff;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn:hover {
+            background-color: #f8f9fa;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .social-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .form-footer {
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: var(--hover-color);
+            text-decoration: underline;
+        }
+
+        .errorlist {
+            list-style: none;
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+
+        .errorlist li {
+            margin-bottom: 4px;
+        }
+
+        .error-text {
+            color: #c33;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* TABLET RESPONSIVE */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+                height: auto;
+            }
+
+            .welcome-section {
+                min-height: auto;
+                height: auto;
+                padding: clamp(30px, 5vw, 40px) clamp(25px, 4vw, 35px);
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .form-section {
+                padding: clamp(25px, 4vw, 35px) clamp(25px, 4vw, 35px);
+                max-height: none;
+                height: auto;
+            }
+
+            .welcome-content h2 {
+                font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+            }
+
+            .welcome-content .logo {
+                font-size: clamp(1.3rem, 4vw, 1.8rem);
+            }
+
+            .form-header h1 {
+                font-size: clamp(1.1rem, 3vw, 1.5rem);
+            }
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 600px) {
+            body {
+                padding: clamp(10px, 3vw, 15px);
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                border-radius: 16px;
+                min-height: auto;
+                height: auto;
+                width: 100%;
+                max-width: none;
+                margin: 0;
+            }
+
+            .welcome-section {
+                min-height: auto;
+                height: auto;
+                padding: clamp(20px, 5vw, 30px) clamp(15px, 4vw, 20px);
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+                animation: none;
+            }
+
+            .welcome-section,
+            .form-section {
+                animation: none;
+            }
+
+            .welcome-content .logo {
+                font-size: clamp(1.2rem, 4vw, 1.5rem);
+                margin-bottom: clamp(10px, 3vw, 15px);
+            }
+
+            .welcome-content h2 {
+                font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+                margin-bottom: clamp(8px, 2.5vw, 12px);
+            }
+
+            .welcome-content p {
+                font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+                margin-bottom: clamp(8px, 2.5vw, 12px);
+            }
+
+            .benefits-list li {
+                font-size: clamp(0.75rem, 2.2vw, 0.85rem);
+                margin-bottom: clamp(8px, 2vw, 10px);
+                gap: clamp(8px, 2vw, 10px);
+            }
+
+            .benefits-list li::before {
+                width: 20px;
+                height: 20px;
+                font-size: 0.75rem;
+            }
+
+            .form-section {
+                padding: clamp(15px, 4vw, 25px) clamp(15px, 3vw, 18px);
+                max-height: auto;
+                height: auto;
+                overflow-y: visible;
+            }
+
+            .form-header h1 {
+                font-size: clamp(1rem, 3vw, 1.3rem);
+                margin-bottom: clamp(4px, 1.5vw, 6px);
+            }
+
+            .form-header p {
+                font-size: clamp(0.75rem, 2.2vw, 0.85rem);
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+                gap: clamp(12px, 3vw, 14px);
+            }
+
+            .input-group input,
+            .input-group select {
+                padding: clamp(8px, 2.5vw, 10px) clamp(12px, 3vw, 14px) clamp(8px, 2.5vw, 10px) clamp(36px, 5vw, 40px);
+                font-size: clamp(14px, 4vw, 16px);
+            }
+
+            .input-icon {
+                font-size: 0.9rem;
+                left: clamp(10px, 2.5vw, 12px);
+            }
+
+            .checkbox-group {
+                gap: clamp(6px, 2vw, 8px);
+                margin: clamp(12px, 3vw, 14px) 0;
+            }
+
+            .checkbox-group label {
+                font-size: clamp(0.75rem, 2.2vw, 0.8rem);
+            }
+
+            .btn {
+                padding: clamp(9px, 2.5vw, 11px) clamp(12px, 3vw, 14px);
+                font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+                margin-top: clamp(6px, 2vw, 8px);
+            }
+
+            .divider {
+                font-size: clamp(0.75rem, 2.2vw, 0.8rem);
+                margin: clamp(12px, 3vw, 14px) 0;
+            }
+
+            .divider::before {
+                margin-right: clamp(8px, 2vw, 10px);
+            }
+
+            .divider::after {
+                margin-left: clamp(8px, 2vw, 10px);
+            }
+
+            .social-btn {
+                padding: clamp(8px, 2.5vw, 10px) clamp(12px, 3vw, 14px);
+                font-size: clamp(0.8rem, 2.5vw, 0.85rem);
+            }
+
+            .form-footer {
+                font-size: clamp(0.75rem, 2.2vw, 0.8rem);
+                margin-top: clamp(8px, 2vw, 10px);
+            }
+
+            .role-badge {
+                font-size: clamp(0.7rem, 2vw, 0.75rem);
+                padding: clamp(4px, 1.5vw, 5px) clamp(8px, 2.5vw, 10px);
+            }
+        }
+
+        /* VERY SMALL MOBILE */
+        @media (max-width: 380px) {
+            body {
+                padding-top: 15px;
+            }
+
+            .welcome-content .logo {
+                font-size: clamp(1rem, 4vw, 1.2rem);
+            }
+
+            .welcome-content h2 {
+                font-size: clamp(1rem, 3.5vw, 1.1rem);
+            }
+
+            .form-header h1 {
+                font-size: clamp(0.95rem, 3vw, 1.1rem);
+            }
+
+            .benefits-list li {
+                font-size: clamp(0.7rem, 2.2vw, 0.8rem);
+            }
+
+            .input-group label {
+                font-size: clamp(0.75rem, 2vw, 0.8rem);
+            }
+
+            .checkbox-group label {
+                font-size: clamp(0.7rem, 2.2vw, 0.75rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <div class="logo">ShopHub</div>
+                <h2>Join India's Favorite Shopping Destination</h2>
+                <p>Discover amazing deals and exclusive member benefits.</p>
+
+                <ul class="benefits-list">
+                    <li>Access millions of products</li>
+                    <li>Exclusive member-only deals</li>
+                    <li>Fast and free delivery</li>
+                    <li>24/7 customer support</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-header">
+                <h1>Create Account</h1>
+                <p>Join ShopHub and start shopping today!</p>
+            </div>
+
+            <form id="registration-form" method="POST" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <div class="row">
+                    <div class="input-group">
+                        <label for="first-name">First Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="first-name" name="first_name" placeholder="First name" required>
+                        </div>
+                        {% if form.first_name.errors %}<span class="error-text">{{ form.first_name.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <label for="last-name">Last Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="last-name" name="last_name" placeholder="Last name" required>
+                        </div>
+                        {% if form.last_name.errors %}<span class="error-text">{{ form.last_name.errors.0 }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">@</span>
+                        <input type="text" id="username" name="username" placeholder="Choose username" required>
+                    </div>
+                    {% if form.username.errors %}<span class="error-text">{{ form.username.errors.0 }}</span>{% endif %}
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">✉</span>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    </div>
+                    {% if form.email.errors %}<span class="error-text">{{ form.email.errors.0 }}</span>{% endif %}
+                </div>
+
+                <div class="input-group">
+                    <label for="role">Account Type</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👥</span>
+                        <select id="role" name="role" required>
+                            <option value="">Select your role</option>
+                            <option value="customer">Customer</option>
+                            <option value="seller">Seller</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER FIELDS -->
+                <div id="customer-fields" class="role-fields">
+                    <div class="role-badge">👤 Customer Registration</div>
+                    <div class="input-group">
+                        <label for="phone">Phone Number</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📱</span>
+                            <input type="tel" id="phone" name="phone" placeholder="10-digit number">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SELLER FIELDS -->
+                <div id="seller-fields" class="role-fields">
+                    <div class="role-badge">🏪 Seller Registration</div>
+
+                    <div class="input-group">
+                        <label for="shop-name">Shop Name</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏪</span>
+                            <input type="text" id="shop-name" name="shop_name" placeholder="Your shop name">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="shop-address">Shop Address</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📍</span>
+                            <input type="text" id="shop-address" name="shop_address" placeholder="Full address">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="business-type">Business Type</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">💼</span>
+                            <select id="business-type" name="business_type">
+                                <option value="">Select type</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="clothing">Clothing & Accessories</option>
+                                <option value="food">Food & Beverages</option>
+                                <option value="books">Books & Media</option>
+                                <option value="home">Home & Furniture</option>
+                                <option value="beauty">Beauty & Personal Care</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="gst">GST Number</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">📄</span>
+                            <input type="text" id="gst" name="gst" placeholder="GST number">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="bank-account">Bank Account Number</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏦</span>
+                            <input type="text" id="bank-account" name="bank_account" placeholder="Account number">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN FIELDS -->
+                <div id="admin-fields" class="role-fields">
+                    <div class="role-badge">⚙️ Admin Registration</div>
+
+                    <div class="input-group">
+                        <label for="admin-id">Employee ID</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🆔</span>
+                            <input type="text" id="admin-id" name="admin_id" placeholder="Employee ID">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="admin-department">Department</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🏢</span>
+                            <select id="admin-department" name="admin_department">
+                                <option value="">Select department</option>
+                                <option value="support">Customer Support</option>
+                                <option value="operations">Operations</option>
+                                <option value="finance">Finance</option>
+                                <option value="it">IT & Security</option>
+                                <option value="marketing">Marketing</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="admin-phone">Office Phone</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">☎️</span>
+                            <input type="tel" id="admin-phone" name="admin_phone" placeholder="Phone number">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="admin-access">Access Level</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔐</span>
+                            <select id="admin-access" name="admin_access">
+                                <option value="">Select level</option>
+                                <option value="level1">Level 1 - Basic</option>
+                                <option value="level2">Level 2 - Standard</option>
+                                <option value="level3">Level 3 - Advanced</option>
+                                <option value="level4">Level 4 - Super Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="password" name="password" placeholder="Password" required>
+                        </div>
+                        {% if form.password.errors %}<span class="error-text">{{ form.password.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="confirm-password" name="password_confirm" placeholder="Confirm password" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+
+                <button type="submit" class="btn">CREATE ACCOUNT</button>
+            </form>
+
+            <div class="divider">or</div>
+
+            <div class="social-login">
+                <a href="{% provider_login_url 'google' process='login' prompt='select_account' %}" class="social-btn">
+                   <svg class="social-icon" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                    </svg>
+                    <span>Continue with Google</span>
+                </a>
+            </div>
+
+            <div class="form-footer">
+                <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const customerFields = document.getElementById('customer-fields');
+        const sellerFields = document.getElementById('seller-fields');
+        const adminFields = document.getElementById('admin-fields');
+
+        roleSelect.addEventListener('change', function(e) {
+            const selectedRole = e.target.value;
+
+            [customerFields, sellerFields, adminFields].forEach(field => {
+                field.classList.remove('active');
+                field.classList.add('hidden');
+            });
+
+            setTimeout(() => {
+                if (selectedRole === 'customer') {
+                    customerFields.classList.remove('hidden');
+                    customerFields.classList.add('active');
+                } else if (selectedRole === 'seller') {
+                    sellerFields.classList.remove('hidden');
+                    sellerFields.classList.add('active');
+                } else if (selectedRole === 'admin') {
+                    adminFields.classList.remove('hidden');
+                    adminFields.classList.add('active');
+                }
+            }, 100);
+        });
+
+        const registrationForm = document.getElementById('registration-form');
+        registrationForm.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Mismatch',
+                    text: 'Passwords do not match. Please try again.',
+                    background: '#ef4444',
+                    color: '#fff',
+                    confirmButtonColor: '#fff',
+                    confirmButtonTextColor: '#ef4444',
+                    customClass: {
+                        popup: 'swal-popup-custom',
+                        title: 'swal-title-custom',
+                        confirmButton: 'swal-button-custom'
+                    }
+                });
+                return false;
+            }
+        });
+
+        const messageTypeMap = {
+            'success': { icon: 'success', background: '#10b981' },
+            'error': { icon: 'error', background: '#ef4444' },
+            'warning': { icon: 'warning', background: '#f59e0b' },
+            'info': { icon: 'info', background: '#3b82f6' },
+            'debug': { icon: 'info', background: '#8b5cf6' }
+        };
+
+        const messages = [
+            {% for message in messages %}
+                {
+                    text: "{{ message }}",
+                    tags: "{{ message.tags }}",
+                    level: "{{ message.level_tag }}"
+                }
+            {% endfor %}
+        ];
+
+        if (messages.length > 0) {
+            messages.forEach((msg, index) => {
+                const messageType = msg.level || msg.tags || 'info';
+                const config = messageTypeMap[messageType] || messageTypeMap['info'];
+
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: config.icon,
+                        title: msg.text,
+                        background: config.background,
+                        color: '#fff',
+                        confirmButtonColor: '#fff',
+                        confirmButtonTextColor: config.background,
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK',
+                        timer: 4000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        allowEscapeKey: true,
+                        customClass: {
+                            popup: 'swal-popup-custom',
+                            title: 'swal-title-custom',
+                            confirmButton: 'swal-button-custom'
+                        }
+                    });
+                }, index * 500);
+            });
+        }
+    </script>
+</body>
+</html>
