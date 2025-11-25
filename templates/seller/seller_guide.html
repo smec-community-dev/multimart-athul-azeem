@@ -970,21 +970,20 @@
                     <h3>Quick Links</h3>
                     <ul>
 
-                <li><a href="#"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                   <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
 
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+            <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->

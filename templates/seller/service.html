@@ -637,7 +637,7 @@
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -688,10 +688,10 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                            <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" ><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                            <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}" ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
             </ul>
         </div>
         <!-- MAIN CONTENT -->
@@ -777,19 +777,19 @@
                     <ul>
 
                 <li><a href="#"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
 
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
-                        <li><a href="{% url 'service' %}">Service</a></li>
-                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
+                        <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
