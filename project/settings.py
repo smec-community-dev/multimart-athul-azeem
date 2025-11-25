@@ -23,13 +23,14 @@ INSTALLED_APPS = [
     "user",
     "seller.apps.SellerConfig",
     "core",
-
+    ### SOCIAL AUTH  ######
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
 
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
+    ### SOCIAL AUTH  ######
 ]
 
 AUTH_USER_MODEL = "core.User"
@@ -76,7 +77,7 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+########## SOCIAL AUTH #####################
 AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = "en-us"
@@ -128,3 +129,4 @@ SOCIALACCOUNT_PROVIDERS = {
         "AUTH_PARAMS": {"prompt": "select_account"},
     }
 }
+###### SOCIAL AUTH COMPLETED ###########33
