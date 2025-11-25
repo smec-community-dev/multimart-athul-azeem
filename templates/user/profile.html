@@ -35,9 +35,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        /* ======================== HEADER STYLES ======================== */
+        /* ======================== HEADER STYLING ======================== */
         header {
             background: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -49,18 +48,18 @@
         .header-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            height: 60px;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 24px;
+            gap: 8px;
+            font-size: 20px;
             font-weight: bold;
             color: #333;
             flex-shrink: 0;
@@ -68,15 +67,15 @@
 
         .logo i {
             color: #ff8c00;
-            font-size: 28px;
+            font-size: 24px;
         }
 
         .nav-center {
             flex: 1;
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin: 0 20px;
+            gap: 20px;
+            margin: 0 15px;
         }
 
         .nav-center a {
@@ -93,49 +92,35 @@
             color: #ff8c00;
         }
 
-        .nav-center a:hover::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #ff8c00;
-        }
-
         .search-box {
             display: flex;
             align-items: center;
             background: #f5f5f5;
-            border-radius: 8px;
-            padding: 8px 14px;
-            width: 250px;
-            margin-right: 20px;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            margin-right: 15px;
         }
 
         .search-box i {
             color: #999;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .search-box input {
             background: none;
             border: none;
             outline: none;
-            margin-left: 10px;
+            margin-left: 8px;
             flex: 1;
             font-size: 13px;
             color: #333;
         }
 
-        .search-box input::placeholder {
-            color: #bbb;
-        }
-
         .header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             flex-shrink: 0;
         }
 
@@ -144,7 +129,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             color: #666;
             transition: color 0.3s;
             display: flex;
@@ -153,60 +138,20 @@
             text-decoration: none;
         }
 
-        .icon-btn:hover {
-            color: #ff8c00;
-        }
-
         .badge {
             position: absolute;
-            top: -6px;
-            right: -6px;
+            top: -5px;
+            right: -5px;
             background: #ff8c00;
             color: white;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .auth-buttons button {
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-        }
-
-        .login-btn {
-            background: white;
-            color: #333;
-            border: 2px solid #333;
-        }
-
-        .login-btn:hover {
-            background: #f5f5f5;
-        }
-
-        .register-btn {
-            background: #ff8c00;
-            color: white;
-        }
-
-        .register-btn:hover {
-            background: #e67e00;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
         .profile-dropdown {
@@ -216,23 +161,18 @@
         .profile-toggle {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 5px 8px;
+            gap: 5px;
+            padding: 4px 6px;
             background: rgba(255, 127, 50, 0.1);
-            border-radius: 20px;
+            border-radius: 18px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid transparent;
         }
 
-        .profile-toggle:hover {
-            background: rgba(255, 127, 50, 0.2);
-            border-color: #ff7f32;
-        }
-
         .profile-avatar {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ffb273, #ff7f32);
             display: flex;
@@ -240,29 +180,12 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             flex-shrink: 0;
         }
 
-        .profile-info-text {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            font-size: 0.75rem;
-            color: #333;
-        }
-
-        .profile-role {
-            font-size: 0.65rem;
-            color: #777;
-        }
-
         .dropdown-arrow {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: transform 0.3s ease;
             line-height: 1;
         }
@@ -276,10 +199,10 @@
             top: 100%;
             right: 0;
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 240px;
-            margin-top: 8px;
+            min-width: 220px;
+            margin-top: 6px;
             display: none;
             z-index: 1000;
             animation: slideDown 0.3s ease;
@@ -292,7 +215,7 @@
         }
 
         .dropdown-header {
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
             border-bottom: 1px solid #e6e6e6;
         }
@@ -300,12 +223,12 @@
         .dropdown-header-content {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .dropdown-header-avatar {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ffb273, #ff7f32);
             display: flex;
@@ -313,33 +236,33 @@
             justify-content: center;
             color: white;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             flex-shrink: 0;
         }
 
         .dropdown-header-info h3 {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             color: #333;
             margin-bottom: 2px;
         }
 
         .dropdown-header-info p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #777;
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
+            gap: 8px;
+            padding: 8px 14px;
             color: #333;
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
             border-left: 3px solid transparent;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .dropdown-item:hover {
@@ -349,72 +272,80 @@
         }
 
         .dropdown-item-icon {
-            font-size: 1rem;
-            width: 20px;
+            font-size: 0.9rem;
+            width: 18px;
             flex-shrink: 0;
         }
 
         .dropdown-item-label {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .dropdown-divider {
             height: 1px;
             background: #e6e6e6;
-            margin: 6px 0;
+            margin: 5px 0;
         }
 
         .dropdown-item.logout {
             color: #f44336;
         }
 
-        .dropdown-item.logout:hover {
-            background-color: rgba(244, 67, 54, 0.1);
-            border-left-color: #f44336;
-        }
-
-        /* Mobile menu styles */
         .mobile-menu-btn {
             display: none;
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             color: #666;
             cursor: pointer;
+            z-index: 101;
         }
 
-        /* Responsive adjustments */
+        .mobile-nav {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-top: 1px solid #eee;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .mobile-nav.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .header-container {
-                padding: 0 12px;
-                height: 60px;
+                padding: 0 10px;
+                height: 56px;
             }
-
             .logo {
-                font-size: 20px;
+                font-size: 18px;
             }
-
             .logo i {
-                font-size: 24px;
+                font-size: 22px;
             }
-
             .nav-center {
                 display: none;
             }
-
             .search-box {
-                width: 180px;
-                margin-right: 10px;
-                padding: 6px 10px;
+                width: 150px;
+                margin-right: 8px;
+                padding: 5px 8px;
             }
-
             .mobile-menu-btn {
                 display: block;
             }
-
-            .profile-info-text {
-                display: none;
+            .header-right {
+                gap: 12px;
+            }
+            .icon-btn {
+                font-size: 15px;
             }
         }
 
@@ -422,74 +353,469 @@
             .search-box {
                 display: none;
             }
-
             .header-right {
-                gap: 15px;
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+                gap: 10px;
             }
         }
 
         /* ======================== CONTAINER & SIDEBAR ======================== */
-        .container { display: flex; min-height: calc(100vh - 70px); }
-        .sidebar { width: 260px; background: var(--card-bg); border-right: 1px solid var(--border-color); padding: 20px 0; animation: slideInLeft 0.5s ease; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 15px; padding: 14px 20px; color: var(--light-text); transition: all 0.3s ease; border-left: 3px solid transparent; }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255, 127, 50, 0.1); color: var(--primary-color); border-left-color: var(--primary-color); }
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            flex-direction: column;
+        }
 
-        .main-content { flex: 1; padding: 30px; }
+        @media (min-width: 1024px) {
+            .container {
+                flex-direction: row;
+            }
+        }
 
-        /* Sections & Forms */
-        .profile-section { background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-light); padding: 25px; margin-bottom: 30px; animation: fadeIn 0.6s ease; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border-color); }
-        .section-title { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; }
-        .btn-primary { background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3); }
+        .sidebar {
+            width: 100%;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            animation: slideInLeft 0.5s ease;
+        }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group.full-width { grid-column: 1 / -1; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border-color); border-radius: 8px; transition: all 0.3s ease; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1); }
-        .form-actions { display: flex; gap: 12px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); grid-column: 1 / -1; }
-        .btn-save { background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .btn-cancel { background: var(--border-color); color: var(--text-color); padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        @media (min-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+        }
+
+        .sidebar-menu {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 15px;
+            gap: 0;
+            list-style: none;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-menu {
+                display: block;
+                overflow-x: visible;
+                padding: 0;
+            }
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--light-text);
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-menu a {
+                padding: 14px 20px;
+                gap: 15px;
+            }
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-text {
+            display: inline;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        @media (min-width: 640px) {
+            .main-content {
+                padding: 30px;
+            }
+        }
+
+        /* Profile Sections */
+        .profile-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @media (min-width: 640px) {
+            .profile-section {
+                padding: 25px;
+                margin-bottom: 30px;
+            }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .section-header {
+                flex-direction: row;
+                gap: 0;
+            }
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        @media (min-width: 640px) {
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            grid-column: 1 / -1;
+            flex-direction: column;
+        }
+
+        @media (min-width: 640px) {
+            .form-actions {
+                flex-direction: row;
+            }
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-cancel {
+            background: var(--border-color);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Wishlist Styles */
+        .wishlist-item:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        /* Orders Styles */
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .order-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .order-status.completed {
+            background: #d1edff;
+            color: #0c5460;
+        }
+        .order-status.shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+        .order-status.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
 
         /* Footer Styles */
-        footer { background: #1f2937; color: white; padding: 40px 0; margin-top: auto; }
-        .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .footer-section h3 { font-size: 1.2rem; margin-bottom: 15px; color: #ff8c00; }
-        .footer-section p, .footer-section a { color: #d1d5db; margin-bottom: 8px; display: block; }
-        .footer-section a:hover { color: #ff8c00; }
-        .footer-bottom { text-align: center; padding-top: 20px; margin-top: 20px; border-top: 1px solid #374151; color: #9ca3af; }
+        footer {
+            background: #1f2937;
+            color: white;
+            padding: 40px 0;
+            margin-top: auto;
+        }
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; border-bottom: 1px solid var(--border-color); display: flex; overflow-x: auto; }
+        @media (min-width: 640px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #ff8c00;
+        }
+        .footer-section p, .footer-section a {
+            color: #d1d5db;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .footer-section a:hover {
+            color: #ff8c00;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
         }
 
         /* Hidden class */
-        .hidden { display: none; }
+        .hidden {
+            display: none;
+        }
+
+        /* Order Card Styles */
+        .order-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #ff8c00;
+        }
+
+        .order-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left-color: #ff6b6b;
+        }
+
+        .status-badge {
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Profile layout responsive */
+        .profile-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .profile-layout {
+                flex-direction: row;
+            }
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            font-size: 2rem;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        @media (min-width: 768px) {
+            .profile-avatar-large {
+                width: 120px;
+                height: 120px;
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Wishlist grid responsive */
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .wishlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .wishlist-grid {
+                grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            }
+        }
+
+        /* Order item responsive */
+        .order-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .order-item {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .order-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        @media (min-width: 640px) {
+            .order-actions {
+                flex-direction: row;
+                width: auto;
+            }
+        }
+
+        .alert-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Profile content sections */
+        .profile-content {
+            display: block;
+        }
+
+        /* Mobile sidebar improvements */
+        @media (max-width: 1023px) {
+            .sidebar {
+                position: relative;
+                z-index: 98;
+            }
+
+            .sidebar-menu {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            .sidebar-menu::-webkit-scrollbar {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen overflow-x-hidden bg-gray-50">
 
-    <!-- Header (same as user home) -->
+    <!-- Header -->
     <header>
         <div class="header-container">
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars" id="mobileMenuIcon"></i>
             </button>
 
             <div class="logo">
@@ -567,54 +893,49 @@
             </div>
         </div>
 
-        <!-- Mobile menu -->
-        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4 py-4">
-                <nav class="flex flex-col space-y-4">
-                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
-                    <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
-                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
-                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
-                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav" id="mobileNav">
+            <a href="{% url 'user_home' %}">Home</a>
+            <a href="{% url 'products_list' %}">Products</a>
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'deals_and_offers' %}">Deals & Offers</a>
+            <a href="{% url 'contact' %}">Contact</a>
 
-                    <form method="GET" action="{% url 'user_home' %}" class="pt-4">
-                        <div class="flex">
-                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </nav>
-            </div>
+            <!-- Mobile search box -->
+            <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                <div class="flex">
+                    <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                           class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
+                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition text-sm">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </header>
 
     <!-- Main Content -->
     <div class="container">
 
-
         <!-- USER SIDEBAR -->
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'user_home' %}"><span>🏠</span> Dashboard</a></li>
-                <li><a href="{% url 'my_orders' %}"><span>🛒</span> My Orders</a></li>
-                <li><a href="{% url 'wishlist_page' %}"><span>❤️</span> Wishlist</a></li>
-                <li><a href="#"><span>🔔</span> Notifications</a></li>
-                <li><a href="{% url 'profile' %}?section=profile" class="{% if active_section == 'profile' %}active{% endif %}"><span>👤</span> My Profile</a></li>
-                <li><a href="{% url 'profile' %}?section=address" class="{% if active_section == 'address' %}active{% endif %}"><span>📍</span> Addresses</a></li>
-                <li><a href="{% url 'profile' %}?section=password" class="{% if active_section == 'password' %}active{% endif %}"><span>🔒</span> Change Password</a></li>
-                <li><a href="{% url 'logout' %}"><span>🚪</span> Logout</a></li>
+                <li><a href="#" onclick="showSection('profileSection')" class="{% if active_section == 'profile' %}active{% endif %}"><span>👤</span> <span class="menu-text">My Profile</span></a></li>
+                <li><a href="#" onclick="showSection('ordersSection')" class="{% if active_section == 'orders' %}active{% endif %}"><span>🛒</span> <span class="menu-text">My Orders</span></a></li>
+                <li><a href="#" onclick="showSection('wishlistSection')" class="{% if active_section == 'wishlist' %}active{% endif %}"><span>❤️</span> <span class="menu-text">Wishlist</span></a></li>
+                <li><a href="#" onclick="showSection('addressSection')" class="{% if active_section == 'address' %}active{% endif %}"><span>📍</span> <span class="menu-text">Addresses</span></a></li>
+                <li><a href="#" onclick="showSection('passwordSection')" class="{% if active_section == 'password' %}active{% endif %}"><span>🔒</span> <span class="menu-text">Change Password</span></a></li>
+                <li><a href="#"><span>🔔</span> <span class="menu-text">Notifications</span></a></li>
+                <li><a href="{% url 'logout' %}"><span>🚪</span> <span class="menu-text">Logout</span></a></li>
             </ul>
         </div>
 
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <!-- PROFILE SECTION -->
-            <div id="profileSection" class="{% if active_section != 'profile' %}hidden{% endif %}">
+            <div id="profileSection" class="profile-content {% if active_section != 'profile' %}hidden{% endif %}">
                 <div class="header" style="margin-bottom: 30px;">
-                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">My Profile 👤</h1>
+                    <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color);">My Profile 👤</h1>
                     <p style="color: var(--light-text); margin-top: 8px;">Manage your personal information and preferences</p>
                 </div>
 
@@ -625,14 +946,14 @@
                         <button class="btn-primary" id="editBtn" onclick="enableEdit()">Edit</button>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: start;">
-                        <div style="text-align:center;">
-                            <div class="profile-avatar" style="width:120px;height:120px;font-size:2.5rem;margin:0 auto 15px;background: linear-gradient(135deg, var(--accent-color), var(--primary-color)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                    <div class="profile-layout">
+                        <div style="text-align:center; flex-shrink: 0;">
+                            <div class="profile-avatar-large">
                                 {{ user.username|slice:":2"|upper|default:"US" }}
                             </div>
                         </div>
 
-                       <form method="POST" action="{% url 'profile' %}?section=profile">
+                       <form method="POST" action="{% url 'profile' %}?section=profile" style="flex: 1;">
                             {% csrf_token %}
                             <div style="display:grid; gap:15px;">
 
@@ -676,10 +997,239 @@
                 </div>
             </div>
 
-            <!-- ADDRESS SECTION -->
-            <div id="addressSection" class="{% if active_section != 'address' %}hidden{% endif %}">
+            <!-- ORDERS SECTION -->
+            <div id="ordersSection" class="profile-content {% if active_section != 'orders' %}hidden{% endif %}">
                 <div class="header" style="margin-bottom: 30px;">
-                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">My Addresses 📍</h1>
+                    <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color);">My Orders 🛒</h1>
+                    <p style="color: var(--light-text); margin-top: 8px;">Track and manage all your orders in one place</p>
+                </div>
+
+                <div class="space-y-6">
+                    {% if orders %}
+                        {% for order in orders %}
+                        <!-- ORDER CARD - One card per order -->
+                        <div class="order-card bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+
+                            <!-- Order Header -->
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                                <div class="flex-1">
+                                    <h2 class="text-xl font-bold text-gray-900 mb-1">Order #{{ order.id }}</h2>
+
+                                    <p class="text-gray-600 text-sm mb-2">
+                                        <i class="far fa-calendar mr-1"></i>
+                                        {{ order.order_date|date:"M d, Y" }}
+                                    </p>
+
+                                    <p class="text-gray-600 text-sm">
+                                        <i class="fas fa-credit-card mr-1"></i>
+                                        Payment: {{ order.payment_method|default:"Cash on Delivery" }}
+                                    </p>
+                                </div>
+
+                                <!-- STATUS BADGE -->
+                                <div class="flex sm:flex-col sm:items-end gap-2">
+                                    {% if order.status == "placed" %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-clock mr-2"></i>Placed
+                                        </span>
+                                    {% elif order.status == "Processing" %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-cog mr-2"></i>Processing
+                                        </span>
+                                    {% elif order.status == "Shipped" %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-shipping-fast mr-2"></i>Shipped
+                                        </span>
+                                    {% elif order.status == "Delivered" %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-check mr-2"></i>Delivered
+                                        </span>
+                                    {% elif order.status == "Cancelled" %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-times-circle mr-2"></i>Cancelled
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-semibold">
+                                            <i class="fas fa-circle mr-2 text-xs"></i>{{ order.status }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- ORDER ITEMS - All items in this order -->
+                            {% for item in order.items.all %}
+                            <div class="order-item {% if not forloop.first %}border-t pt-4 mt-4{% endif %}">
+
+                                <!-- Image -->
+                                <div class="flex-shrink-0">
+                                    {% with item.product.images.all|first as main_image %}
+                                        {% if main_image %}
+                                        <img src="{{ main_image.image.url }}"
+                                             class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl shadow"
+                                             alt="{{ item.product.name }}">
+                                        {% else %}
+                                        <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-box text-gray-400 text-xl"></i>
+                                        </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ item.product.name }}</h3>
+
+                                    <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                                        <p class="flex items-center">
+                                            <i class="fas fa-layer-group mr-2 text-orange-500"></i>
+                                            Quantity: {{ item.quantity }}
+                                        </p>
+
+                                        <p class="flex items-center">
+                                            <i class="fas fa-tag mr-2 text-orange-500"></i>
+                                            ₹{{ item.unit_price }} each
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- PRICE + ACTIONS -->
+                                <div class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-4 w-full md:w-auto">
+
+                                    <div class="text-right">
+                                        <p class="text-gray-600 text-sm mb-1">Subtotal</p>
+                                        <p class="text-xl font-bold text-orange-500">
+                                            ₹{% widthratio item.unit_price 1 item.quantity %}
+                                        </p>
+                                    </div>
+
+                                    <div class="order-actions">
+                                        <!-- Add Review (only delivered) -->
+                                        {% if order.status == "Delivered" %}
+                                        <a href="{% url 'add_review' item.product.slug %}"
+                                           class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
+                                            <i class="fas fa-star mr-2"></i> Add Review
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <!-- ORDER TOTAL & ACTIONS -->
+                            <div class="mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <p class="text-gray-700 font-semibold">Total Paid: <span class="text-2xl font-bold text-orange-500">₹{{ order.total_amount }}</span></p>
+                                </div>
+
+                                <!-- Order-level actions (Cancel Order) -->
+                                <div class="flex gap-2">
+                                    {% if order.status == "Pending" or order.status == "Processing" %}
+                                    <a href="{% url 'cancel_order' order.id %}"
+                                       class="btn bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all flex items-center justify-center">
+                                        <i class="fas fa-times-circle mr-2"></i> Cancel Order
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Empty State -->
+                        <div class="bg-white rounded-2xl shadow-xl text-center py-16 px-6">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full mb-6">
+                                <i class="fas fa-box-open text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">No Orders Found</h3>
+                            <p class="text-gray-600 text-lg mb-8">
+                                You haven't ordered anything yet. Start shopping to discover amazing products!
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="{% url 'products_list' %}"
+                                   class="btn bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-shopping-bag"></i> Start Shopping
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- WISHLIST SECTION -->
+            <div id="wishlistSection" class="profile-content {% if active_section != 'wishlist' %}hidden{% endif %}">
+                <div class="header" style="margin-bottom: 30px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color);">My Wishlist ❤️</h1>
+                    <p style="color: var(--light-text); margin-top: 8px;">Your saved favorite items</p>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-header">
+                        <div class="section-title">Saved Items</div>
+                        <div class="flex space-x-4">
+                            <a href="{% url 'clear_wishlist' %}" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors">
+                                Clear All
+                            </a>
+                        </div>
+                    </div>
+
+                    {% if wishlist_items %}
+                    <div class="wishlist-grid">
+                        {% for item in wishlist_items %}
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden wishlist-item">
+                            <div class="relative">
+                                <div class="h-48 bg-gray-100 overflow-hidden">
+                                    <img src="{{ item.product.images.first.image.url }}"
+                                         class="w-full h-full object-cover"
+                                         alt="{{ item.product.name }}">
+                                </div>
+
+                                <!-- Remove wishlist button -->
+                                <a href="{% url 'add_to_wishlist' item.product.slug %}"
+                                   class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                            </div>
+
+                            <div class="p-5">
+                                <span class="inline-block px-3 py-1 bg-orange-100 text-orange-600 text-xs font-semibold rounded-full mb-3">
+                                    {{ item.product.subcategory.category.name }}
+                                </span>
+
+                                <h3 class="text-lg font-semibold text-gray-900 mb-3">{{ item.product.name }}</h3>
+
+                                <div class="flex items-center justify-between mt-4">
+                                    <span class="text-2xl font-bold text-gray-900">₹{{ item.product.price }}</span>
+
+                                    <div class="flex space-x-2">
+                                        <a href="{% url 'add_to_cart' item.product.slug %}"
+                                           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                                           <i class="fas fa-shopping-cart"></i>
+                                        </a>
+
+                                        <a href="{% url 'product_detail' item.product.slug %}"
+                                           class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                                           Buy Now
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-heart text-gray-300 text-6xl mb-4"></i>
+                        <p class="text-xl text-gray-600 mb-2">Your wishlist is empty</p>
+                        <p class="text-gray-500 mb-6">Start adding items you love!</p>
+                        <a href="{% url 'products_list' %}" class="btn-primary">Browse Products</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ADDRESS SECTION -->
+            <div id="addressSection" class="profile-content {% if active_section != 'address' %}hidden{% endif %}">
+                <div class="header" style="margin-bottom: 30px;">
+                    <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color);">My Addresses 📍</h1>
                     <p style="color: var(--light-text); margin-top: 8px;">Manage your shipping addresses</p>
                 </div>
 
@@ -735,9 +1285,9 @@
             </div>
 
             <!-- CHANGE PASSWORD SECTION -->
-            <div id="passwordSection" class="{% if active_section != 'password' %}hidden{% endif %}">
+            <div id="passwordSection" class="profile-content {% if active_section != 'password' %}hidden{% endif %}">
                 <div class="header" style="margin-bottom: 30px;">
-                    <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text-color);">Change Password 🔒</h1>
+                    <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; color: var(--text-color);">Change Password 🔒</h1>
                     <p style="color: var(--light-text); margin-top: 8px;">Update your account password</p>
                 </div>
                 {% if messages %}
@@ -781,7 +1331,7 @@
     <!-- Footer -->
     <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div class="footer-grid">
                 <div class="animate-on-scroll">
                     <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
                         <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
@@ -842,6 +1392,47 @@
     </footer>
 
     <script>
+        // ================= MOBILE MENU TOGGLE =================
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNav = document.getElementById('mobileNav');
+            const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+            if (mobileMenuBtn && mobileNav) {
+                // Toggle mobile menu when hamburger is clicked
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mobileNav.classList.toggle('active');
+
+                    // Toggle between hamburger and close icon
+                    if (mobileNav.classList.contains('active')) {
+                        mobileMenuIcon.className = 'fas fa-times';
+                    } else {
+                        mobileMenuIcon.className = 'fas fa-bars';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                const mobileLinks = mobileNav.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        mobileNav.classList.remove('active');
+                        mobileMenuIcon.className = 'fas fa-bars';
+                    });
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (mobileNav.classList.contains('active') &&
+                        !mobileNav.contains(e.target) &&
+                        !mobileMenuBtn.contains(e.target)) {
+                        mobileNav.classList.remove('active');
+                        mobileMenuIcon.className = 'fas fa-bars';
+                    }
+                });
+            }
+        });
+
         // ================= PROFILE DROPDOWN =================
         function toggleProfileMenu() {
             const menu = document.getElementById("dropdownMenu");
@@ -851,7 +1442,6 @@
             menu.classList.toggle("show");
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener("click", function(e) {
             const menu = document.getElementById("dropdownMenu");
             const parent = document.getElementById("profileDropdown");
@@ -862,10 +1452,28 @@
             }
         });
 
-        // ================= MOBILE MENU =================
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById("mobileMenu");
-            mobileMenu.classList.toggle("hidden");
+        // ================= SECTION NAVIGATION =================
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.profile-content');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+            }
+
+            // Update active menu item
+            const menuItems = document.querySelectorAll('.sidebar-menu a');
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Find and activate the clicked menu item
+            event.target.closest('a').classList.add('active');
         }
 
         // ================= PROFILE EDIT FUNCTIONS =================
@@ -893,16 +1501,7 @@
             document.getElementById("editBtn").style.display = "inline-block";
         }
 
-        // Show active section based on URL parameter
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const section = urlParams.get('section') || 'profile';
-
-            // Show the correct section
-            document.getElementById('profileSection').classList.toggle('hidden', section !== 'profile');
-            document.getElementById('addressSection').classList.toggle('hidden', section !== 'address');
-            document.getElementById('passwordSection').classList.toggle('hidden', section !== 'password');
-        });
+        // Auto-hide messages after 3 seconds
         setTimeout(() => {
           let alerts = document.querySelectorAll('.alert-message');
           alerts.forEach(a => a.style.display = 'none');

@@ -1,4 +1,4 @@
-
+from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
@@ -14,6 +14,9 @@ from difflib import get_close_matches
 from django.core.paginator import Paginator
 from .models import Address
 from django.contrib.auth import update_session_auth_hash
+import razorpay
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def products(request):
     bestseller_products = Product.objects.filter(is_featured=True)[:4]
@@ -119,13 +122,16 @@ def productslist(request):
         "page_obj": products_page,
     })
 
-
 @login_required(login_url="login")
 def profile(request):
     address, created = Address.objects.get_or_create(user=request.user)
 
     # Check which section to show (profile or address)
     section = request.GET.get('section', 'profile')
+
+    # FIXED: Use 'order_date' instead of 'created_at'
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    orders = Order.objects.filter(user=request.user).order_by('-order_date')  # CHANGED HERE
 
     # Handle PROFILE form submission
     if request.method == "POST" and 'username' in request.POST:
@@ -148,7 +154,6 @@ def profile(request):
         messages.success(request, "Profile updated successfully!")
         return redirect("/user/profile/?section=profile")
 
-
     # Handle ADDRESS form submission
     if request.method == "POST" and 'street' in request.POST:
         address.full_name = request.POST.get("full_name")
@@ -163,13 +168,12 @@ def profile(request):
         messages.success(request, "Address updated successfully!")
         return redirect("/user/profile/?section=address")
 
-
     return render(request, "user/profile.html", {
         "address": address,
         "active_section": section,
+        "wishlist_items": wishlist_items,
+        "orders": orders,
     })
-
-
 
 def product_detail(request, slug):
     product = Product.objects.filter(slug=slug).first()
@@ -200,11 +204,18 @@ def product_detail(request, slug):
 
     # ==== Check if user bought AND delivered this product ====
     has_delivered_order = False
+    user_review_exists = False
+
     if request.user.is_authenticated:
         has_delivered_order = OrderItem.objects.filter(
             order__user=request.user,
             order__status="Delivered",
             product=product
+        ).exists()
+
+        # Check if user already reviewed
+        user_review_exists = Review.objects.filter(
+            user=request.user, product=product
         ).exists()
 
     return render(request, "user/product_detail.html", {
@@ -215,6 +226,7 @@ def product_detail(request, slug):
         "in_wishlist": in_wishlist,
         "related_products": related_products,
         "has_delivered_order": has_delivered_order,
+        "user_review_exists": user_review_exists,   # ADD THIS
     })
 
 @login_required(login_url="login")
@@ -429,56 +441,51 @@ def user_register(request):
 
     return render(request, "user/register.html")
 
-
 def category_products(request, slug):
-    category = Category.objects.get(slug=slug)
+    category = get_object_or_404(Category, slug=slug)
 
-    # Base queryset: only products inside this category
+    # Base queryset
     products = Product.objects.filter(subcategory__category=category)
 
-    search = request.GET.get("search")  # <-- NEW
-
-    # Search Filter
+    # ----- SEARCH -----
+    search = request.GET.get("search", "")
     if search:
-        products = products.filter(name__icontains=search)
-
-    # Get filters from query params
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(subcategory__name__icontains=search)
+        )
+    # ----- FILTER -----
     selected_price = request.GET.get("price")
-    sort = request.GET.get("sort", "featured")
-    page_number = request.GET.get("page", 1)
-
-    # PRICE FILTERING
     if selected_price == "under_1000":
         products = products.filter(price__lt=1000)
-
     elif selected_price == "1000_10000":
         products = products.filter(price__gte=1000, price__lte=10000)
-
     elif selected_price == "10000_50000":
         products = products.filter(price__gte=10000, price__lte=50000)
-
     elif selected_price == "over_50000":
         products = products.filter(price__gt=50000)
 
-    # SORTING
+    # ----- SORT -----
+    sort = request.GET.get("sort", "featured")
     if sort == "low_to_high":
         products = products.order_by("price")
-
     elif sort == "high_to_low":
         products = products.order_by("-price")
-
     elif sort == "newest":
         products = products.order_by("-created_at")
-
     else:
         products = products.order_by("-is_featured")
 
-    # PAGINATION (4 per page)
-    paginator = Paginator(products, 4)
+    # ----- PAGINATION -----
+    paginator = Paginator(products, 4)   # 8 items per page
+    page_number = request.GET.get("page")
     products = paginator.get_page(page_number)
 
-    # FEATURED SLIDER PRODUCTS
-    slider_products = Product.objects.filter(subcategory__category=category, is_featured=True)[:4]
+    # ----- FEATURED SLIDER PRODUCTS -----
+    slider_products = Product.objects.filter(
+        subcategory__category=category, is_featured=True
+    )[:4]
 
     return render(request, "user/category_products.html", {
         "category": category,
@@ -486,11 +493,8 @@ def category_products(request, slug):
         "slider_products": slider_products,
         "selected_price": selected_price,
         "sort": sort,
-        "search":search
+        "search": search,
     })
-
-
-
 
 @login_required(login_url="login")
 def add_to_wishlist(request, slug):
@@ -524,48 +528,276 @@ def wishlist_page(request):
         "wishlist_items": wishlist_items,
         "search": search,
     })
-
 @login_required(login_url="login")
 def checkout(request):
     buy_slug = request.GET.get("buy")
     quantity = request.GET.get("quantity", 1)
 
-    addresses = []  # always define addresses to avoid NameError
+    # Get user's addresses and counts
+    addresses = Address.objects.filter(user=request.user)
+    cart_count = Cart.objects.filter(user=request.user).count()
+    wishlist_count = Wishlist.objects.filter(user=request.user).count()
 
     # BUY NOW MODE
     if buy_slug:
-        product = Product.objects.get(slug=buy_slug)
+        try:
+            product = Product.objects.get(slug=buy_slug)
+            item = {
+                "product": product,
+                "quantity": int(quantity),
+                "subtotal": product.price * int(quantity)
+            }
+            total = item["subtotal"]
 
-        item = {
-            "product": product,
-            "quantity": int(quantity),
-            "subtotal": product.price * int(quantity)
-        }
-
-        total = item["subtotal"]
-
-        return render(request, "user/checkout.html", {
-            "items": [item],
-            "total": total,
-            "addresses": addresses,
-            "buy_now": True
-        })
+            return render(request, "user/checkout.html", {
+                "items": [item],
+                "total": total,
+                "addresses": addresses,
+                "buy_now": True,
+                "cart_count": cart_count,
+                "wishlist_count": wishlist_count,
+                "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID  # ADD THIS
+            })
+        except Product.DoesNotExist:
+            messages.error(request, "Product not found")
+            return redirect("cart_page")
 
     # NORMAL CART CHECKOUT
     items = Cart.objects.filter(user=request.user)
+    if not items.exists():
+        messages.error(request, "Your cart is empty")
+        return redirect("cart_page")
 
     total = 0
     for item in items:
-        item.subtotal = item.product.price * item.quantity   # <-- ADD THIS
+        item.subtotal = item.product.price * item.quantity
         total += item.subtotal
 
     return render(request, "user/checkout.html", {
         "items": items,
         "total": total,
         "addresses": addresses,
-        "buy_now": False
+        "buy_now": False,
+        "cart_count": cart_count,  # ADD THIS
+        "wishlist_count": wishlist_count,  # ADD THIS
+        "RAZORPAY_KEY_ID": settings.RAZORPAY_KEY_ID  # ADD THIS
     })
 
+
+@login_required(login_url="login")
+def create_order(request):
+    if request.method == "POST":
+        try:
+            # Handle saved address selection
+            selected_address_id = request.POST.get('selected_address')
+            if selected_address_id:
+                try:
+                    address = Address.objects.get(id=selected_address_id, user=request.user)
+                    request.session['checkout_full_name'] = address.full_name
+                    request.session['checkout_phone'] = address.phone
+                    request.session['checkout_address_line1'] = address.street
+                    request.session['checkout_address_line2'] = address.landmark or ""  # ADD THIS LINE
+                    request.session['checkout_city'] = address.city
+                    request.session['checkout_state'] = address.state
+                    request.session['checkout_pincode'] = address.pincode
+                    request.session['checkout_country'] = 'India'
+
+                except Address.DoesNotExist:
+                    pass
+            else:
+                # Save new address data to session
+                if request.POST.get('full_name'):
+                    # Save new address data to session (required fields check later in JS)
+                    request.session['checkout_full_name'] = request.POST.get('full_name', '').strip()
+                    request.session['checkout_phone'] = request.POST.get('phone', '').strip()
+                    request.session['checkout_address_line1'] = request.POST.get('address_line1', '').strip()
+                    request.session['checkout_address_line2'] = request.POST.get('address_line2', '').strip()
+                    request.session['checkout_city'] = request.POST.get('city', '').strip()
+                    request.session['checkout_state'] = request.POST.get('state', '').strip()
+                    request.session['checkout_pincode'] = request.POST.get('pincode', '').strip()
+                    request.session['checkout_country'] = request.POST.get('country', 'India').strip()
+
+            # Save BUY NOW data in session if present
+            if request.POST.get("buy_now_slug"):
+                request.session["buy_now_slug"] = request.POST.get("buy_now_slug")
+                request.session["buy_now_qty"] = request.POST.get("buy_now_qty")
+
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Get amount from form
+            amount = int(request.POST.get("amount", 0))
+
+            # Ensure amount is at least Rs 1 (100 paise)
+            if amount < 100:
+                amount = 100
+
+            # Store amount in session for potential refund
+            request.session['payment_amount'] = amount
+
+            # Create Razorpay order
+            order_data = {
+                "amount": amount,
+                "currency": "INR",
+                "payment_capture": 1,
+            }
+
+            razorpay_order = client.order.create(order_data)
+
+            return JsonResponse({
+                "id": razorpay_order["id"],
+                "amount": razorpay_order["amount"],
+                "currency": razorpay_order["currency"]
+            })
+
+        except Exception as e:
+            print("Create Order Error:", e)
+            return JsonResponse({"error": "Failed to create order"}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+@csrf_exempt
+def payment_verify(request):
+    if request.method == "POST":
+        razorpay_payment_id = request.POST.get("razorpay_payment_id")
+        razorpay_order_id = request.POST.get("razorpay_order_id")
+        razorpay_signature = request.POST.get("razorpay_signature")
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        try:
+            # Verify the payment signature
+            params_dict = {
+                "razorpay_order_id": razorpay_order_id,
+                "razorpay_payment_id": razorpay_payment_id,
+                "razorpay_signature": razorpay_signature,
+            }
+
+            client.utility.verify_payment_signature(params_dict)
+
+            # Read stored address session values
+            full_name = request.session.get('checkout_full_name', request.user.get_full_name())
+            phone = request.session.get('checkout_phone', '')
+            address_line1 = request.session.get('checkout_address_line1', '')
+            address_line2 = request.session.get('checkout_address_line2', '')
+            city = request.session.get('checkout_city', '')
+            state = request.session.get('checkout_state', '')
+            pincode = request.session.get('checkout_pincode', '')
+            country = request.session.get('checkout_country', 'India')
+
+            # Build address skipping empties
+            parts = []
+            if full_name: parts.append(full_name)
+            if phone: parts.append(phone)
+            if address_line1: parts.append(address_line1)
+            if address_line2: parts.append(address_line2)
+            if city: parts.append(city)
+            if state: parts.append(state)
+            if pincode: parts.append(pincode)
+            if country: parts.append(country)
+            shipping_address = ', '.join(parts)
+
+            # ==========================
+            # HANDLE BUY NOW MODE
+            # ==========================
+            buy_slug = request.session.get("buy_now_slug")
+            buy_qty = request.session.get("buy_now_qty")
+
+            if buy_slug:
+                try:
+                    product = Product.objects.get(slug=buy_slug)
+                    quantity = int(buy_qty)
+                    total = product.price * quantity
+
+                    order = Order.objects.create(
+                        user=request.user,
+                        seller=product.seller,
+                        total_amount=total,
+                        shipping_address=shipping_address,
+                        payment_method="Online",
+                        status="Processing",
+                        razorpay_payment_id=razorpay_payment_id,
+                        razorpay_order_id=razorpay_order_id,
+                    )
+
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                        unit_price=product.price
+                    )
+
+                    # Delete buy now session data
+                    if "buy_now_slug" in request.session:
+                        del request.session["buy_now_slug"]
+                    if "buy_now_qty" in request.session:
+                        del request.session["buy_now_qty"]
+
+                except Product.DoesNotExist:
+                    return JsonResponse({"success": False, "error": "Product not found"})
+
+            else:
+                # ==========================
+                # NORMAL CART CHECKOUT MODE
+                # ==========================
+                items = Cart.objects.filter(user=request.user)
+
+                if not items.exists():
+                    # Refund the payment since cart is empty
+                    try:
+                        client.payment.refund(razorpay_payment_id, {"amount": request.session.get('payment_amount', 0)})
+                    except:
+                        pass  # If refund fails, log it but don't break
+
+                    return JsonResponse({
+                        "success": False,
+                        "error": "No items in cart. Payment has been refunded."
+                    })
+
+                total = sum(item.product.price * item.quantity for item in items)
+
+                # Get the first product's seller (you might want to handle multiple sellers differently)
+                first_item = items.first()
+                order = Order.objects.create(
+                    user=request.user,
+                    seller=first_item.product.seller,
+                    total_amount=total,
+                    shipping_address=shipping_address,
+                    payment_method="Online",
+                    status="Processing",
+                    razorpay_payment_id=razorpay_payment_id,
+                    razorpay_order_id=razorpay_order_id,
+                )
+
+                for item in items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        quantity=item.quantity,
+                        unit_price=item.product.price
+                    )
+
+                # Clear cart only after successful order creation
+                items.delete()
+
+            # Clear session address values
+            address_keys = ['checkout_full_name', 'checkout_phone', 'checkout_address_line1',
+                            'checkout_address_line2', 'checkout_city', 'checkout_state',
+                            'checkout_pincode', 'checkout_country']
+            for key in address_keys:
+                request.session.pop(key, None)
+
+            return JsonResponse({
+                "success": True,
+                "order_id": order.id,
+                "message": "Payment verified & order created successfully"
+            })
+
+        except razorpay.errors.SignatureVerificationError:
+            return JsonResponse({"success": False, "error": "Signature verification failed"})
+        except Exception as e:
+            print("Payment Verification Error:", str(e))
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Invalid request"})
 @login_required(login_url="login")
 def clear_wishlist(request):
     Wishlist.objects.filter(user=request.user).delete()
@@ -574,19 +806,46 @@ def clear_wishlist(request):
 @login_required(login_url="login")
 def place_order(request):
     if request.method == "POST":
+        # Handle saved address selection or new address
+        selected_address_id = request.POST.get('selected_address')
+        if selected_address_id:
+            try:
+                address = Address.objects.get(id=selected_address_id, user=request.user)
+                full_name = address.full_name.strip()
+                phone = address.phone.strip()
+                address_line1 = address.street.strip()
+                address_line2 = address.landmark.strip() if address.landmark else ""
+                city = address.city.strip()
+                state = address.state.strip()
+                pincode = address.pincode.strip()
+                country = 'India'
+            except Address.DoesNotExist:
+                messages.error(request, "Invalid address selected.")
+                return redirect('checkout')
+        else:
+            # New address: strip all to avoid whitespace issues
+            full_name = request.POST.get("full_name", "").strip()
+            phone = request.POST.get("phone", "").strip()
+            address_line1 = request.POST.get("address_line1", "").strip()
+            address_line2 = request.POST.get("address_line2", "").strip()
+            city = request.POST.get("city", "").strip()
+            state = request.POST.get("state", "").strip()
+            pincode = request.POST.get("pincode", "").strip()
+            country = request.POST.get("country", "India").strip()
 
-        # Get values safely (None -> "" prevents 'None' printing)
-        full_name = request.POST.get("full_name", "") or ""
-        phone = request.POST.get("phone_number", "") or ""
-        address_line1 = request.POST.get("address_line1", "") or ""
-        address_line2 = request.POST.get("address_line2", "") or ""
-        city = request.POST.get("city", "") or ""
-        state = request.POST.get("state", "") or ""
-        pincode = request.POST.get("pincode", "") or ""
-        country = request.POST.get("country", "") or ""
+            # Validate new address fields
+            if not all([full_name, phone, address_line1, city, state, pincode]):
+                messages.error(request, "Please fill all required address fields.")
+                return redirect('checkout')
 
         # Final formatted shipping address string
-        shipping_address = f"{full_name}, {phone}, {address_line1}, {address_line2}, {city}, {state}, {pincode}, {country}"
+        shipping_address = f"{full_name}, {phone}, {address_line1}"
+        if address_line2:
+            shipping_address += f", {address_line2}"
+        shipping_address += f", {city}, {state}, {pincode}, {country}"
+
+        # Determine payment method
+        payment_method = request.POST.get("payment_method", "cod")
 
         # BUY NOW MODE
         buy_now_slug = request.POST.get("buy_now_slug")
@@ -602,8 +861,8 @@ def place_order(request):
                 seller=product.seller,
                 total_amount=total,
                 shipping_address=shipping_address,
-                payment_method=request.POST.get("payment_method"),
-                status="Pending"
+                payment_method=payment_method,
+                status="Pending" if payment_method == "cod" else "Processing"
             )
 
             OrderItem.objects.create(
@@ -628,8 +887,8 @@ def place_order(request):
             seller=items.first().product.seller,
             total_amount=total,
             shipping_address=shipping_address,
-            payment_method=request.POST.get("payment_method"),
-            status="Pending"
+            payment_method=payment_method,
+            status="Pending" if payment_method == "cod" else "Processing"
         )
 
         for item in items:
@@ -645,24 +904,29 @@ def place_order(request):
 
     return redirect("cart_page")
 
-
 def order_success(request, order_id):
     order = Order.objects.get(id=order_id)
     items = OrderItem.objects.filter(order=order)
 
-    # Split the shipping address into list parts
-    address_parts = order.shipping_address.split(",")
+    # Clean split: Remove empty parts and strip spaces for no blank commas
+    raw_parts = order.shipping_address.split(', ')
+    address_parts = [part.strip() for part in raw_parts if part.strip()]  # Filter empties
+
+    # Pad to exactly 8 indices if fewer (e.g., no landmark) to match template safely
+    while len(address_parts) < 8:
+        address_parts.append('')
 
     return render(request, "user/order_success.html", {
         "order": order,
         "items": items,
-        "address_parts": address_parts,  # send to template
+        "address_parts": address_parts,  # Pass clean list instead of raw string
     })
+
 
 def deals_and_offers(request):
     return render(request,"user/deals_and_offers.html")
 
-from django.contrib import messages
+
 
 def contact(request):
     return render(request,"user/contact.html")

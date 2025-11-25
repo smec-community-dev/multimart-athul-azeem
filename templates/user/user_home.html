@@ -5,7 +5,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="slider rounded-2xl overflow-hidden h-64 sm:h-72 md:h-80 lg:h-96 relative">
                 {% for product in slider_products %}
-                <div class="slide {% if forloop.first %}active{% endif %} w-full h-full">
+                <div class="slide {% if forloop.first %}active{% endif %} w-full h-full absolute top-0 left-0">
                     <div class="w-full h-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 lg:px-16 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
                         <div class="flex-1 fade-in text-center sm:text-left py-6 sm:py-0">
                             <!-- Product Title -->
@@ -330,7 +330,9 @@
     const slideCount = slides.length;
 
     // Initialize slider
-    showSlide(currentSlideIndex);
+    if (slides.length > 0) {
+        showSlide(currentSlideIndex);
+    }
 
     // Function to change slide
     function changeSlide(n) {
@@ -344,22 +346,30 @@
 
     // Main function to display slides
     function showSlide(n) {
+        if (slides.length === 0) return;
+
         // Update current slide index
         currentSlideIndex = (n + slideCount) % slideCount;
 
         // Hide all slides and remove active class from dots
-        slides.forEach(slide => slide.classList.remove('active'));
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+            slide.style.display = 'none';
+        });
         dots.forEach(dot => dot.classList.remove('active'));
 
         // Show current slide and activate corresponding dot
         slides[currentSlideIndex].classList.add('active');
+        slides[currentSlideIndex].style.display = 'flex';
         dots[currentSlideIndex].classList.add('active');
     }
 
     // Auto slide change every 5 seconds
-    setInterval(() => {
-        changeSlide(1);
-    }, 5000);
+    if (slides.length > 0) {
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    }
 
     // Scroll animations
     document.addEventListener('DOMContentLoaded', function () {
@@ -393,7 +403,9 @@
     // Mobile menu functionality
     function toggleMobileMenu() {
         const menu = document.getElementById("mobileMenu");
-        menu.classList.toggle("hidden");
+        if (menu) {
+            menu.classList.toggle("hidden");
+        }
     }
 </script>
 {% endblock %}

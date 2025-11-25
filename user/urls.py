@@ -36,6 +36,9 @@ urlpatterns = [
     path("shipping-info/",views.shipping_info, name="shipping_info"),
     path("privacy-policy/",views.privacy_policy, name="privacy_policy"),
     path("update-profile/", views.update_profile, name="update_profile"),
+    path("create-order/", views.create_order, name="create_order"),
+    path("payment-verify/", views.payment_verify, name="payment_verify"),
+
 
 
 ]

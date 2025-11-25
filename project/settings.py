@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,6 +60,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'project.urls'
 
+
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -62,17 +71,24 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                # ⭐ custom context processor
-                'user.context_processors.cart_wishlist_counts',
-            ],
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                    'django.template.context_processors.media',
+
+                    # Custom context processors
+                    'user.context_processors.cart_wishlist_counts',
+                    'project.settings.razorpay_keys',
+                ],
+
         },
     },
 ]
 
 WSGI_APPLICATION = 'project.wsgi.application'
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 
 # Database
@@ -84,6 +100,14 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+from django.conf import settings
+def razorpay_keys(request):
+    return {
+        'RAZORPAY_KEY_ID': settings.RAZORPAY_KEY_ID
+    }
+
 
 
 # Password validation
