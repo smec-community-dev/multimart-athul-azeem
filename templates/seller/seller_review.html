@@ -1513,11 +1513,10 @@
             <div class="footer-section">
                 <h3>Customer Service</h3>
                 <ul>
-                    <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="#">Returns & Refunds</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Track Your Order</a></li>
+                     <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                 </ul>
             </div>
 
