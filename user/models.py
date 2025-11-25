@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from core.models import  User
 from seller.models import SellerDetails, Product
-
-
+from  django.conf import  settings
+from django.utils import timezone
 # ------------------ CUSTOM USER ------------------
 
 
@@ -30,8 +30,6 @@ class Wishlist(models.Model):
 
 
 # ------------------ ORDER ------------------
-from django.utils import timezone
-
 class Order(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -47,19 +45,18 @@ class Order(models.Model):
     shipping_address = models.TextField()
     payment_method = models.CharField(max_length=50)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-
-    # TIMELINE DATES
+    order_date = models.DateTimeField(auto_now_add=True)
+    delivery_date=models.DateTimeField(null=True,blank=True)
     pending_date = models.DateTimeField(default=timezone.now)
     processing_date = models.DateTimeField(null=True, blank=True)
     shipped_date = models.DateTimeField(null=True, blank=True)
     delivered_date = models.DateTimeField(null=True, blank=True)
-
-    order_date = models.DateTimeField(auto_now_add=True)
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.status}"
-
-
+            return f"Order #{self.id} - {self.status}"
 
 
 class OrderItem(models.Model):
@@ -83,3 +80,20 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.rating}⭐"
+
+
+
+
+# ------------------ ADDRESS ------------------
+class Address(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_address")
+    full_name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20)
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    landmark = models.CharField(max_length=255, blank=True, null=True)
+
+    def _str_(self):
+        return f"{self.full_name} - {self.city}"
