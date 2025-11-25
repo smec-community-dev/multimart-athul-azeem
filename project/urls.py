@@ -14,20 +14,33 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path,include
+from django.conf import settings
 from django.conf.urls.static import static
-from user import  views
-
-from project import settings
+from django.contrib import admin
+from django.shortcuts import redirect
+from django.urls import path, include
+def redirect_to_user_home(request):
+    return redirect("user_home")   # USER HOME
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.products, name="user_home"),
-    path("user/",include("user.urls"))
+
+    # Root redirects to user home
+    path("", redirect_to_user_home, name="root"),
+
+    # USER app (user home)
+    path("user/", include("user.urls")),
+
+    # SELLER app
+    path("seller/", include("seller.urls")),
+
+    # ADMIN PANEL (includes common auth + admin dashboard)
+    path("", include(("core.urls", "admin_panel"), namespace="admin_panel")),  # ← NO PREFIX, includes /login/, /registration/, /admin-dashboard/
+
+
+    # GOOGLE / ALLAUTH
+    path("accounts/", include("allauth.urls")),
 ]
-
-
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,327 @@
+<!-- admin/templates/admin/profile.html -->
+{% extends 'admin/base.html' %}
+{% block title %}My Profile - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>My Profile</h1>
+    <p>View and manage your profile information</p>
+</div>
+
+<div class="section">
+    <div class="profile-container">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+                <div class="profile-info">
+                    <h2>{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="profile-role">Super Admin</p>
+                    <p class="profile-email">{{ user.email }}</p>
+                </div>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-row">
+                    <label>Username:</label>
+                    <span>{{ user.username }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Email:</label>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Full Name:</label>
+                    <span>{{ user.get_full_name|default:"Not set" }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Date Joined:</label>
+                    <span>{{ user.date_joined|date:"F d, Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Last Login:</label>
+                    <span>{{ user.last_login|date:"F d, Y H:i" }}</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="{% url 'admin_panel:edit_profile' %}" class="btn-primary">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+                <a href="{% url 'admin_panel:admin_settings' %}" class="btn-secondary">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <div class="quick-link-card">
+                <div class="quick-link-icon" style="background: #e3f2fd;">
+                    <i class="fas fa-chart-bar" style="color: #2196F3;"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h3>Dashboard</h3>
+                    <p>View admin dashboard</p>
+                </div>
+                <a href="{% url 'admin_panel:admin_dashboard' %}" class="quick-link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <div class="quick-link-card">
+                <div class="quick-link-icon" style="background: #f3e5f5;">
+                    <i class="fas fa-users" style="color: #9c27b0;"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h3>Manage Users</h3>
+                    <p>View all users</p>
+                </div>
+                <a href="{% url 'admin_panel:admin_users' %}" class="quick-link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <div class="quick-link-card">
+                <div class="quick-link-icon" style="background: #fff3e0;">
+                    <i class="fas fa-box" style="color: #ff9800;"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h3>Manage Products</h3>
+                    <p>View all products</p>
+                </div>
+                <a href="{% url 'admin_panel:admin_products' %}" class="quick-link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <div class="quick-link-card">
+                <div class="quick-link-icon" style="background: #e8f5e9;">
+                    <i class="fas fa-shopping-cart" style="color: #4caf50;"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h3>Manage Orders</h3>
+                    <p>View all orders</p>
+                </div>
+                <a href="{% url 'admin_panel:admin_orders' %}" class="quick-link-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        color: white;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        border: 3px solid white;
+    }
+
+    .profile-info h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .profile-role {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+
+    .profile-email {
+        margin: 0.25rem 0 0 0;
+        opacity: 0.8;
+        font-size: 0.9rem;
+    }
+
+    .profile-details {
+        padding: 2rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-row label {
+        font-weight: 600;
+        color: #333;
+        min-width: 150px;
+    }
+
+    .detail-row span {
+        color: #666;
+        text-align: right;
+    }
+
+    .profile-actions {
+        padding: 1.5rem 2rem;
+        display: flex;
+        gap: 1rem;
+        background: #f9f9f9;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        transition: background 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #d0d0d0;
+    }
+
+    /* Quick Links */
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .quick-link-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .quick-link-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .quick-link-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .quick-link-content {
+        flex: 1;
+    }
+
+    .quick-link-content h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .quick-link-content p {
+        margin: 0.25rem 0 0 0;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .quick-link-arrow {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+    }
+
+    .quick-link-card:hover .quick-link-arrow {
+        transform: translateX(5px);
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .profile-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .detail-row label {
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-links {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,585 @@
+<!-- admin/templates/admin/subcategory_products.html -->
+{% extends 'admin/base.html' %}
+{% block title %}{{ subcategory.name }} - Products{% endblock %}
+{% block content %}
+<div class="header">
+    <a href="{% url 'admin_panel:admin_subcategories' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Subcategories
+    </a>
+    <h1>{{ subcategory.name }}</h1>
+    <p>View all products in this subcategory</p>
+</div>
+
+<div class="section">
+    <!-- Subcategory Info Card -->
+    <div class="category-info-card">
+        <div class="info-row">
+            <span class="info-label">Subcategory Name:</span>
+            <span class="info-value">{{ subcategory.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Category:</span>
+            <span class="info-value">{{ subcategory.category.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Description:</span>
+            <span class="info-value">{{ subcategory.description|default:"No description" }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Status:</span>
+            <span class="info-value">
+                {% if subcategory.status %}
+                    <span class="status-badge status-active">
+                        <i class="fas fa-check-circle"></i> Active
+                    </span>
+                {% else %}
+                    <span class="status-badge status-inactive">
+                        <i class="fas fa-times-circle"></i> Inactive
+                    </span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Created:</span>
+            <span class="info-value">{{ subcategory.created_at|date:"M d, Y" }}</span>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd;">
+                <i class="fas fa-box" style="color: #2196F3;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ total_products }}</div>
+                <div class="stat-label">Total Products</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #f3e5f5;">
+                <i class="fas fa-check-circle" style="color: #9c27b0;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ in_stock_count }}</div>
+                <div class="stat-label">In Stock</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fff3e0;">
+                <i class="fas fa-exclamation-circle" style="color: #ff9800;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ low_stock_count }}</div>
+                <div class="stat-label">Low Stock</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: #fce4ec;">
+                <i class="fas fa-dollar-sign" style="color: #e91e63;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">${{ total_inventory_value|floatformat:2 }}</div>
+                <div class="stat-label">Inventory Value</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+        <div class="section-title">Products in {{ subcategory.name }}</div>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <div class="search-filter">
+        <form method="get" class="filter-form">
+            <div class="form-group">
+                <input type="text" name="search" placeholder="Search by product name..." value="{{ search_query|default:'' }}" class="search-input">
+            </div>
+            <div class="form-group">
+                <select name="stock_status" class="filter-select">
+                    <option value="">All Stock Status</option>
+                    <option value="in_stock" {% if current_stock_status == 'in_stock' %}selected{% endif %}>In Stock</option>
+                    <option value="low_stock" {% if current_stock_status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                    <option value="out_stock" {% if current_stock_status == 'out_stock' %}selected{% endif %}>Out of Stock</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-search"></i> Apply Filter
+            </button>
+            {% if search_query or current_stock_status %}
+            <a href="{% url 'admin_panel:subcategory_products' subcategory.id %}" class="btn-secondary">
+                <i class="fas fa-times"></i> Clear Filters
+            </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Products Table -->
+    <div class="responsive-table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th data-label="Image">Image</th>
+                    <th data-label="Name">Name</th>
+                    <th data-label="Price">Price</th>
+                    <th data-label="Stock">Stock</th>
+                    <th data-label="Seller">Seller</th>
+                    <th data-label="Actions">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td data-label="Image">
+                        {% with product.images.first as image %}
+                            {% if image %}
+                                <img src="{{ image.image.url }}" alt="{{ product.name }}" width="40" class="rounded" style="border-radius: 4px;">
+                            {% else %}
+                                <div class="product-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td data-label="Name">
+                        <strong>{{ product.name }}</strong>
+                    </td>
+                    <td data-label="Price" class="price-cell">${{ product.price }}</td>
+                    <td data-label="Stock">
+                        {% if product.stock == 0 %}
+                            <span class="status-badge status-inactive">Out of Stock</span>
+                        {% elif product.stock <= 5 %}
+                            <span class="status-badge status-warning">{{ product.stock }} Low</span>
+                        {% else %}
+                            <span class="status-badge status-active">{{ product.stock }}</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Seller">{{ product.seller.user.username }}</td>
+                    <td data-label="Actions">
+                        <!-- View Details -->
+                        <a href="{% url 'admin_panel:edit_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="View Details"
+                           class="action-icon action-icon-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        <!-- Edit Product -->
+                        <a href="{% url 'admin_panel:edit_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="Edit Product"
+                           class="action-icon action-icon-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <!-- Delete Product -->
+                        <a href="{% url 'admin_panel:delete_product' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}"
+                           title="Delete Product"
+                           class="action-icon action-icon-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-state">
+                    <td colspan="6" style="text-align: center; padding: 40px; font-style: italic; color: var(--light-text);">
+                        No products found in this subcategory.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if products.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% with search_query=search_query current_stock_status=current_stock_status %}
+        {% if products.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ products.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+            <span class="disabled"><i class="fas fa-angle-left"></i></span>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+            {% if products.number == num %}
+                <span class="active">{{ num }}</span>
+            {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ products.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_stock_status %}&stock_status={{ current_stock_status }}{% endif %}">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+        {% else %}
+            <span class="disabled"><i class="fas fa-angle-right"></i></span>
+            <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+        {% endif %}
+
+        {% endwith %}
+    </div>
+    {% endif %}
+
+</div>
+
+<style>
+    /* Back Link */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary-color, #2196F3);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        transition: opacity 0.2s;
+    }
+
+    .back-link:hover {
+        opacity: 0.8;
+    }
+
+    /* Category Info Card */
+    .category-info-card {
+        background: white;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        min-width: 150px;
+    }
+
+    .info-value {
+        color: #333;
+        flex: 1;
+    }
+
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.25rem;
+    }
+
+    /* Status Badge Styles */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .status-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #FFC107;
+    }
+
+    .status-active {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50;
+    }
+
+    .status-inactive {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: #F44336;
+    }
+
+    /* Product Icon */
+    .product-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f0;
+        border-radius: 4px;
+        color: #999;
+        font-size: 1.2rem;
+    }
+
+    /* Price Cell */
+    .price-cell {
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    /* Action Icons */
+    .action-icon {
+        padding: 4px;
+        font-size: 0.875rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: white;
+        transition: background-color 0.2s, opacity 0.2s;
+        margin: 2px;
+    }
+
+    .action-icon:hover {
+        opacity: 0.8;
+        text-decoration: none;
+        color: white;
+    }
+
+    .action-icon i {
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    .action-icon-danger {
+        background: var(--danger-color, #dc3545);
+    }
+
+    .action-icon-warning {
+        background: #ff9800;
+    }
+
+    .action-icon-info {
+        background: var(--info-color, #17a2b8);
+    }
+
+    /* Search and Filter */
+    .search-filter {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-width: 200px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color, #2196F3);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .empty-state td {
+        padding: 40px !important;
+        text-align: center;
+        font-style: italic;
+        color: var(--light-text, #999);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-group {
+            min-width: auto;
+        }
+
+        .search-input,
+        .filter-select {
+            min-width: auto;
+            width: 100%;
+        }
+
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            margin: 1px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .empty-state td {
+            display: block !important;
+            padding: 20px !important;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            padding: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            font-size: 0.7rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .category-info-card {
+            padding: 15px;
+        }
+
+        .info-label {
+            min-width: 120px;
+        }
+    }
+</style>
+
+{% endblock %}

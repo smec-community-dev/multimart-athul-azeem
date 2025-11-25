@@ -1,0 +1,230 @@
+
+<!-- admin/templates/admin/settings.html -->
+{% extends 'admin/base.html' %}
+{% block title %}Settings - Admin Panel{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>Admin Settings</h1>
+    <p>Manage your admin settings</p>
+</div>
+
+<div class="section">
+    <div class="settings-container">
+        <!-- Change Password Section -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <h2>Change Password</h2>
+                <p>Update your account password</p>
+            </div>
+
+            <form method="POST" class="settings-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+
+                <div class="form-group">
+                    <label for="old_password">Current Password *</label>
+                    <input type="password" id="old_password" name="old_password" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="new_password">New Password *</label>
+                    <input type="password" id="new_password" name="new_password" required class="form-input">
+                    <small style="color: #666;">Minimum 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required class="form-input">
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-lock"></i> Change Password
+                </button>
+            </form>
+        </div>
+
+        <!-- Account Section -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <h2>Account</h2>
+                <p>Manage your account</p>
+            </div>
+
+            <div class="account-info">
+                <div class="info-row">
+                    <span class="info-label">Username:</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Account Type:</span>
+                    <span class="info-value">Super Admin</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Member Since:</span>
+                    <span class="info-value">{{ user.date_joined|date:"F d, Y" }}</span>
+                </div>
+            </div>
+
+            <div class="account-actions">
+                <a href="{% url 'admin_panel:edit_profile' %}" class="btn-secondary">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .settings-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+        background: #f9f9f9;
+    }
+
+    .settings-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .settings-header p {
+        margin: 0.5rem 0 0 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .settings-form {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-input {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background 0.3s;
+        align-self: flex-start;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .account-info {
+        padding: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .info-value {
+        color: #666;
+    }
+
+    .account-actions {
+        padding: 0 1.5rem 1.5rem;
+    }
+
+    .btn-secondary {
+        padding: 0.75rem 1.5rem;
+        background: #e0e0e0;
+        color: #333;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background: #d0d0d0;
+    }
+
+    @media (max-width: 600px) {
+        .settings-card {
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .info-value {
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}

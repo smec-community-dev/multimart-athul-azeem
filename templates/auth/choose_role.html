@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Account Type</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 420px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        p { color: #666; margin-bottom: 20px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 22px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 8px;
+            text-decoration: none;
+        }
+        .btn-customer {
+            background: #e5f4ff;
+            color: #0369a1;
+        }
+        .btn-seller {
+            background: #ffedd5;
+            color: #c05621;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Choose how you want to continue</h2>
+    <p>We detected a new Google account. Please select your role.</p>
+
+    <a href="{% url 'admin_panel:complete_customer' %}" class="btn btn-customer">I am a Customer</a>
+    <a href="{% url 'admin_panel:complete_seller' %}" class="btn btn-seller">I am a Seller</a>
+</div>
+</body>
+</html>

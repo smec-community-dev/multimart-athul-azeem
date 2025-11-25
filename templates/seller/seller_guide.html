@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF7F32;
+            --accent-color: #FFB273;
+            --secondary-color: #E67A3A;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #F44336;
+            --text-color: #3A3A3A;
+            --light-text: #666666;
+            --bg-color: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E0E0E0;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Open Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; }
+
+        /* ======================== NAVBAR ======================== */
+        .navbar {
+            background: var(--card-bg);
+            padding: 12px 20px;
+            box-shadow: var(--shadow-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+            gap: 3px;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 3px;
+            background: var(--text-color);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        .navbar-title {
+            font-size: 0.85rem;
+            color: var(--light-text);
+            border-left: 2px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .notification-bell:hover { transform: scale(1.1); }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .profile-dropdown { position: relative; }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .profile-info-text {
+                display: flex;
+            }
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .profile-role {
+            font-size: 0.7rem;
+            color: var(--light-text);
+        }
+
+        .dropdown-arrow {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow { transform: rotate(180deg); }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            min-width: 260px;
+            margin-top: 8px;
+            display: none;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show { display: block; }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-header-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        .dropdown-items { padding: 8px 0; }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item-icon {
+            font-size: 1.1rem;
+            width: 22px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-text { flex: 1; }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-item-desc {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+
+        .dropdown-item.logout { color: var(--danger-color); }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        /* ======================== MAIN LAYOUT ======================== */
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+            background: var(--bg-color);
+        }
+
+        .sidebar {
+            width: 240px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 16px 0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 98;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li { margin: 0; }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .sidebar-menu span {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            max-width: 100%;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: var(--light-text);
+            font-size: 0.95rem;
+        }
+
+        /* ======================== SELLER GUIDE CONTENT ======================== */
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .guide-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .guide-header h1 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .guide-header p {
+            font-size: 1.1rem;
+            color: var(--light-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .guide-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-light);
+        }
+
+        .guide-section h2 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .step-card {
+            background: rgba(255, 127, 50, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .step-card h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .tip-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .resource-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* ======================== FOOTER ======================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo span:first-child {
+            font-size: 2rem;
+        }
+
+        .footer-logo span:last-child {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .footer-description {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.75rem;
+            color: #999;
+        }
+
+        .footer-section a {
+            color: #999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 127, 50, 0.2);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            color: #999;
+            margin: 0;
+        }
+
+        /* ======================== RESPONSIVE ======================== */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .navbar-title {
+                display: none !important;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: 0;
+                width: 280px;
+                height: calc(100vh - 60px);
+                z-index: 99;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .guide-header h1 {
+                font-size: 2rem;
+            }
+
+            .guide-section {
+                padding: 1.5rem;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+                max-width: 280px;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+
+            .guide-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .guide-section {
+                padding: 16px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="hamburger" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo">ShopHub</div>
+            <div class="navbar-title">Seller Guide</div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()">
+                🔔
+                <div class="notification-badge">3</div>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">S</div>
+                    <div class="profile-info-text">
+                        <div class="profile-name">Sarah Johnson</div>
+                        <div class="profile-role">Seller</div>
+                    </div>
+                    <div class="dropdown-arrow">▼</div>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-content">
+                            <div class="dropdown-header-avatar">S</div>
+                            <div class="dropdown-header-info">
+                                <h3>Sarah Johnson</h3>
+                                <p>sarah@shophub.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-items">
+                        <a href="profile.html" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">My Profile</div>
+                                <div class="dropdown-item-desc">View & edit profile</div>
+                            </div>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item">
+                            <span class="dropdown-item-icon">🔔</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-desc">Preferences</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="help-support.html" class="dropdown-item">
+                            <span class="dropdown-item-icon">❓</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Help & Support</div>
+                                <div class="dropdown-item-desc">FAQs & contact support</div>
+                            </div>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">Logout</div>
+                                <div class="dropdown-item-desc">Sign out</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+               <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                <li><a href="seller-guide.html" class="active"><span>📚</span> Seller Guide</a></li>
+                <li><a href="{% url 'help_support' %}"><span>❓</span> Help & Support</a></li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="guide-container">
+                <div class="guide-header">
+                    <h1>📚 Seller Success Guide</h1>
+                    <p>Your comprehensive guide to maximizing sales and growing your business on ShopHub</p>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Getting Started</h2>
+
+                    <div class="step-card">
+                        <h3><span class="step-number">1</span> Set Up Your Store</h3>
+                        <p>Complete your seller profile, add your business information, and set up your payment methods to start selling.</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h3><span class="step-number">2</span> Add Your Products</h3>
+                        <p>Upload high-quality images, write compelling descriptions, and set competitive prices for your products.</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h3><span class="step-number">3</span> Optimize Listings</h3>
+                        <p>Use relevant keywords, clear categories, and attractive pricing to improve your product visibility.</p>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Sales Optimization Tips</h2>
+
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <h4><span class="icon">🖼️</span> Quality Images</h4>
+                            <p>Use multiple high-resolution images from different angles. Include lifestyle photos showing your product in use.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4><span class="icon">📝</span> Compelling Descriptions</h4>
+                            <p>Write detailed, benefit-focused descriptions. Highlight key features and answer common customer questions.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4><span class="icon">⭐</span> Customer Reviews</h4>
+                            <p>Encourage satisfied customers to leave reviews. Respond professionally to all feedback.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4><span class="icon">🚚</span> Fast Shipping</h4>
+                            <p>Offer quick shipping options and process orders within 24 hours. Update tracking information promptly.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4><span class="icon">💰</span> Competitive Pricing</h4>
+                            <p>Research similar products and price competitively. Consider running promotions during peak seasons.</p>
+                        </div>
+
+                        <div class="tip-card">
+                            <h4><span class="icon">📊</span> Analytics</h4>
+                            <p>Regularly check your sales analytics to understand customer behavior and optimize your strategy.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Additional Resources</h2>
+
+                    <div class="resources">
+                        <div class="resource-card">
+                            <div class="resource-icon">🎥</div>
+                            <h3>Video Tutorials</h3>
+                            <p>Step-by-step guides for every aspect of selling on ShopHub</p>
+                            <a href="https://youtu.be/S8p31Sg69RY?si=VeAX_1vgQGWqKyMg"
+                               class="btn" style="margin-top: 1rem;" target="_blank">
+                               Watch Now
+                            </a>
+                        </div>
+
+                        <div class="resource-card">
+                            <div class="resource-icon">👥</div>
+                            <h3>Seller Community</h3>
+                            <p>Connect with other sellers and share best practices</p>
+                            <a href="https://indianonlineseller.com/"
+                               class="btn" style="margin-top: 1rem;" target="_blank">
+                               Join Community
+                            </a>
+                        </div>
+
+                        <div class="resource-card">
+                            <div class="resource-icon">📞</div>
+                            <h3>1-on-1 Support</h3>
+                            <p>Get personalized help from our seller success team</p>
+                            <a href="mailto:leod23955@gmail.com"
+                               class="btn" style="margin-top: 1rem;">
+                               Contact Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+ <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Logo Section -->
+                <div>
+                    <div class="footer-logo">
+                        <span>🛍️</span>
+                        <span>ShopHub</span>
+                    </div>
+                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="social-links">
+                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+
+                <li><a href="#"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+
+                </div>
+                <!-- Customer Service -->
+                <div class="footer-section">
+                    <h3>Customer Service</h3>
+                    <ul>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Returns & Refunds</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Track Your Order</a></li>
+                    </ul>
+                </div>
+                <!-- Contact Us -->
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📍</span>
+                            123 Shopping Street, Mumbai, India
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">📞</span>
+                            +91 98765 43210
+                        </li>
+                        <li>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            support@shophub.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>Made with ❤️ for Sellers & Shoppers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            hamburger.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const hamburger = document.querySelector('.hamburger');
+
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            hamburger.classList.remove('active');
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('dropdownMenu');
+            const profileDropdown = document.getElementById('profileDropdown');
+
+            dropdown.classList.toggle('show');
+            profileDropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+
+            if (!profileDropdown.contains(event.target) && dropdownMenu.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+                profileDropdown.classList.remove('active');
+            }
+        });
+
+        // Simple animation for step cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const stepCards = document.querySelectorAll('.step-card');
+            stepCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+            });
+        });
+
+        // Show notifications
+        function showNotifications() {
+            alert('You have 3 unread notifications:\n\n- New order #SH-2456\n- Product review from John D.\n- Payment processed for order #SH-2398');
+        }
+    </script>
+</body>
+</html>

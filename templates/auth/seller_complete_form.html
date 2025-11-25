@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Complete Seller Profile</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #f9fafb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 480px;
+        }
+        h2 { margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 20px; }
+        .input-group { margin-bottom: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #FF7F32;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .error { color: #c33; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Complete Seller Registration</h2>
+    <p>Just a few more details to setup your seller account.</p>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label>Shop Name</label>
+            <input type="text" name="shop_name" required
+                   value="{{ initial.shop_name|default:'' }}">
+        </div>
+
+        <div class="input-group">
+            <label>Shop Address</label>
+            <input type="text" name="shop_address">
+        </div>
+
+        <div class="input-group">
+            <label>Business Type</label>
+            <select name="business_type">
+                <option value="">Select type</option>
+                <option value="electronics">Electronics</option>
+                <option value="clothing">Clothing & Accessories</option>
+                <option value="food">Food & Beverages</option>
+                <option value="books">Books & Media</option>
+                <option value="home">Home & Furniture</option>
+                <option value="beauty">Beauty & Personal Care</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>GST Number</label>
+            <input type="text" name="gst_number">
+        </div>
+
+        <div class="input-group">
+            <label>Bank Account Number</label>
+            <input type="text" name="bank_account">
+        </div>
+
+        <button type="submit" class="btn">Save & Go to Dashboard</button>
+    </form>
+</div>
+</body>
+</html>
