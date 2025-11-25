@@ -23,9 +23,249 @@ from django.conf import settings
 
 User = get_user_model()
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from seller.models import SellerDetails  # adjust path if different
+
+import calendar
+import csv
+
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models.functions import Cast
+from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.db.models import Sum, Q, CharField, F, Count
+
+from django.contrib.auth import get_user_model, logout, authenticate, login
+from django.contrib import messages
+from datetime import timedelta, timezone as dt_timezone, datetime
+from django.db import models
+
+from core.models import SubCategory, Category
+from seller.models import SellerDetails, Product
+from user.models import Order, Review
+from django.contrib import messages as django_messages
+from django.core.mail import send_mail
+from django.conf import settings
+
+User = get_user_model()
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from seller.models import SellerDetails
+
+
+def home():
+    return redirect('')
+
+
+# ========================================================================
+# NORMAL REGISTRATION (EMAIL + PASSWORD) - ROLE SELECTED DURING SIGNUP
+# ========================================================================
+def registration_view(request):
+    if request.method == "POST":
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        password_confirm = request.POST.get("password_confirm")
+        role = request.POST.get("role")  # 'user' / 'seller' / 'admin'
+
+        phone = request.POST.get("phone")
+
+        shop_name = request.POST.get("shop_name")
+        shop_address = request.POST.get("shop_address")
+        business_type = request.POST.get("business_type")
+        gst_number = request.POST.get("gst")
+        bank_account = request.POST.get("bank_account")
+
+        # ---- validations ----
+        if password != password_confirm:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "registration.html")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f"Username '{username}' already exists.")
+            return render(request, "registration.html")
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f"Email '{email}' is already registered.")
+            return render(request, "registration.html")
+
+        if role not in ["user", "seller", "admin"]:
+            messages.error(request, "Please select a valid account type.")
+            return render(request, "auth/registration.html")
+
+        # ---- create user ----
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            role=role
+        )
+
+        # ---- role-specific info ----
+        if role == "user":
+            user.phone_number = phone
+            user.save()
+
+        elif role == "seller":
+            SellerDetails.objects.create(
+                user=user,
+                shop_name=shop_name,
+                shop_address=shop_address,
+                business_type=business_type,
+                gst_number=gst_number,
+                bank_account=bank_account
+            )
+
+        # admin extra fields you can handle here if needed
+
+        messages.success(request, "Registration successful! Please log in.")
+        return redirect("core:login")
+
+    # GET
+    return render(request, "auth/registration.html")
+
+
+# ========================================================================
+# NORMAL LOGIN (EMAIL + PASSWORD) - DIRECT TO DASHBOARD
+# ========================================================================
+def normal_login_view(request):
+    """
+    Normal login for users who registered with email/password.
+    They already have a role, so redirect directly to their dashboard.
+    """
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+
+            # Check if user is blocked
+            if hasattr(user, 'is_blocked') and user.is_blocked:
+                logout(request)
+                messages.error(request, "Your account has been blocked. Please contact support.")
+                return redirect("core:login")
+
+            # Redirect based on role
+            if user.role == "seller":
+                return redirect("seller_dashboard")
+            elif user.role == "admin":
+                return redirect("core:admin_dashboard")
+            else:  # user
+                return redirect("user_home")
+        else:
+            messages.error(request, "Invalid username or password.")
+            return render(request, "login.html")
+
+    return render(request, "auth/login.html")
+
+
+# ========================================================================
+# SOCIAL AUTH (GOOGLE) - ROLE SELECTION NEEDED
+# ========================================================================
+@login_required
+def choose_role(request):
+    """
+    For Google users: they arrive here with default role='user'
+    They can select/change their role here.
+    """
+    # If user already has role and it's not default, skip
+    if request.user.role and request.user.role != "user":
+        return redirect_role_dashboard(request.user.role)
+
+    if request.method == "POST":
+        selected_role = request.POST.get("role")
+
+        if selected_role not in ["user", "seller", "admin"]:
+            messages.error(request, "Invalid role selected.")
+            return redirect("core:choose_role")
+
+        request.user.role = selected_role
+        request.user.save()
+
+        # If seller, we need extra details
+        return redirect("core:complete_registration")
+
+    # Initial render
+    return render(request, "auth/choose_role.html", {"current_role": request.user.role})
+
+
+@login_required
+def complete_registration(request):
+    """
+    This is mainly for Google users who selected seller/admin role
+    to fill missing fields depending on role.
+    """
+    role = request.user.role
+
+    # If user role, no extra details needed
+    if role == "user":
+        return redirect("user_home")
+
+    if request.method == "POST":
+        if role == "seller":
+            # Create seller profile only if not already existing
+            if not SellerDetails.objects.filter(user=request.user).exists():
+                SellerDetails.objects.create(
+                    user=request.user,
+                    shop_name=request.POST.get("shop_name"),
+                    shop_address=request.POST.get("shop_address"),
+                    business_type=request.POST.get("business_type"),
+                    gst_number=request.POST.get("gst"),
+                    bank_account=request.POST.get("bank_account"),
+                )
+
+        elif role == "admin":
+            # admin: handle your extra fields if any
+            pass
+
+        return redirect_role_dashboard(role)
+
+    # GET
+    return render(request, "auth/complete_registration.html", {"role": role})
+
+
+# ========================================================================
+# HELPER FUNCTION
+# ========================================================================
+def redirect_role_dashboard(role):
+    from django.shortcuts import redirect
+
+    if role == "seller":
+        return redirect("seller_dashboard")
+    elif role == "admin":
+        return redirect("admin_panel:admin_dashboard")
+    else:
+        return redirect("user_home")
+
+
+# ========================================================================
+# LOGOUT
+# ========================================================================
+def custom_logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect("admin_panel:login")
+
 
 # ============================================================================
-# DASHBOARD
+# REST OF YOUR ADMIN DASHBOARD CODE (UNCHANGED)
 # ============================================================================
 
 def dashboard(request):
@@ -43,8 +283,8 @@ def dashboard(request):
     users_this_month = User.objects.filter(date_joined__gte=first_day_this_month).count()
     orders_this_month = Order.objects.filter(order_date__gte=first_day_this_month).count()
     revenue_this_month = (
-        Order.objects.filter(order_date__gte=first_day_this_month, status='Delivered')
-        .aggregate(total=Sum('total_amount'))['total'] or 0
+            Order.objects.filter(order_date__gte=first_day_this_month, status='Delivered')
+            .aggregate(total=Sum('total_amount'))['total'] or 0
     )
 
     # Last month metrics
@@ -57,11 +297,11 @@ def dashboard(request):
         order_date__lt=first_day_this_month
     ).count()
     revenue_last_month = (
-        Order.objects.filter(
-            order_date__gte=first_day_last_month,
-            order_date__lt=first_day_this_month,
-            status='Delivered'
-        ).aggregate(total=Sum('total_amount'))['total'] or 0
+            Order.objects.filter(
+                order_date__gte=first_day_last_month,
+                order_date__lt=first_day_this_month,
+                status='Delivered'
+            ).aggregate(total=Sum('total_amount'))['total'] or 0
     )
 
     # Overall totals
@@ -69,8 +309,8 @@ def dashboard(request):
     total_sellers = SellerDetails.objects.count()
     total_orders = Order.objects.count()
     total_revenue = (
-        Order.objects.filter(status='Delivered')
-        .aggregate(total=Sum('total_amount'))['total'] or 0
+            Order.objects.filter(status='Delivered')
+            .aggregate(total=Sum('total_amount'))['total'] or 0
     )
     pending_orders = Order.objects.filter(status='Pending').count()
 
@@ -100,11 +340,11 @@ def dashboard(request):
             tzinfo=dt_timezone.utc
         )
         revenue = (
-            Order.objects.filter(
-                status='Delivered',
-                order_date__gte=start_date,
-                order_date__lt=end_date
-            ).aggregate(total=Sum('total_amount'))['total'] or 0
+                Order.objects.filter(
+                    status='Delivered',
+                    order_date__gte=start_date,
+                    order_date__lt=end_date
+                ).aggregate(total=Sum('total_amount'))['total'] or 0
         )
         monthly_revenue.append(float(revenue))
 
@@ -126,6 +366,10 @@ def dashboard(request):
     }
 
     return render(request, 'admin/dashboard.html', context)
+
+
+# ... (REST OF YOUR ADMIN VIEWS - USERS, SELLERS, PRODUCTS, ORDERS, REVIEWS, ETC.)
+# Keep all your existing admin management views here...
 
 
 # ============================================================================

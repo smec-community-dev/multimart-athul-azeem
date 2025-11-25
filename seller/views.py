@@ -305,9 +305,8 @@ def delete_product(request, slug):
 
 
 
-
 def seller_registration(request):
-    if request.method=="POST":
+    if request.method == "POST":
 
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
@@ -316,27 +315,34 @@ def seller_registration(request):
         password = request.POST.get("password")
 
         role = request.POST.get("role")
+
         shop_name = request.POST.get("shop_name")
         shop_address = request.POST.get("shop_address")
         business_type = request.POST.get("business_type")
-        gst_number = request.POST.get("gst_number")
+        gst_number = request.POST.get("gst")
         bank_account = request.POST.get("bank_account")
 
-
+        # Username already exists?
         if User.objects.filter(username=username).exists():
-            messages.error(request, f" username {username} already exists")
-            return render(request, "seller/seller_registration.html")
+            messages.error(request, f"Username '{username}' already exists")
+            return render(request, "seller/registration.html", {"filled": request.POST})
 
-        user=User.objects.create_user(
+        # Email already exists?
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f"Email '{email}' is already registered. Please login.")
+            return render(request, "seller/registration.html", {"filled": request.POST})
+
+        # Create user
+        user = User.objects.create_user(
             username=username,
             password=password,
             email=email,
             first_name=first_name,
             last_name=last_name,
             role=role
-
-
         )
+
+        # Create seller profile
         SellerDetails.objects.create(
             user=user,
             shop_name=shop_name,
@@ -349,12 +355,14 @@ def seller_registration(request):
         messages.success(request, "Registration successful! Please log in.")
         return redirect('login')
 
+    return render(request, "seller/registration.html")
 
 
 
 
 
-    return render(request,"seller/seller_registration.html")
+
+
 
 @login_required()
 @seller_required
@@ -1030,103 +1038,132 @@ def review_analytics(request):
     return render(request, "seller/review_analytics.html", context)
 
 
-# ============================================================================
-# SOCIAL AUTH & ROLE SELECTION VIEWS
-# ============================================================================
-
-@login_required(login_url="login")
-def choose_role(request):
-    """
-    Role selection page after social authentication.
-
-    Redirects existing users to their appropriate dashboard.
-    Shows role selection for new social auth users.
-    """
-    user = request.user
-
-    # Redirect existing customer
-    if user.role == "customer" and hasattr(user, "customer"):
-        return redirect("home")
-
-    # Redirect existing seller
-    if user.role == "seller" and hasattr(user, "sellerdetails"):
-        return redirect("seller_dashboard")
-
-    return render(request, "auth/choose_role.html", {"user": user})
-
-
-@login_required
-def complete_customer(request):
-    """
-    Complete customer profile after Google signup.
-
-    Sets user role to customer and redirects to home page.
-    """
-    user = request.user
-    user.role = "customer"
-    user.save()
-
-    # Later you can create a Customer profile here if needed
-    return redirect("home")
-
-
-@login_required
-def complete_seller(request):
-    """
-    Complete seller profile after Google signup.
-
-    Collects business information and creates SellerDetails profile.
-    """
-    user = request.user
-
-    # Already a seller - just set role and redirect
-    if hasattr(user, "seller_details"):
-        user.role = "seller"
-        user.save()
-        return redirect("seller_dashboard")
-
-    if request.method == "POST":
-        shop_name = request.POST.get("shop_name")
-        shop_address = request.POST.get("shop_address")
-        business_type = request.POST.get("business_type")
-        gst_number = request.POST.get("gst_number")
-        bank_account = request.POST.get("bank_account")
-
-        # Validate required fields
-        if not shop_name:
-            return render(request, "auth/seller_complete_form.html", {
-                "error": "Shop name is required."
-            })
-
-        # Create seller profile
-        SellerDetails.objects.create(
-            user=user,
-            shop_name=shop_name,
-            shop_address=shop_address or "",
-            business_type=business_type or "",
-            gst_number=gst_number or "",
-            bank_account=bank_account or "",
-        )
-
-        user.role = "seller"
-        user.save()
-
-        return redirect("seller_dashboard")
-
-    # Prepopulate form with user data
-    initial = {
-        "shop_name": f"{user.first_name}'s Shop" if user.first_name else "",
-        "email": user.email,
-    }
-    return render(request, "auth/seller_complete_form.html", {"initial": initial})
-
-
-def social_signup_error(request):
-    """
-    Handle social signup errors (e.g., email already registered).
-    """
-    messages.error(request, "This email is already registered. Please login.")
-    return redirect("login")
+# # ============================================================================
+# # SOCIAL AUTH & ROLE SELECTION VIEWS
+# # ============================================================================
+# @login_required
+# def choose_role(request):
+#     # If user already has a role, skip selection
+#     if request.user.role and request.user.role != "user":
+#         return redirect_role_dashboard(request.user.role)
+#
+#     if request.method == "POST":
+#         selected_role = request.POST.get("role")
+#
+#         if selected_role not in ["user", "seller", "admin"]:
+#             messages.error(request, "Invalid role selected.")
+#             return redirect("choose_role")
+#
+#         request.user.role = selected_role
+#         request.user.save()
+#
+#         return redirect("complete_registration")
+#
+#     return render(request, "choose_role.html")
+#
+# @login_required
+# def complete_registration(request):
+#     role = request.user.role
+#
+#     if request.method == "POST":
+#         if role == "seller":
+#             SellerDetails.objects.create(
+#                 user=request.user,
+#                 shop_name=request.POST.get("shop_name"),
+#                 shop_address=request.POST.get("shop_address"),
+#                 business_type=request.POST.get("business_type"),
+#                 gst_number=request.POST.get("gst"),
+#                 bank_account=request.POST.get("bank_account"),
+#             )
+#
+#         elif role == "user":
+#             request.user.phone_number = request.POST.get("phone")
+#             request.user.address = request.POST.get("address")
+#             request.user.save()
+#
+#         elif role == "admin":
+#             # admin-specific fields
+#             request.user.employee_id = request.POST.get("employee_id")
+#             request.user.save()
+#
+#         return redirect_role_dashboard(role)
+#
+#     return render(request, "complete_registration.html", {"role": role})
+#
+#
+#
+# @login_required
+# def complete_customer(request):
+#     """
+#     Complete customer profile after Google signup.
+#
+#     Sets user role to customer and redirects to home page.
+#     """
+#     user = request.user
+#     user.role = "customer"
+#     user.save()
+#
+#     # Later you can create a Customer profile here if needed
+#     return redirect("home")
+#
+#
+# @login_required
+# def complete_seller(request):
+#     """
+#     Complete seller profile after Google signup.
+#
+#     Collects business information and creates SellerDetails profile.
+#     """
+#     user = request.user
+#
+#     # Already a seller - just set role and redirect
+#     if hasattr(user, "seller_details"):
+#         user.role = "seller"
+#         user.save()
+#         return redirect("seller_dashboard")
+#
+#     if request.method == "POST":
+#         shop_name = request.POST.get("shop_name")
+#         shop_address = request.POST.get("shop_address")
+#         business_type = request.POST.get("business_type")
+#         gst_number = request.POST.get("gst_number")
+#         bank_account = request.POST.get("bank_account")
+#
+#         # Validate required fields
+#         if not shop_name:
+#             return render(request, "auth/seller_complete_form.html", {
+#                 "error": "Shop name is required."
+#             })
+#
+#         # Create seller profile
+#         SellerDetails.objects.create(
+#             user=user,
+#             shop_name=shop_name,
+#             shop_address=shop_address or "",
+#             business_type=business_type or "",
+#             gst_number=gst_number or "",
+#             bank_account=bank_account or "",
+#         )
+#
+#         user.role = "seller"
+#         user.save()
+#
+#         return redirect("seller_dashboard")
+#
+#     # Prepopulate form with user data
+#     initial = {
+#         "shop_name": f"{user.first_name}'s Shop" if user.first_name else "",
+#         "email": user.email,
+#     }
+#     return render(request, "auth/seller_complete_form.html", {"initial": initial})
+#
+#
+# def social_signup_error(request):
+#     """
+#     Handle social signup errors (e.g., email already registered).
+#     """
+#     messages.error(request, "This email is already registered. Please login.")
+#     return redirect("login")
 
 
 @login_required
@@ -1148,4 +1185,20 @@ def seller_guide(request):
         'user': request.user,
     }
     return render(request, 'seller/seller_guide.html', context)
+
+@login_required
+def privacypolicy(request):
+    return render(request,"seller/privacypolicy.html")
+@login_required
+def contact(request):
+    return render(request,"seller/contact.html")
+@login_required
+def service(request):
+    return render(request,"seller/service.html")
+@login_required
+def feedback(request):
+    return render(request,"seller/feedback.html")
+
+
+
 

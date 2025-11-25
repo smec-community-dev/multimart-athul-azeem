@@ -17,19 +17,29 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import path, include
+def redirect_to_user_home(request):
+    return redirect("user_home")   # USER HOME
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("user/",include("user.urls")),
-    path("",include("seller.urls")),
-path("accounts/", include("allauth.urls")),
-    path('admin-panel/', include(('core.urls', 'admin_panel'), namespace='admin_panel')),
+
+    # Root redirects to user home
+    path("", redirect_to_user_home, name="root"),
+
+    # USER app (user home)
+    path("user/", include("user.urls")),
+
+    # SELLER app
+    path("seller/", include("seller.urls")),
+
+    # ADMIN PANEL (includes common auth + admin dashboard)
+    path("", include(("core.urls", "admin_panel"), namespace="admin_panel")),  # ← NO PREFIX, includes /login/, /registration/, /admin-dashboard/
 
 
-
-
-
+    # GOOGLE / ALLAUTH
+    path("accounts/", include("allauth.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

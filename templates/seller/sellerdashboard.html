@@ -1192,7 +1192,7 @@ table {
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'logout' %}">Logout</a>
+                                    <a href="{% url 'admin_panel:logout' %}">Logout</a>
                                 </div>
                                 <div class="dropdown-item-desc">Sign out</div>
                             </div>
@@ -1445,11 +1445,10 @@ table {
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'service' %}">Service</a></li>
+                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
