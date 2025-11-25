@@ -92,20 +92,31 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# REDIRECTS
+# ----------------------------------------
+# LOGIN / LOGOUT REDIRECTS
+# ----------------------------------------
 LOGIN_REDIRECT_URL = "/choose-role/"
 ACCOUNT_SIGNUP_REDIRECT_URL = "/choose-role/"
 LOGOUT_REDIRECT_URL = "/login/"
 
-# ACCOUNT SETTINGS
-SOCIALACCOUNT_LOGIN_ON_GET = True
+# ----------------------------------------
+# ACCOUNT CONFIG
+# ----------------------------------------
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True   # YOU NEED THIS
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # BEST CHOICE
+ACCOUNT_UNIQUE_EMAIL = True
+
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 
-# SOCIAL PROVIDERS
+SOCIALACCOUNT_STORE_TOKENS = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Remove these (they break username-based login)
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+# ACCOUNT_USER_MODEL_EMAIL_FIELD = "email"
+
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {

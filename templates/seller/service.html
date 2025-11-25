@@ -1,10 +1,9 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Orders - ShopHub</title>
+    <title>Terms of Service - Seller Dashboard - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -15,8 +14,6 @@
             --secondary-color: #E67A3A;
             --success-color: #4CAF50;
             --warning-color: #FFC107;
-            --info-color: #2196F3;
-            --purple-color: #AA66CC;
             --danger-color: #F44336;
             --text-color: #3A3A3A;
             --light-text: #666666;
@@ -352,91 +349,55 @@
             color: var(--light-text);
             font-size: 0.95rem;
         }
-        /* ======================== SEARCH & FILTERS ======================== */
-        .search-filters {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .search-box {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: var(--card-bg);
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 200px;
-        }
-        .search-box:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
-        }
-        .search-box input {
-            border: none;
-            background: transparent;
-            font-size: 0.95rem;
-            flex: 1;
-            outline: none;
-        }
-        .search-box input::placeholder { color: var(--light-text); }
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .filter-tab {
-            padding: 8px 16px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 25px;
-            background: var(--card-bg);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.85rem;
-        }
-        .filter-tab:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        .filter-tab.active {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            color: white;
-            border-color: var(--primary-color);
-        }
-        /* ======================== SECTION ======================== */
-        .section {
+        /* ======================== TERMS SECTION ======================== */
+        .terms-section {
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: var(--shadow-light);
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 24px;
             animation: fadeIn 0.6s ease;
+            line-height: 1.6;
         }
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 12px;
+        .terms-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
             border-bottom: 2px solid var(--border-color);
-            flex-wrap: wrap;
-            gap: 12px;
         }
-        .section-title {
+        .terms-date {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .terms-section h2 {
             font-family: var(--font-heading);
-            font-size: 1.3rem;
-            font-weight: 700;
+            font-size: 1.4rem;
             color: var(--text-color);
+            margin: 24px 0 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
         }
-        .btn-primary {
+        .terms-section h3 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin: 20px 0 10px;
+            font-weight: 600;
+        }
+        .terms-section p,
+        .terms-section li {
+            margin-bottom: 12px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .terms-section ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .terms-section li {
+            margin-bottom: 6px;
+        }
+        .btn-print {
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
             border: none;
@@ -446,156 +407,12 @@
             font-weight: 600;
             transition: all 0.3s ease;
             font-size: 0.85rem;
-            white-space: nowrap;
+            margin-top: 20px;
+            display: inline-block;
         }
-        .btn-primary:hover {
+        .btn-print:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
-        }
-        .btn-primary a {
-            color: white;
-        }
-        /* ======================== TABLE ======================== */
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin: -5px;
-            padding: 5px;
-        }
-        table {
-            width: auto;
-            min-width: 800px;
-            margin: 0 auto;
-            border-collapse: collapse;
-        }
-        thead { background-color: rgba(255, 127, 50, 0.05); }
-        th {
-            padding: 12px 8px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-color);
-            border-bottom: 2px solid var(--border-color);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        td {
-            padding: 12px 8px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
-        .order-id {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .customer-name {
-            font-weight: 600;
-        }
-        .product-name {
-            font-weight: 500;
-        }
-        .quantity {
-            text-align: center;
-            font-weight: 600;
-        }
-        .order-total {
-            font-weight: 700;
-            color: var(--primary-color);
-            text-align: right;
-        }
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            text-align: center;
-            white-space: nowrap;
-            border: 1px solid;
-        }
-        .status-delivered {
-            background-color: rgba(76, 175, 80, 0.15);
-            color: #4CAF50;
-            border-color: rgba(76, 175, 80, 0.3);
-        }
-        .status-pending {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #FFC107;
-            border-color: rgba(255, 193, 7, 0.3);
-        }
-        .status-processing {
-            background-color: rgba(33, 150, 243, 0.15);
-            color: #2196F3;
-            border-color: rgba(33, 150, 243, 0.3);
-        }
-        .status-shipped {
-            background-color: rgba(170, 102, 204, 0.15);
-            color: #AA66CC;
-            border-color: rgba(170, 102, 204, 0.3);
-        }
-        .status-cancelled {
-            background-color: rgba(244, 67, 54, 0.15);
-            color: #F44336;
-            border-color: rgba(244, 67, 54, 0.3);
-        }
-        .action-btn {
-            background: transparent;
-            border: 1.5px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-        }
-        .action-btn:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--light-text);
-        }
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-        .empty-state-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        /* ======================== PAGINATION ======================== */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 24px;
-        }
-        .pagination {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .pagination-btn {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            min-width: 40px;
-            text-align: center;
-        }
-        .pagination-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        .pagination-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
         }
         /* ======================== FOOTER ======================== */
         .footer {
@@ -696,10 +513,6 @@
             .sidebar { width: 220px; }
             .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
             .main-content { padding: 20px; }
-            .search-filters { flex-direction: column; align-items: stretch; }
-            .search-box { min-width: auto; }
-            .filter-tabs { justify-content: center; }
-            table { min-width: 700px; }
         }
         @media (max-width: 768px) {
             .hamburger {
@@ -736,14 +549,9 @@
             }
             .header h1 { font-size: 1.5rem; }
             .header p { font-size: 0.9rem; }
-            .search-box { padding: 8px 12px; }
-            .filter-tab { padding: 6px 12px; font-size: 0.8rem; }
-            table { min-width: 600px; font-size: 0.85rem; }
-            th { padding: 8px 6px; font-size: 0.8rem; }
-            td { padding: 8px 6px; }
-            .status-badge { padding: 4px 10px; font-size: 0.75rem; }
-            .action-btn { padding: 5px 10px; font-size: 0.75rem; }
-            .pagination-btn { padding: 6px 10px; font-size: 0.8rem; }
+            .terms-section { padding: 18px; }
+            .terms-section h2 { font-size: 1.2rem; }
+            .terms-section p, .terms-section li { font-size: 0.9rem; }
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -764,13 +572,12 @@
             .header { margin-bottom: 16px; }
             .header h1 { font-size: 1.3rem; }
             .header p { font-size: 0.85rem; }
-            .search-box { padding: 6px 10px; }
-            .filter-tab { padding: 5px 8px; font-size: 0.75rem; }
-            table { min-width: 500px; font-size: 0.8rem; }
-            th { padding: 6px 4px; font-size: 0.75rem; }
-            td { padding: 6px 4px; }
-            .order-total { text-align: left; }
-            .pagination-btn { padding: 5px 8px; font-size: 0.75rem; min-width: 32px; }
+            .terms-section { padding: 16px; }
+            .terms-header { margin-bottom: 24px; }
+            .terms-section h2 { font-size: 1.1rem; margin: 20px 0 10px; }
+            .terms-section h3 { font-size: 1rem; }
+            .terms-section p, .terms-section li { font-size: 0.85rem; }
+            .btn-print { padding: 6px 12px; font-size: 0.8rem; }
             .footer-grid {
                 grid-template-columns: 1fr;
             }
@@ -782,56 +589,8 @@
             .navbar-right { gap: 8px; }
             .header h1 { font-size: 1.1rem; }
             .main-content { padding: 10px; }
-            .filter-tab { padding: 4px 6px; font-size: 0.7rem; }
-            table { min-width: 400px; font-size: 0.75rem; }
-            th, td { padding: 4px 2px; }
-            .status-badge { padding: 3px 6px; font-size: 0.7rem; }
-        }
-        /* ======================== RESPONSIVE TABLE ======================== */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px; /* desktop */
-        }
-        @media (max-width: 768px) {
-            table {
-                min-width: 600px;
-                font-size: 0.85rem;
-            }
-            th, td {
-                padding: 8px 6px;
-                white-space: nowrap;
-            }
-        }
-        @media (max-width: 480px) {
-            table {
-                min-width: 500px;
-                font-size: 0.8rem;
-            }
-            th, td {
-                padding: 6px 4px;
-                font-size: 0.75rem;
-            }
-            .status-badge {
-                padding: 4px 8px;
-                font-size: 0.7rem;
-                border-radius: 12px;
-            }
-        }
-        @media (max-width: 360px) {
-            table {
-                min-width: 400px;
-                font-size: 0.75rem;
-            }
-            th, td {
-                padding: 4px 3px;
-            }
+            .terms-section { padding: 14px; }
+            .terms-section p, .terms-section li { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -897,7 +656,7 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'help_support'  %}">
+                            <a href="{% url 'help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -912,7 +671,7 @@
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                 <a href="{% url 'admin_panel:logout' %}">Logout</a>
+                                    <a href="{% url 'admin_panel:logout' %}">Logout</a>
                                 </div>
                                 <div class="dropdown-item-desc">Sign out</div>
                             </div>
@@ -929,118 +688,69 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.path == '/seller_dashboard/' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" class="{% if 'add' in request.path %}active{% endif %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}" class="{% if 'order' in request.path %}active{% endif %}"><span>🛒</span> Orders</a></li>
-
+                            <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}" ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
-
             </ul>
         </div>
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
-                <h1>🛒 Orders</h1>
-                <p>Manage your customer orders efficiently</p>
+                <h1>Terms of Service 📋</h1>
+                <p>Read our terms and conditions carefully</p>
             </div>
-            <!-- SEARCH & FILTERS -->
-            <div class="search-filters">
-                <form method="GET" style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px;">
-                    <div class="search-box">
-                        <span style="font-size: 1rem; color: var(--light-text);">🔍</span>
-                        <input type="text" name="search" placeholder="Search orders…" value="{{ search_query }}" style="min-width: 200px;">
-                    </div>
-                    <input type="hidden" name="status" value="{{ request.GET.status|default:'all' }}">
-                    <button type="submit" class="btn-primary" style="flex-shrink: 0; padding: 10px 16px;">Search</button>
-                </form>
-                <form id="filterForm" method="GET" style="display: flex; gap: 8px;">
-                    <button type="submit" name="status" value="all" class="filter-tab {% if request.GET.status|default:'all' == 'all' %}active{% endif %}">📋 All Orders</button>
-                    <button type="submit" name="status" value="pending" class="filter-tab {% if request.GET.status == 'pending' %}active{% endif %}">⏳ Pending</button>
-                    <button type="submit" name="status" value="processing" class="filter-tab {% if request.GET.status == 'processing' %}active{% endif %}">⚙️ Processing</button>
-                    <button type="submit" name="status" value="shipped" class="filter-tab {% if request.GET.status == 'shipped' %}active{% endif %}">📦 Shipped</button>
-                    <button type="submit" name="status" value="delivered" class="filter-tab {% if request.GET.status == 'delivered' %}active{% endif %}">✅ Delivered</button>
-                    <button type="submit" name="status" value="cancelled" class="filter-tab {% if request.GET.status == 'cancelled' %}active{% endif %}">❌ Cancelled</button>
-                    <input type="hidden" name="search" value="{{ search_query }}">
-                </form>
-            </div>
-            <!-- ORDERS TABLE -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">All Orders</div>
-                    <button class="btn-primary"><a href="{% url 'order' %}">Refresh</a></button>
+            <div class="terms-section">
+                <div class="terms-header">
+                    <h1 style="font-size: 2.2rem; color: var(--primary-color);">Terms of Service</h1>
+                    <p class="terms-date">Last updated: November 25, 2025</p>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Product Name</th>
-                                <th>Qty</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead><tbody>
-    {% if orders %}
-        {% for order in orders %}
-            <tr>
-                <td class="order-id">#{{ order.id }}</td>
-                <td class="customer-name">{{ order.user.username }}</td>
+                <h2>1. Introduction</h2>
+                <p>Welcome to ShopHub. By accessing or using our platform, you agree to be bound by these Terms of Service ("Terms"). If you do not agree, please do not use the service.</p>
 
-                <td class="product-name">
-                    {% for item in order.items.all %}
-                        {{ item.product.name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </td>
+                <h3>Eligibility</h3>
+                <p>You must be at least 18 years old to use this service. By creating an account, you represent that you meet this requirement.</p>
 
-                <td class="quantity">{{ order.total_qty }}</td>
+                <h2>2. User Accounts</h2>
+                <p>You are responsible for maintaining the confidentiality of your account and password. ShopHub reserves the right to terminate accounts for violations of these Terms.</p>
+                <ul>
+                    <li>Provide accurate information during registration.</li>
+                    <li>Notify us immediately of any unauthorized use.</li>
+                    <li>You may not share your account with others.</li>
+                </ul>
 
-                <td class="order-total">₹{{ order.total_price|stringformat:".2f" }}</td>
+                <h2>3. Seller Responsibilities</h2>
+                <p>As a seller, you agree to:</p>
+                <ul>
+                    <li>List accurate product descriptions and images.</li>
+                    <li>Process orders within 48 hours.</li>
+                    <li>Handle returns as per our policy.</li>
+                    <li>Comply with all applicable laws.</li>
+                </ul>
 
-                <td>
-                    <span class="status-badge status-{{ order.status|lower }}">
-                        {% if order.status == 'Pending' %}⏳ Pending
-                        {% elif order.status == 'Processing' %}⚙️ Processing
-                        {% elif order.status == 'Shipped' %}📦 Shipped
-                        {% elif order.status == 'Delivered' %}✅ Delivered
-                        {% elif order.status == 'Cancelled' %}❌ Cancelled
-                        {% endif %}
-                    </span>
-                </td>
+                <h2>4. Payments and Fees</h2>
+                <p>ShopHub charges a 5% commission on sales. Payments are processed weekly via bank transfer. All fees are non-refundable except as required by law.</p>
 
-                <td><a href="{% url 'seller_order_view' order.id %}" class="action-btn">View</a></td>
-            </tr>
-        {% endfor %}
-    {% else %}
-        <tr>
-            <td colspan="7" class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">No orders found</div>
-            </td>
-        </tr>
-    {% endif %}
-</tbody>
+                <h2>5. Intellectual Property</h2>
+                <p>All content on ShopHub is owned by us or our licensors. You may not reproduce or distribute without permission.</p>
 
-                    </table>
-                </div>
+                <h2>6. Limitation of Liability</h2>
+                <p>ShopHub is not liable for any indirect damages. Our total liability shall not exceed the amount paid by you in the past 12 months.</p>
+
+                <h2>7. Termination</h2>
+                <p>We may suspend or terminate your access at any time for violations. Upon termination, your right to use the service ends immediately.</p>
+
+                <h2>8. Governing Law</h2>
+                <p>These Terms are governed by the laws of India. Any disputes shall be resolved in Mumbai courts.</p>
+
+                <h2>9. Changes to Terms</h2>
+                <p>We may update these Terms at any time. Continued use after changes constitutes acceptance.</p>
+
+                <p style="text-align: center; font-style: italic; color: var(--light-text); margin-top: 24px;">
+                    By using ShopHub, you acknowledge that you have read and agree to these Terms.
+                </p>
+                <button class="btn-print" onclick="window.print()">Print Terms</button>
             </div>
-            <!-- PAGINATION -->
-            {% if page_obj.paginator.num_pages > 1 %}
-            <div class="pagination-container">
-                <div class="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">« Previous</a>
-                    {% endif %}
-                    {% for num in page_obj.paginator.page_range %}
-                        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">Next »</a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
     <!-- FOOTER -->
@@ -1055,32 +765,31 @@
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                        <a href="#" title="Facebook">f</a>
-                        <a href="#" title="Twitter">𝕏</a>
-                        <a href="#" title="Instagram">📷</a>
-                        <a href="#" title="LinkedIn">💼</a>
+                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
                 <!-- Quick Links -->
-                <div class="footer-section">
+                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
+
+                <li><a href="#"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'service' %}">Service</a></li>
+                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
@@ -1110,46 +819,27 @@
         </div>
     </footer>
     <script>
-        /* ==================== GLOBAL FUNCTIONS ==================== */
         function toggleProfileMenu() {
-            const menu = document.getElementById("dropdownMenu");
-            menu.classList.toggle("show");
+            document.getElementById("dropdownMenu").classList.toggle("show");
         }
-
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const hamburger = document.querySelector('.hamburger');
-            const overlay = document.querySelector('.sidebar-overlay');
-
-            sidebar.classList.toggle('show');
-            hamburger.classList.toggle('active');
-            overlay.classList.toggle('show');
-
-            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.querySelector(".sidebar-overlay");
+            const menu = document.querySelector(".hamburger");
+            sidebar.classList.toggle("show");
+            overlay.classList.toggle("show");
+            menu.classList.toggle("active");
+            document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
         }
-
         function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('show');
-            document.querySelector('.hamburger').classList.remove('active');
-            document.querySelector('.sidebar-overlay').classList.remove('show');
-            document.body.style.overflow = '';
+            document.getElementById("sidebar").classList.remove("show");
+            document.querySelector(".sidebar-overlay").classList.remove("show");
+            document.querySelector(".hamburger").classList.remove("active");
+            document.body.style.overflow = "";
         }
-
         function showNotifications() {
-            alert('🔔 You have new pending orders!');
+            alert('Notifications panel would open here.');
         }
-
-        // Close dropdown on outside click
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('profileDropdown');
-            const menu = document.getElementById('dropdownMenu');
-            if (dropdown && menu && !dropdown.contains(e.target)) {
-                menu.classList.remove('show');
-            }
-        });
-
-        // Placeholder functions
-        function openStoreModal() { alert('Opening Store Settings'); }
     </script>
 </body>
 </html>

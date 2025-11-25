@@ -1,11 +1,6 @@
-from django.contrib import admin
 from django.urls import path
-from user import views
+from . import views
 
 urlpatterns = [
-
-    # path("products/",views.products),
-    # path("register/",views.user_register),
-    # path("login/",views.user_login)
-
+    path("", views.user_home, name="user_home"),   # HOME PAGE ONLY FOR USERS
 ]

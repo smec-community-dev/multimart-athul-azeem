@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title }}</title>
+    <title>Privacy Policy - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #FF7F32;
@@ -36,16 +37,16 @@
             width: 100%;
             height: 100%;
             overflow-x: hidden;
-        }
-
-        body {
             font-family: var(--font-body);
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
         }
 
         a { text-decoration: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ======================== NAVBAR ======================== */
         .navbar {
@@ -186,9 +187,7 @@
         }
 
         @media (min-width: 769px) {
-            .profile-info-text {
-                display: flex;
-            }
+            .profile-info-text { display: flex; }
         }
 
         .profile-name {
@@ -221,6 +220,7 @@
             margin-top: 8px;
             display: none;
             z-index: 1000;
+            animation: slideDown 0.3s ease;
             border: 1px solid var(--border-color);
             overflow: hidden;
         }
@@ -299,12 +299,6 @@
             font-size: 0.85rem;
         }
 
-        .dropdown-item-desc {
-            font-size: 0.7rem;
-            color: var(--light-text);
-            margin-top: 2px;
-        }
-
         .dropdown-divider {
             height: 1px;
             background: var(--border-color);
@@ -318,12 +312,10 @@
             border-left-color: var(--danger-color);
         }
 
-        /* ======================== MAIN LAYOUT ======================== */
-        .container {
+        /* ======================== MAIN CONTENT ======================== */
+        .main-wrapper {
             display: flex;
-            width: 100%;
             min-height: calc(100vh - 60px);
-            background: var(--bg-color);
         }
 
         .sidebar {
@@ -331,9 +323,13 @@
             background: var(--card-bg);
             border-right: 1px solid var(--border-color);
             padding: 16px 0;
+            animation: slideInLeft 0.5s ease;
             overflow-y: auto;
             flex-shrink: 0;
+            display: none;
         }
+
+        .sidebar.show { display: block; }
 
         .sidebar-overlay {
             display: none;
@@ -382,173 +378,139 @@
             padding: 24px;
             overflow-y: auto;
             max-width: 100%;
+            background: var(--bg-color);
         }
 
-        .header {
-            margin-bottom: 24px;
+        /* ======================== PRIVACY CONTENT ======================== */
+        .privacy-gradient {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            padding: 3rem 2rem;
         }
 
-        .header h1 {
-            font-family: var(--font-heading);
-            font-size: 2rem;
-            color: var(--text-color);
-            margin-bottom: 4px;
-        }
-
-        .header p {
-            color: var(--light-text);
-            font-size: 0.95rem;
-        }
-
-        /* ======================== SELLER GUIDE CONTENT ======================== */
-        .guide-container {
-            max-width: 1200px;
+        .privacy-hero {
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0;
-        }
-
-        .guide-header {
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow-light);
         }
 
-        .guide-header h1 {
+        .privacy-hero h1 {
             font-family: var(--font-heading);
-            font-size: 2.5rem;
-            color: var(--primary-color);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-color);
             margin-bottom: 1rem;
         }
 
-        .guide-header p {
+        .privacy-hero p {
             font-size: 1.1rem;
             color: var(--light-text);
-            max-width: 600px;
-            margin: 0 auto;
         }
 
-        .guide-section {
-            background: var(--card-bg);
-            border-radius: 12px;
+        .privacy-content {
+            max-width: 900px;
+            margin: 2rem auto;
             padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow-light);
         }
 
-        .guide-section h2 {
+        .privacy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .privacy-section h2 {
             font-family: var(--font-heading);
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
             font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1rem;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
         }
 
-        .step-card {
-            background: rgba(255, 127, 50, 0.05);
-            border-left: 4px solid var(--primary-color);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-        }
-
-        .step-card h3 {
+        .privacy-section h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
             color: var(--text-color);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 0.8rem;
         }
 
-        .step-number {
-            background: var(--primary-color);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .privacy-section p {
+            color: var(--light-text);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .privacy-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .privacy-section li {
+            color: var(--light-text);
+            line-height: 1.8;
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .privacy-section li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
             font-weight: bold;
         }
 
-        .tips-grid {
+        .privacy-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0;
         }
 
-        .tip-card {
-            background: white;
+        .privacy-card {
+            background: linear-gradient(135deg, rgba(255, 127, 50, 0.05), rgba(255, 178, 115, 0.05));
             padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
         }
 
-        .tip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .tip-card h4 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .icon {
-            font-size: 1.2rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
-        }
-
-        .resources {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .resource-card {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .resource-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .resource-icon {
-            font-size: 2.5rem;
+        .privacy-card h4 {
+            font-weight: 700;
+            color: var(--text-color);
             margin-bottom: 1rem;
+        }
+
+        .contact-box {
+            background: linear-gradient(135deg, rgba(255, 127, 50, 0.1), rgba(255, 178, 115, 0.05));
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .contact-box h2 {
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .contact-item h4 {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item p {
+            color: var(--primary-color);
+            font-weight: 500;
         }
 
         /* ======================== FOOTER ======================== */
@@ -664,21 +626,17 @@
 
         /* ======================== RESPONSIVE ======================== */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 16px;
+                gap: 8px;
+            }
+
             .hamburger {
                 display: flex;
             }
 
             .navbar-title {
                 display: none !important;
-            }
-
-            .container {
-                flex-direction: column;
-            }
-
-            .navbar {
-                padding: 10px 16px;
-                gap: 8px;
             }
 
             .sidebar {
@@ -690,6 +648,7 @@
                 z-index: 99;
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
+                display: block !important;
             }
 
             .sidebar.show {
@@ -700,59 +659,86 @@
                 display: block;
             }
 
+            .main-wrapper {
+                flex-direction: column;
+            }
+
             .main-content {
                 padding: 16px;
             }
 
-            .guide-header h1 {
+            .privacy-gradient {
+                padding: 2rem 1rem;
+            }
+
+            .privacy-hero h1 {
                 font-size: 2rem;
             }
 
-            .guide-section {
+            .privacy-content {
                 padding: 1.5rem;
             }
 
-            .tips-grid {
+            .privacy-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .privacy-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 480px) {
-            .sidebar {
-                width: 100%;
-                max-width: 280px;
+            .navbar {
+                padding: 8px 12px;
+            }
+
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            .profile-info-text {
+                display: none !important;
             }
 
             .main-content {
                 padding: 12px;
             }
 
-            .guide-header h1 {
-                font-size: 1.8rem;
+            .privacy-gradient {
+                padding: 1.5rem 1rem;
             }
 
-            .guide-section {
-                padding: 16px;
+            .privacy-hero h1 {
+                font-size: 1.5rem;
             }
 
-            .btn {
-                width: 100%;
+            .privacy-section h2 {
+                font-size: 1.2rem;
             }
-        }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+            .privacy-content {
+                padding: 1rem;
+                margin: 1rem auto;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
+
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="navbar-left">
@@ -762,10 +748,10 @@
                 <span></span>
             </div>
             <div class="logo">ShopHub</div>
-            <div class="navbar-title">Seller Guide</div>
+            <div class="navbar-title">Privacy Policy</div>
         </div>
         <div class="navbar-right">
-            <div class="notification-bell" onclick="showNotifications()">
+            <div class="notification-bell">
                 🔔
                 <div class="notification-badge">3</div>
             </div>
@@ -773,8 +759,8 @@
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">S</div>
                     <div class="profile-info-text">
-                        <div class="profile-name">Sarah Johnson</div>
-                        <div class="profile-role">Seller</div>
+                        <div class="profile-name">ShopHub</div>
+                        <div class="profile-role">User</div>
                     </div>
                     <div class="dropdown-arrow">▼</div>
                 </div>
@@ -783,45 +769,33 @@
                         <div class="dropdown-header-content">
                             <div class="dropdown-header-avatar">S</div>
                             <div class="dropdown-header-info">
-                                <h3>Sarah Johnson</h3>
-                                <p>sarah@shophub.com</p>
+                                <h3>ShopHub</h3>
+                                <p>user@shophub.com</p>
                             </div>
                         </div>
                     </div>
                     <div class="dropdown-divider"></div>
                     <div class="dropdown-items">
-                        <a href="profile.html" class="dropdown-item">
+                        <div class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">My Profile</div>
-                                <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
-                        </a>
+                        </div>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Notifications</div>
-                                <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="help-support.html" class="dropdown-item">
-                            <span class="dropdown-item-icon">❓</span>
-                            <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Help & Support</div>
-                                <div class="dropdown-item-desc">FAQs & contact support</div>
-                            </div>
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                        <div class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Logout</div>
-                                <div class="dropdown-item-desc">Sign out</div>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -829,137 +803,190 @@
     </div>
 
     <!-- SIDEBAR OVERLAY -->
-    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
-
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <!-- MAIN CONTAINER -->
     <div class="container">
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-               <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
+                <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
                 <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
-                <li><a href="seller-guide.html" class="active"><span>📚</span> Seller Guide</a></li>
-                <li><a href="{% url 'help_support' %}"><span>❓</span> Help & Support</a></li>
+
             </ul>
         </div>
-
         <!-- MAIN CONTENT -->
         <div class="main-content">
-            <div class="guide-container">
-                <div class="guide-header">
-                    <h1>📚 Seller Success Guide</h1>
-                    <p>Your comprehensive guide to maximizing sales and growing your business on ShopHub</p>
+            <!-- Privacy Policy Hero -->
+            <section class="privacy-gradient" style="margin: -24px -24px 0 -24px; border-radius: 0;">
+                <div class="privacy-hero">
+                    <h1>Privacy Policy</h1>
+                    <p>Last updated: December 1, 2023</p>
+                </div>
+            </section>
+
+            <!-- Privacy Content -->
+            <section class="privacy-content">
+                <!-- Introduction -->
+                <div class="privacy-section">
+                    <h2>1. Introduction</h2>
+                    <p>
+                        Welcome to ShopHub. We are committed to protecting your privacy and ensuring the security of your personal information.
+                        This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website
+                        and use our services.
+                    </p>
+                    <p>
+                        By using ShopHub, you consent to the data practices described in this policy. If you do not agree with the data practices
+                        described in this policy, you should not use our website or services.
+                    </p>
                 </div>
 
-                <div class="guide-section">
-                    <h2>Getting Started</h2>
+                <!-- Information We Collect -->
+                <div class="privacy-section">
+                    <h2>2. Information We Collect</h2>
 
-                    <div class="step-card">
-                        <h3><span class="step-number">1</span> Set Up Your Store</h3>
-                        <p>Complete your seller profile, add your business information, and set up your payment methods to start selling.</p>
-                    </div>
+                    <h3>Personal Information</h3>
+                    <ul>
+                        <li>Name, email address, phone number</li>
+                        <li>Shipping and billing addresses</li>
+                        <li>Payment information (processed securely by our payment partners)</li>
+                        <li>Order history and preferences</li>
+                        <li>Account credentials</li>
+                    </ul>
 
-                    <div class="step-card">
-                        <h3><span class="step-number">2</span> Add Your Products</h3>
-                        <p>Upload high-quality images, write compelling descriptions, and set competitive prices for your products.</p>
-                    </div>
-
-                    <div class="step-card">
-                        <h3><span class="step-number">3</span> Optimize Listings</h3>
-                        <p>Use relevant keywords, clear categories, and attractive pricing to improve your product visibility.</p>
-                    </div>
+                    <h3>Automatically Collected Information</h3>
+                    <ul>
+                        <li>IP address and device information</li>
+                        <li>Browser type and version</li>
+                        <li>Pages visited and time spent on site</li>
+                        <li>Clickstream data and browsing patterns</li>
+                        <li>Cookies and similar technologies</li>
+                    </ul>
                 </div>
 
-                <div class="guide-section">
-                    <h2>Sales Optimization Tips</h2>
-
-                    <div class="tips-grid">
-                        <div class="tip-card">
-                            <h4><span class="icon">🖼️</span> Quality Images</h4>
-                            <p>Use multiple high-resolution images from different angles. Include lifestyle photos showing your product in use.</p>
+                <!-- How We Use Your Information -->
+                <div class="privacy-section">
+                    <h2>3. How We Use Your Information</h2>
+                    <div class="privacy-grid">
+                        <div class="privacy-card">
+                            <h4>Service Delivery</h4>
+                            <ul>
+                                <li>Process orders and payments</li>
+                                <li>Deliver products and services</li>
+                                <li>Provide customer support</li>
+                                <li>Send order confirmations</li>
+                            </ul>
                         </div>
-
-                        <div class="tip-card">
-                            <h4><span class="icon">📝</span> Compelling Descriptions</h4>
-                            <p>Write detailed, benefit-focused descriptions. Highlight key features and answer common customer questions.</p>
-                        </div>
-
-                        <div class="tip-card">
-                            <h4><span class="icon">⭐</span> Customer Reviews</h4>
-                            <p>Encourage satisfied customers to leave reviews. Respond professionally to all feedback.</p>
-                        </div>
-
-                        <div class="tip-card">
-                            <h4><span class="icon">🚚</span> Fast Shipping</h4>
-                            <p>Offer quick shipping options and process orders within 24 hours. Update tracking information promptly.</p>
-                        </div>
-
-                        <div class="tip-card">
-                            <h4><span class="icon">💰</span> Competitive Pricing</h4>
-                            <p>Research similar products and price competitively. Consider running promotions during peak seasons.</p>
-                        </div>
-
-                        <div class="tip-card">
-                            <h4><span class="icon">📊</span> Analytics</h4>
-                            <p>Regularly check your sales analytics to understand customer behavior and optimize your strategy.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="guide-section">
-                    <h2>Additional Resources</h2>
-
-                    <div class="resources">
-                        <div class="resource-card">
-                            <div class="resource-icon">🎥</div>
-                            <h3>Video Tutorials</h3>
-                            <p>Step-by-step guides for every aspect of selling on ShopHub</p>
-                            <a href="https://youtu.be/S8p31Sg69RY?si=VeAX_1vgQGWqKyMg"
-                               class="btn" style="margin-top: 1rem;" target="_blank">
-                               Watch Now
-                            </a>
-                        </div>
-
-                        <div class="resource-card">
-                            <div class="resource-icon">👥</div>
-                            <h3>Seller Community</h3>
-                            <p>Connect with other sellers and share best practices</p>
-                            <a href="https://indianonlineseller.com/"
-                               class="btn" style="margin-top: 1rem;" target="_blank">
-                               Join Community
-                            </a>
-                        </div>
-
-                        <div class="resource-card">
-                            <div class="resource-icon">📞</div>
-                            <h3>1-on-1 Support</h3>
-                            <p>Get personalized help from our seller success team</p>
-                            <a href="mailto:leod23955@gmail.com"
-                               class="btn" style="margin-top: 1rem;">
-                               Contact Support
-                            </a>
+                        <div class="privacy-card">
+                            <h4>Personalization</h4>
+                            <ul>
+                                <li>Customize shopping experience</li>
+                                <li>Show relevant products</li>
+                                <li>Remember preferences</li>
+                                <li>Improve website functionality</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Data Sharing -->
+                <div class="privacy-section">
+                    <h2>4. Data Sharing and Disclosure</h2>
+                    <p>
+                        We do not sell your personal information to third parties. We may share your information with:
+                    </p>
+                    <ul>
+                        <li><strong>Service Providers:</strong> Payment processors, shipping carriers, and IT service providers</li>
+                        <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                        <li><strong>Business Transfers:</strong> In connection with mergers or acquisitions</li>
+                        <li><strong>With Your Consent:</strong> When you explicitly agree to share your information</li>
+                    </ul>
+                </div>
+
+                <!-- Data Security -->
+                <div class="privacy-section">
+                    <h2>5. Data Security</h2>
+                    <p>
+                        We implement appropriate technical and organizational security measures to protect your personal information
+                        against unauthorized access, alteration, disclosure, or destruction.
+                    </p>
+                    <div class="privacy-card" style="border-left-color: var(--success-color); background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.05));">
+                        <h4 style="color: var(--success-color);">Security Measures</h4>
+                        <ul>
+                            <li>SSL encryption for data transmission</li>
+                            <li>PCI-DSS compliance for payment processing</li>
+                            <li>Regular security audits and monitoring</li>
+                            <li>Access controls and authentication</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Your Rights -->
+                <div class="privacy-section">
+                    <h2>6. Your Rights</h2>
+                    <div class="privacy-grid">
+                        <div class="privacy-card">
+                            <h4>Access and Control</h4>
+                            <ul>
+                                <li>Access your personal information</li>
+                                <li>Correct inaccurate data</li>
+                                <li>Delete your personal data</li>
+                                <li>Object to data processing</li>
+                            </ul>
+                        </div>
+                        <div class="privacy-card">
+                            <h4>Communication Preferences</h4>
+                            <ul>
+                                <li>Opt-out of marketing communications</li>
+                                <li>Manage notification settings</li>
+                                <li>Control cookie preferences</li>
+                                <li>Withdraw consent at any time</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="contact-box">
+                    <h2>Contact Us</h2>
+                    <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <h4>Email</h4>
+                            <p>privacy@shophub.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>Phone</h4>
+                            <p>+91 98765 43210</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>Address</h4>
+                            <p>123 Shopping Street, Retail District</p>
+                        </div>
+                        <div class="contact-item">
+                            <h4>Data Protection Officer</h4>
+                            <p>dpo@shophub.com</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <!-- FOOTER -->
- <footer class="footer">
+    <footer class="footer">
         <div class="footer-content">
             <div class="footer-grid">
                 <!-- Logo Section -->
                 <div>
                     <div class="footer-logo">
-                        <span>🛍️</span>
+                        <span>🛒</span>
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+                                       <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
 <a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
 <a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
 <a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
@@ -969,22 +996,21 @@
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-
-                <li><a href="#"><span></span> Dashboard</a></li>
+                 <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
                 <li><a href="{% url 'add' %}"><span></span> Products</a></li>
                 <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
                 <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
 
+                    </ul>
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                       <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'service' %}">Service</a></li>
+                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
@@ -1000,7 +1026,7 @@
                             +91 98765 43210
                         </li>
                         <li>
-                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
                             support@shophub.com
                         </li>
                     </ul>
@@ -1009,66 +1035,51 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <p>&copy; 2024 ShopHub. All rights reserved.</p>
-                <p>Made with ❤️ for Sellers & Shoppers</p>
+                <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Toggle sidebar on mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            const hamburger = document.querySelector('.hamburger');
+        /* ================= PROFILE DROPDOWN ================= */
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
 
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
-            hamburger.classList.toggle('active');
+        /* ================= SIDEBAR ================= */
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.querySelector(".sidebar-overlay");
+            const menu = document.querySelector(".hamburger");
+
+            sidebar.classList.toggle("show");
+            overlay.classList.toggle("show");
+            menu.classList.toggle("active");
+
+            document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
         }
 
         function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            const hamburger = document.querySelector('.hamburger');
-
-            sidebar.classList.remove('show');
-            overlay.classList.remove('show');
-            hamburger.classList.remove('active');
+            document.getElementById("sidebar").classList.remove("show");
+            document.querySelector(".sidebar-overlay").classList.remove("show");
+            document.querySelector(".hamburger").classList.remove("active");
+            document.body.style.overflow = "";
         }
 
-        // Toggle profile dropdown
-        function toggleProfileMenu() {
-            const dropdown = document.getElementById('dropdownMenu');
-            const profileDropdown = document.getElementById('profileDropdown');
+        /* ================= CLOSE DROPDOWN ON CLICK OUTSIDE ================= */
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
 
-            dropdown.classList.toggle('show');
-            profileDropdown.classList.toggle('active');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const profileDropdown = document.getElementById('profileDropdown');
-            const dropdownMenu = document.getElementById('dropdownMenu');
-
-            if (!profileDropdown.contains(event.target) && dropdownMenu.classList.contains('show')) {
-                dropdownMenu.classList.remove('show');
-                profileDropdown.classList.remove('active');
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
             }
         });
-
-        // Simple animation for step cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const stepCards = document.querySelectorAll('.step-card');
-            stepCards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.style.animation = 'fadeInUp 0.6s ease forwards';
-            });
-        });
-
-        // Show notifications
-        function showNotifications() {
-            alert('You have 3 unread notifications:\n\n- New order #SH-2456\n- Product review from John D.\n- Payment processed for order #SH-2398');
-        }
     </script>
+
 </body>
 </html>
