@@ -827,10 +827,9 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                           <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" ><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                <li><a href="{% url 'seller:add' %}" ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
                 <li><a href="help-support.html" class="active"><span>❓</span> Help & Support</a></li>
             </ul>
         </div>
@@ -857,7 +856,7 @@
                 </div>
 
 
-                <a href="{% url 'seller_guide' %}">
+                <a href="{% url 'seller:seller_guide' %}">
                       <div class="help-card" onclick="alert('Opening seller guide...')">
                     <span class="help-card-icon">📚</span>
                     <h3>Seller Guide</h3>
@@ -1043,10 +1042,10 @@
                     <h3>For Sellers</h3>
                     <ul>
 
-                <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li
+                <li><a href="% url 'seller:seller_dashboard' %" class="active"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
 

@@ -207,7 +207,7 @@ def choose_role(request):
     return render(request, "auth/choose_role.html", {"current_role": request.user.role})
 
 
-@login_required
+@login_required(login_url="admin_panel:login")
 def complete_registration(request):
     """
     This is mainly for Google users who selected seller/admin role
@@ -217,7 +217,7 @@ def complete_registration(request):
 
     # If user role, no extra details needed
     if role == "user":
-        return redirect("user_home")
+        return redirect("user:user_home")
 
     if request.method == "POST":
         if role == "seller":
@@ -249,11 +249,11 @@ def redirect_role_dashboard(role):
     from django.shortcuts import redirect
 
     if role == "seller":
-        return redirect("seller_dashboard")
+        return redirect("seller:seller_dashboard")
     elif role == "admin":
         return redirect("admin_panel:admin_dashboard")
     else:
-        return redirect("user_home")
+        return redirect("user:user_home")
 
 
 # ========================================================================
