@@ -8,7 +8,7 @@ _pycache_/
 db.sqlite3
 media/
 staticfiles/
-static/
+
 
 # Virtual environment
 .venv/
