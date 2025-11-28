@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Header Styles */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 24px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 0 15px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            margin-right: 15px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 8px;
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff8c00;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .auth-buttons button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 6px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.7rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 0.9rem;
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .nav-center {
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 10px;
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo i {
+                font-size: 22px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+                margin-right: 8px;
+                padding: 5px 8px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 8px;
+            }
+
+            .header-right {
+                gap: 12px;
+            }
+
+            .icon-btn {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+            }
+
+            .auth-buttons button {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+                gap: 6px;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+
+            .mobile-menu-btn {
+                font-size: 18px;
+                margin-right: 6px;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .icon-btn {
+                font-size: 14px;
+            }
+
+            .badge {
+                width: 14px;
+                height: 14px;
+                font-size: 8px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Product Detail Page Specific Styles */
+        .color-btn.active .rounded-full {
+            border-color: #f97316;
+        }
+
+        .storage-btn.active {
+            border-color: #f97316;
+            background-color: #ffedd5;
+            color: #ea580c;
+        }
+
+        /* Responsive product detail styles */
+        @media (max-width: 768px) {
+            .product-image-container {
+                height: 300px !important;
+            }
+
+            .gallery-thumbnails {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+
+            .gallery-thumbnail {
+                height: 60px !important;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .action-buttons button {
+                width: 100%;
+                padding: 12px !important;
+                font-size: 16px !important;
+            }
+
+            .tab-headers {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+
+            .tab-header {
+                white-space: nowrap;
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .product-image-container {
+                height: 250px !important;
+            }
+
+            .gallery-thumbnails {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+
+            .gallery-thumbnail {
+                height: 50px !important;
+            }
+
+            .product-title {
+                font-size: 24px !important;
+            }
+
+            .product-price {
+                font-size: 28px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-image-container {
+                height: 200px !important;
+            }
+
+            .gallery-thumbnails {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+
+            .gallery-thumbnail {
+                height: 40px !important;
+            }
+
+            .product-title {
+                font-size: 20px !important;
+            }
+
+            .product-price {
+                font-size: 24px !important;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+        }
+
+        /* Consistent button styles */
+        .btn-primary {
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background: #1f2937;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen overflow-x-hidden">
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <!-- Mobile menu button - visible only on small screens -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <!-- Navigation for medium screens and up -->
+            <nav class="nav-center">
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
+            </nav>
+
+            <!-- Search box -->
+            <form method="GET" action="{% url 'user:user_home' %}" class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+            </form>
+
+            <div class="header-right">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'admin_panel:login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'admin_panel:register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <form method="GET" action="{% url 'user:user_home' %}" class="pt-4">
+                        <div class="flex">
+                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Product Detail Content -->
+    <main class="flex-1">
+        <!-- Breadcrumb -->
+        <section class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
+                <nav class="flex space-x-2 text-xs md:text-sm text-gray-600 overflow-x-auto">
+                    <a href="{% url 'user:user_home' %}" class="hover:text-orange-500 whitespace-nowrap">Home</a>
+                    <span class="text-gray-400">/</span>
+                    <a href="{% url 'user:products_list' %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.category.name }}</a>
+                    <span class="text-gray-400">/</span>
+                    <a href="{% url 'user:category_products' product.subcategory.category.slug %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.name }}</a>
+                    <span class="text-gray-400">/</span>
+                    <span class="text-gray-900 whitespace-nowrap truncate max-w-[150px]">{{ product.name }}</span>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Product Details -->
+        <section class="py-4 md:py-8 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                    <!-- Product Images -->
+                    <div class="image-gallery">
+                        <div class="mb-4 rounded-xl md:rounded-2xl overflow-hidden bg-gray-100 product-image-container">
+                            {% if main_image %}
+                                <img src="{{ main_image.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="w-full h-[300px] md:h-[400px] lg:h-[500px] object-contain"
+                                     id="mainImage">
+                            {% else %}
+                                {% if gallery %}
+                                    <img src="{{ gallery.0.image.url }}"
+                                         alt="{{ product.name }}"
+                                         class="w-full h-[300px] md:h-[400px] lg:h-[500px] object-contain"
+                                         id="mainImage">
+                                {% else %}
+                                    <div class="w-full h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center text-gray-500">No Image Available</div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-3 md:gap-4 gallery-thumbnails">
+                            {% for img in gallery %}
+                                <div class="cursor-pointer border border-gray-300 rounded-lg overflow-hidden hover:border-orange-500 transition gallery-thumbnail">
+                                    <img src="{{ img.image.url }}"
+                                         alt="{{ product.name }}"
+                                         class="w-full h-12 md:h-16 lg:h-20 object-contain"
+                                         onclick="changeImage(this.src)">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="lg:pl-4 xl:pl-8">
+                        <div class="mb-4">
+                            <span class="inline-block px-2 md:px-3 py-1 bg-orange-100 text-orange-600 text-xs md:text-sm font-semibold rounded-full">
+                                Best Seller
+                            </span>
+                            <span class="inline-block px-2 md:px-3 py-1 bg-green-100 text-green-600 text-xs md:text-sm font-semibold rounded-full ml-2">
+                                Free Shipping
+                            </span>
+                        </div>
+
+                        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4 product-title">{{ product.name }}</h1>
+
+                        <div class="flex items-center mb-3 md:mb-4 flex-wrap gap-2">
+                            <div class="flex items-center">
+                                <span class="text-yellow-400 text-base md:text-lg">★★★★★</span>
+                                <span class="text-gray-600 ml-2 text-sm md:text-base">4.8 Review({{ product.review_set.count }})</span>
+                            </div>
+                            <span class="mx-2 md:mx-4 text-gray-300 hidden sm:block">|</span>
+                            <span class="text-green-600 font-semibold text-sm md:text-base">In Stock</span>
+                        </div>
+
+                        <div class="mb-4 md:mb-6">
+                            <span class="text-3xl md:text-4xl font-bold text-gray-900 product-price">₹{{ product.price }}</span>
+                            <span class="text-lg md:text-xl text-gray-500 line-through ml-2">₹{{ product.price|add:10000 }}</span>
+                            <span class="ml-2 px-2 py-1 bg-red-100 text-red-600 text-xs md:text-sm font-semibold rounded">Save ₹10,000</span>
+                        </div>
+
+                        <p class="text-gray-700 mb-4 md:mb-6 leading-relaxed text-sm md:text-base">
+                            {{ product.description }}
+                        </p>
+
+                        <!-- Color Selection -->
+                        <div class="mb-4 md:mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Color:</h3>
+                            <div class="flex space-x-3 md:space-x-4 flex-wrap gap-2" id="colorOptions">
+                                <button class="color-btn flex items-center space-x-2 cursor-pointer active"
+                                        data-color="Space Black">
+                                    <div class="w-6 h-6 md:w-8 md:h-8 bg-gray-800 rounded-full border-2 border-orange-500"></div>
+                                    <span class="text-gray-700 font-medium text-sm md:text-base">Space Black</span>
+                                </button>
+
+                                <button class="color-btn flex items-center space-x-2 cursor-pointer"
+                                        data-color="Silver">
+                                    <div class="w-6 h-6 md:w-8 md:h-8 bg-gray-400 rounded-full border-2 border-transparent"></div>
+                                    <span class="text-gray-700 font-medium text-sm md:text-base">Silver</span>
+                                </button>
+
+                                <button class="color-btn flex items-center space-x-2 cursor-pointer"
+                                        data-color="Blue">
+                                    <div class="w-6 h-6 md:w-8 md:h-8 bg-blue-800 rounded-full border-2 border-transparent"></div>
+                                    <span class="text-gray-700 font-medium text-sm md:text-base">Blue</span>
+                                </button>
+                            </div>
+
+                            <input type="hidden" id="selectedColor" value="Space Black">
+                        </div>
+
+                        <!-- Storage Selection -->
+                        {% if product.subcategory.category.name == "Electronics" %}
+                        <div class="mb-4 md:mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Storage:</h3>
+                            <div class="flex space-x-2 md:space-x-3 flex-wrap gap-2" id="storageOptions">
+                                <button class="storage-btn px-3 md:px-4 py-2 border-2 border-orange-500 bg-orange-50 text-orange-600 rounded-lg font-medium text-sm md:text-base active">
+                                    128GB
+                                </button>
+                                <button class="storage-btn px-3 md:px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg font-medium text-sm md:text-base hover:border-orange-500">
+                                    256GB
+                                </button>
+                                <button class="storage-btn px-3 md:px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg font-medium text-sm md:text-base hover:border-orange-500">
+                                    512GB
+                                </button>
+
+                                <input type="hidden" id="selectedStorage" name="storage" value="128GB">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Quantity & Actions -->
+                        <div class="mb-4 md:mb-6">
+                            <h3 class="font-semibold text-gray-900 mb-2 md:mb-3 text-sm md:text-base">Quantity:</h3>
+                            <div class="flex items-center space-x-3 md:space-x-4 flex-wrap gap-2">
+                                <div class="flex items-center border border-gray-300 rounded-lg">
+                                    <button id="decreaseQty" class="px-3 md:px-4 py-2 text-gray-600 hover:bg-gray-100 text-sm md:text-base">-</button>
+                                    <span id="quantityValue" class="px-3 md:px-4 py-2 border-l border-r border-gray-300 font-semibold text-sm md:text-base">1</span>
+                                    <button id="increaseQty" class="px-3 md:px-4 py-2 text-gray-600 hover:bg-gray-100 text-sm md:text-base">+</button>
+                                </div>
+                                <div class="text-xs md:text-sm text-gray-600">Only {{ product.stock }} left in stock</div>
+                            </div>
+                        </div>
+
+                      <!-- Action Buttons - FIXED ALIGNMENT -->
+                        <div class="flex space-x-3 md:space-x-4 mt-4 md:mt-6 action-buttons">
+                            <!-- ADD TO CART BUTTON -->
+                            <button
+                                id="addCartMain"
+                                data-url="{% url 'user:add_to_cart' product.slug %}"
+                                class="flex-1 px-4 md:px-6 lg:px-8 py-3 md:py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium text-base md:text-lg flex items-center justify-center btn-primary">
+                                <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
+                            </button>
+
+                            <!-- BUY NOW BUTTON -->
+                            <button
+                                id="buyNowBtn"
+                                data-url="{% url 'user:checkout' %}?buy={{ product.slug }}"
+                                class="flex-1 px-4 md:px-6 lg:px-8 py-3 md:py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-medium text-base md:text-lg flex items-center justify-center btn-secondary">
+                                Buy Now
+                            </button>
+                        </div>
+                        <div class="flex space-x-4 md:space-x-6 text-gray-600 mt-4">
+                            <a href="{% url 'user:add_to_wishlist' product.slug %}" class="flex items-center space-x-2 hover:text-orange-500 transition text-sm md:text-base">
+                                <i class="{% if in_wishlist %}fas fa-heart text-orange-500{% else %}far fa-heart text-gray-600{% endif %} text-lg md:text-xl"></i>
+                                <span class="{% if in_wishlist %}text-orange-500{% endif %}">
+                                    {% if in_wishlist %}Wishlisted{% else %}Add to Wishlist{% endif %}
+                                </span>
+                            </a>
+                        </div>
+
+                        <!-- Features -->
+                        <div class="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm feature-grid">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-shipping-fast text-orange-500 text-sm md:text-base"></i>
+                                <span>Free Shipping</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-undo-alt text-orange-500 text-sm md:text-base"></i>
+                                <span>30-Day Returns</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-shield-alt text-orange-500 text-sm md:text-base"></i>
+                                <span>1 Year Warranty</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-headset text-orange-500 text-sm md:text-base"></i>
+                                <span>24/7 Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Tabs -->
+        <section class="py-8 md:py-12 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Tab Headers -->
+                    <div class="flex border-b border-gray-200 mb-6 md:mb-8 overflow-x-auto tab-headers">
+                        <button class="tab-header px-4 md:px-6 py-2 md:py-3 font-semibold text-gray-900 border-b-2 border-orange-500 whitespace-nowrap text-sm md:text-base" data-tab="description">
+                            Description
+                        </button>
+                        <button class="tab-header px-4 md:px-6 py-2 md:py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap text-sm md:text-base" data-tab="reviewsTab">
+                            Reviews ({{ product.review_set.count }})
+                        </button>
+                        <button class="tab-header px-4 md:px-6 py-2 md:py-3 font-semibold text-gray-600 hover:text-gray-900 whitespace-nowrap text-sm md:text-base" data-tab="shipping">
+                            Shipping & Returns
+                        </button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="description">
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Product Description</h3>
+                        <div class="prose max-w-none text-gray-700 text-sm md:text-base">
+                            <p class="mb-3 md:mb-4">{{ product.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab Content -->
+                    <div id="reviewsTab" class="tab-content hidden">
+                        <h2 class="text-lg md:text-xl font-bold mb-3">Customer Reviews</h2>
+
+                        {% for review in product.review_set.all %}
+                            <div class="border p-3 md:p-4 rounded mb-3 shadow-sm bg-white">
+                                <strong class="text-sm md:text-base">{{ review.user.username }}</strong>
+                                <span class="text-orange-500 ml-2 text-sm md:text-base">{{ review.rating }}⭐</span>
+                                <p class="text-xs md:text-sm text-gray-600">{{ review.created_at|date:"d M Y" }}</p>
+                                <p class="mt-2 text-sm md:text-base">{{ review.comment }}</p>
+                            </div>
+                        {% empty %}
+                            <p class="text-gray-500 text-sm md:text-base">No reviews yet. Be the first!</p>
+                        {% endfor %}
+
+                        <hr class="my-3 md:my-4">
+
+                        {% if user.is_authenticated and has_delivered_order %}
+                            {% if not user_review_exists %}
+                                <h3 class="font-semibold mb-2 text-sm md:text-base">Write a Review</h3>
+                                <form method="POST" action="{% url 'add_review' product.slug %}">
+                                    {% csrf_token %}
+                                    <label class="block mb-1 text-sm md:text-base">Rating:</label>
+                                    <select name="rating" class="border rounded p-2 w-28 md:w-32 mb-2 md:mb-3 text-sm md:text-base">
+                                        <option value="5">⭐⭐⭐⭐⭐</option>
+                                        <option value="4">⭐⭐⭐⭐</option>
+                                        <option value="3">⭐⭐⭐</option>
+                                        <option value="2">⭐⭐</option>
+                                        <option value="1">⭐</option>
+                                    </select>
+                                    <textarea name="comment" class="border rounded p-2 md:p-3 w-full mb-2 md:mb-3 text-sm md:text-base"
+                                              placeholder="Write your review..." rows="4"></textarea>
+                                    <button type="submit" class="bg-orange-500 text-white px-3 md:px-4 py-2 rounded hover:bg-orange-600 transition text-sm md:text-base">
+                                        Submit Review
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p class="text-green-600 font-semibold mt-2 md:mt-3 text-sm md:text-base">You already reviewed this product.</p>
+                            {% endif %}
+                        {% elif user.is_authenticated %}
+                            <p class="text-gray-500 mt-2 md:mt-3 text-sm md:text-base">You can review only after product is delivered.</p>
+                        {% else %}
+                            <p class="text-red-500 mt-2 md:mt-3 text-sm md:text-base">
+                                Please <a href="{% url 'admin_panel:login' %}" class="text-orange-500 hover:underline">Login</a> to review.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="tab-content hidden" id="shipping">
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Shipping & Returns</h3>
+                        <div class="prose max-w-none text-gray-700 text-sm md:text-base">
+                            <h4 class="text-lg md:text-xl font-semibold mt-4 md:mt-6 mb-2 md:mb-3">Shipping Information</h4>
+                            <ul class="list-disc list-inside space-y-1 md:space-y-2 mb-4 md:mb-6">
+                                <li>Free standard shipping on all orders</li>
+                                <li>Express shipping available at additional cost</li>
+                                <li>Estimated delivery: 2-5 business days</li>
+                                <li>Same-day delivery available in select cities</li>
+                            </ul>
+
+                            <h4 class="text-lg md:text-xl font-semibold mt-4 md:mt-6 mb-2 md:mb-3">Return Policy</h4>
+                            <ul class="list-disc list-inside space-y-1 md:space-y-2">
+                                <li>30-day return policy from delivery date</li>
+                                <li>Products must be in original condition with all accessories</li>
+                                <li>Free return shipping for defective products</li>
+                                <li>Refunds processed within 5-7 business days</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products -->
+        <section class="py-6 md:py-8 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">You May Also Like</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                    {% for p in related_products %}
+                        <a href="{% url 'user:product_detail' p.slug %}"
+                           class="bg-white rounded-lg md:rounded-xl shadow-sm hover:shadow-lg transition group block">
+                            <div class="relative h-32 md:h-48 bg-gray-100 overflow-hidden">
+                                <img src="{{ p.images.first.image.url }}"
+                                     class="w-full h-full object-contain group-hover:scale-105 transition">
+                            </div>
+                            <div class="p-3 md:p-5">
+                                <h3 class="text-sm md:text-lg font-semibold text-gray-900 mb-1 md:mb-2 line-clamp-2">{{ p.name }}</h3>
+                                <span class="text-base md:text-xl font-bold text-gray-900">₹{{ p.price }}</span>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <p class="text-gray-500 text-center col-span-full text-sm md:text-base">No related products available</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-8 sm:py-12 lg:py-14 xl:py-16 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-3 xs:px-4 sm:px-5 lg:px-8">
+            <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-5 sm:gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-3 xs:mb-4 sm:mb-5 lg:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-lg xs:text-xl sm:text-2xl"></i>
+                        <span class="text-lg xs:text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-xs xs:text-sm sm:text-base mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-2 xs:space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Quick Links</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Customer Service</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Contact Info</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3 text-gray-400 text-xs xs:text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-6 sm:mt-8 lg:mt-10 xl:mt-12 pt-4 xs:pt-5 sm:pt-6 lg:pt-8 text-center text-gray-400 text-xs xs:text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // ================= PROFILE DROPDOWN =================
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // ================= SEARCH ENTER SUBMIT =================
+        document.querySelector('.search-box input')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                this.form.submit();
+            }
+        });
+
+        // ================= MOBILE MENU =================
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
+        // ================= PRODUCT DETAIL FUNCTIONALITY =================
+        // Quantity functionality
+        const decreaseBtn = document.getElementById("decreaseQty");
+        const increaseBtn = document.getElementById("increaseQty");
+        const quantityValue = document.getElementById("quantityValue");
+        const maxStock = {{ product.stock }};
+
+        // Decrease quantity
+        decreaseBtn.addEventListener("click", () => {
+            let qty = parseInt(quantityValue.textContent);
+            if (qty > 1) {
+                quantityValue.textContent = qty - 1;
+            }
+        });
+
+        // Increase quantity
+        increaseBtn.addEventListener("click", () => {
+            let qty = parseInt(quantityValue.textContent);
+            if (qty < maxStock) {
+                quantityValue.textContent = qty + 1;
+            } else {
+                alert("Maximum stock limit reached!");
+            }
+        });
+
+        // Add to cart with selected quantity
+        document.getElementById("addCartMain").addEventListener("click", function(e) {
+            e.preventDefault();
+            const qty = quantityValue.textContent;
+            const url = this.getAttribute("data-url") + `?quantity=${qty}`;
+            window.location.href = url;
+        });
+
+        // Image gallery functionality
+        function changeImage(src) {
+            const mainImage = document.getElementById("mainImage");
+            mainImage.src = src;
+        }
+
+        // Tab functionality
+        document.querySelectorAll(".tab-header").forEach(button => {
+            button.addEventListener("click", () => {
+                // Remove active class from all tabs
+                document.querySelectorAll(".tab-header").forEach(tab => {
+                    tab.classList.remove("border-orange-500", "text-gray-900");
+                    tab.classList.add("text-gray-600");
+                });
+
+                // Add active class to clicked tab
+                button.classList.add("border-orange-500", "text-gray-900");
+                button.classList.remove("text-gray-600");
+
+                // Hide all tab content
+                document.querySelectorAll(".tab-content").forEach(tab => {
+                    tab.classList.add("hidden");
+                });
+
+                // Show selected tab content
+                let target = button.dataset.tab;
+                document.getElementById(target).classList.remove("hidden");
+            });
+        });
+
+        // Initialize first tab as active
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.tab-header').click();
+        });
+
+        // STORAGE BUTTON ACTIVE TOGGLE
+        document.querySelectorAll(".storage-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".storage-btn").forEach(b => {
+                    b.classList.remove("active", "border-orange-500", "bg-orange-50", "text-orange-600");
+                    b.classList.add("border-gray-300", "text-gray-700");
+                });
+
+                btn.classList.add("active", "border-orange-500", "bg-orange-50", "text-orange-600");
+                btn.classList.remove("border-gray-300", "text-gray-700");
+
+                document.getElementById("selectedStorage").value = btn.textContent.trim();
+            });
+        });
+
+        // COLOR BUTTON ACTIVE TOGGLE
+        document.querySelectorAll(".color-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".color-btn").forEach(b => {
+                    b.classList.remove("active");
+                    b.querySelector('.rounded-full').classList.remove('border-orange-500');
+                    b.querySelector('.rounded-full').classList.add('border-transparent');
+                });
+
+                btn.classList.add("active");
+                btn.querySelector('.rounded-full').classList.add('border-orange-500');
+                btn.querySelector('.rounded-full').classList.remove('border-transparent');
+
+                document.getElementById("selectedColor").value = btn.getAttribute("data-color");
+            });
+        });
+
+        // BUY NOW FUNCTION
+        document.getElementById("buyNowBtn").addEventListener("click", () => {
+            const qty = document.getElementById("quantityValue").textContent;
+            const url = document.getElementById("buyNowBtn").getAttribute("data-url") + `&quantity=${qty}`;
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>

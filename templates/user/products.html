@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Header Styles from user_home.html */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 24px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 0 15px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            margin-right: 15px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 8px;
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff8c00;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .auth-buttons button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 6px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.7rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 0.9rem;
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .nav-center {
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 10px;
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo i {
+                font-size: 22px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+                margin-right: 8px;
+                padding: 5px 8px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 8px;
+            }
+
+            .header-right {
+                gap: 12px;
+            }
+
+            .icon-btn {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+            }
+
+            .auth-buttons button {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+                gap: 6px;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+
+            .mobile-menu-btn {
+                font-size: 18px;
+                margin-right: 6px;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .icon-btn {
+                font-size: 14px;
+            }
+
+            .badge {
+                width: 14px;
+                height: 14px;
+                font-size: 8px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Products page specific styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* ========== BREADCRUMB ========== */
+        .breadcrumb {
+            background: white;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .breadcrumb-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            color: #666;
+        }
+
+        .breadcrumb-container a {
+            color: #ff8c00;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-wrapper {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .filter-section {
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .filter-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 14px;
+            color: #333;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 11px;
+            cursor: pointer;
+        }
+
+        .filter-option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 10px;
+            accent-color: #ff8c00;
+        }
+
+        .filter-option label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            flex: 1;
+            transition: color 0.2s;
+        }
+
+        .filter-option label:hover {
+            color: #ff8c00;
+        }
+
+        .clear-filters {
+            background: #ff8c00;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .clear-filters:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+        }
+
+        .products-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .results-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .sort-dropdown {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            transition: border-color 0.3s;
+        }
+
+        .sort-dropdown:hover {
+            border-color: #ff8c00;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #ff8c00;
+            transform: translateY(-6px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+        }
+
+        .product-category {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 9px;
+            font-size: 14px;
+            height: 36px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 11px;
+            font-size: 12px;
+        }
+
+        .stars {
+            color: #ffc107;
+            margin-right: 6px;
+        }
+
+        .rating-count {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 13px;
+        }
+
+        .price-current {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff8c00;
+        }
+
+        .product-stock {
+            font-size: 12px;
+            color: #28a745;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #ff8c00, #ff7700);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 140, 0, 0.3);
+        }
+
+        /* ========== PAGINATION ========== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #666;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .pagination-btn:hover {
+            border-color: #ff8c00;
+            color: #ff8c00;
+        }
+
+        .pagination-btn.active {
+            background: #ff8c00;
+            color: white;
+            border-color: #ff8c00;
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta-section {
+            background: linear-gradient(135deg, #ff8c00, #ff7700);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .cta-description {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: white;
+            color: #ff8c00;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Mobile Filter Button */
+        .mobile-filter-btn {
+            display: none;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 15px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .mobile-filter-btn:hover {
+            background: #e67e00;
+        }
+
+        /* Responsive styles for products page */
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                grid-template-columns: 200px 1fr;
+                gap: 20px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+                padding: 0 10px;
+            }
+
+            .sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 280px;
+                height: 100vh;
+                z-index: 1000;
+                overflow-y: auto;
+                padding: 20px;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .mobile-filter-btn {
+                display: block;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+
+            .product-image {
+                height: 160px;
+            }
+
+            .products-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .sort-dropdown {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+
+            .product-image {
+                height: 140px;
+            }
+
+            .product-info {
+                padding: 12px;
+            }
+
+            .product-name {
+                font-size: 13px;
+            }
+
+            .price-current {
+                font-size: 16px;
+            }
+
+            .cta-title {
+                font-size: 28px;
+            }
+
+            .cta-description {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .product-image {
+                height: 120px;
+            }
+
+            .product-info {
+                padding: 10px;
+            }
+
+            .product-name {
+                font-size: 12px;
+                height: 32px;
+            }
+
+            .price-current {
+                font-size: 15px;
+            }
+
+            .add-to-cart-btn {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .pagination-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .cta-section {
+                padding: 40px 15px;
+            }
+
+            .cta-title {
+                font-size: 24px;
+            }
+
+            .cta-description {
+                font-size: 14px;
+            }
+
+            .cta-button {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Close button for mobile sidebar */
+        .sidebar-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header from user_home.html -->
+    <header>
+        <div class="header-container">
+            <!-- Mobile menu button - visible only on small screens -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <!-- Navigation for medium screens and up -->
+            <nav class="nav-center">
+     <a href="{% url 'user:user_home' %}">Home</a>
+<a href="{% url 'user:products_list' %}" style="color: #ff8c00;">Products</a>
+<a href="{% url 'user:about' %}">About</a>
+<a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
+<a href="{% url 'user:contact' %}">Contact</a>
+
+            </nav>
+
+            <!-- Search box -->
+            <form class="search-box" method="GET" action="{% url 'user:products_list' %}">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ query }}">
+            </form>
+
+            <div class="header-right">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count|default:0 }}</span>
+                </a>
+
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count|default:0 }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'admin_panel:login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'admin_panel:registration' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+            </div> <!-- closes .header-right -->
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-orange-500 hover:text-orange-600 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <div class="pt-4">
+                        <div class="flex">
+                            <input type="text" placeholder="Search products..."
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="{% url 'user:user_home' %}">Home</a> / <span>All Products</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Mobile Filter Button -->
+        <button class="mobile-filter-btn" onclick="toggleSidebar()">
+            <i class="fas fa-filter"></i> Filter Products
+        </button>
+
+        <!-- Overlay for mobile sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar Filters -->
+        <aside class="sidebar" id="sidebar">
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h3 style="margin-bottom: 20px; font-size: 18px; color: #333;">Filters</h3>
+
+           <div class="filter-section">
+            <div class="filter-title">Price Range</div>
+           <form method="get" id="priceFilter">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <input type="hidden" name="sort" value="{{ sort }}">
+                <input type="hidden" name="q" value="{{ query }}">
+
+                <label class="filter-option">
+                    <input type="radio" name="price" value="under_1000"
+                        onchange="document.getElementById('priceFilter').submit();"
+                        {% if selected_price == 'under_1000' %}checked{% endif %}>
+                    <span>Under ₹1,000</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="price" value="1000_10000"
+                        onchange="document.getElementById('priceFilter').submit();"
+                        {% if selected_price == '1000_10000' %}checked{% endif %}>
+                    <span>₹1,000 - ₹10,000</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="price" value="10000_50000"
+                        onchange="document.getElementById('priceFilter').submit();"
+                        {% if selected_price == '10000_50000' %}checked{% endif %}>
+                    <span>₹10,000 - ₹50,000</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="price" value="over_50000"
+                        onchange="document.getElementById('priceFilter').submit();"
+                        {% if selected_price == 'over_50000' %}checked{% endif %}>
+                    <span>Over ₹50,000</span>
+                </label>
+            </form>
+        </div>
+
+           <div class="filter-section">
+            <div class="filter-title">Categories</div>
+            <form method="get" id="categoryFilter">
+            <input type="hidden" name="price" value="{{ selected_price }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
+            <input type="hidden" name="q" value="{{ query }}">
+                <label class="filter-option">
+                    <input type="radio" name="category" value="Electronics"
+                           onchange="document.getElementById('categoryFilter').submit();"
+                           {% if selected_category == 'Electronics' %}checked{% endif %}>
+                    <span>Electronics</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="category" value="Fashion"
+                           onchange="document.getElementById('categoryFilter').submit();"
+                           {% if selected_category == 'Fashion' %}checked{% endif %}>
+                    <span>Fashion</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="category" value="Cosmetics"
+                           onchange="document.getElementById('categoryFilter').submit();"
+                           {% if selected_category == 'Cosmetics' %}checked{% endif %}>
+                    <span>Cosmetics</span>
+                </label>
+
+                <label class="filter-option">
+                    <input type="radio" name="category" value="Gaming"
+                           onchange="document.getElementById('categoryFilter').submit();"
+                           {% if selected_category == 'Gaming' %}checked{% endif %}>
+                    <span>Gaming</span>
+                </label>
+            </form>
+        </div>
+
+            <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
+        </aside>
+
+        <!-- Products Section -->
+        <section class="products-section">
+            <div class="products-header">
+                <div class="results-count">All Products</div>
+               <select class="sort-dropdown"
+                onchange="window.location.href='?sort=' + this.value +
+                '&price={{ selected_price }}&category={{ selected_category }}&q={{ query }}';">
+                    <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+                    <option value="low_to_high" {% if sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="high_to_low" {% if sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                </select>
+            </div>
+            <div class="products-grid">
+                {% for p in products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if p.images.first %}
+                            <img src="{{ p.images.first.image.url }}" alt="{{ p.name }}">
+                        {% else %}
+                            <img src="/static/default_product.jpg" alt="No Image">
+                        {% endif %}
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-category">{{ p.category.name }}</div>
+                        <div class="product-name">{{ p.name }}</div>
+
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(4.5)</span>
+                        </div>
+
+                        <div class="product-price">
+                            <span class="price-current">₹{{ p.price }}</span>
+                        </div>
+
+                        <div class="product-stock">
+                            {% if p.stock > 0 %}
+                                In Stock
+                            {% else %}
+                                Out of Stock
+                            {% endif %}
+                        </div>
+
+                        <a href="{% url 'user:product_detail' p.slug %}">
+                            <button class="add-to-cart-btn">View Details</button>
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                    <h2 style="color: #666; margin-bottom: 20px;">No products found</h2>
+                    <p style="color: #999;">Try adjusting your filters or search terms</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+           <div class="pagination">
+            <nav class="pagination-nav">
+                {% if products.has_previous %}
+                    <a href="?page={{ products.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-btn">Previous</a>
+                {% endif %}
+
+                {% for num in products.paginator.page_range %}
+                    <a href="?page={{ num }}{% if sort %}&sort={{ sort }}{% endif %}"
+                       class="pagination-btn {% if products.number == num %}active{% endif %}">
+                       {{ num }}
+                    </a>
+                {% endfor %}
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}" class="pagination-btn">Next</a>
+                {% endif %}
+            </nav>
+        </div>
+        </section>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Can't Find What You're Looking For?</h2>
+            <p class="cta-description">Contact our support team for personalized assistance</p>
+            <button class="cta-button">  <a href="{% url 'user:contact' %}">Contact</a></button>
+        </div>
+    </section>
+
+    <!-- Footer from user_home.html -->
+    <footer id="contact" class="bg-gray-900 text-white py-8 sm:py-12 lg:py-14 xl:py-16 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-3 xs:px-4 sm:px-5 lg:px-8">
+            <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-5 sm:gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-3 xs:mb-4 sm:mb-5 lg:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-lg xs:text-xl sm:text-2xl"></i>
+                        <span class="text-lg xs:text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-xs xs:text-sm sm:text-base mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-2 xs:space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Quick Links</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Customer Service</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Contact Info</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3 text-gray-400 text-xs xs:text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-6 sm:mt-8 lg:mt-10 xl:mt-12 pt-4 xs:pt-5 sm:pt-6 lg:pt-8 text-center text-gray-400 text-xs xs:text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ================= PROFILE DROPDOWN =================
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // ================= MOBILE MENU =================
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
+        // ================= MOBILE SIDEBAR =================
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+
+            sidebar.classList.toggle("active");
+            overlay.classList.toggle("active");
+        }
+
+        // Clear filters function
+        function clearFilters() {
+            const inputs = document.querySelectorAll('.filter-option input');
+            inputs.forEach(input => {
+                input.checked = false;
+            });
+
+            // Submit the form to clear filters
+            const priceForm = document.getElementById('priceFilter');
+            const categoryForm = document.getElementById('categoryFilter');
+
+            // Remove price parameter
+            const priceInputs = priceForm.querySelectorAll('input[name="price"]');
+            priceInputs.forEach(input => input.removeAttribute('checked'));
+
+            // Remove category parameter
+            const categoryInputs = categoryForm.querySelectorAll('input[name="category"]');
+            categoryInputs.forEach(input => input.removeAttribute('checked'));
+
+            // Submit the form to refresh the page without filters
+            window.location.href = window.location.pathname;
+        }
+
+        // Search functionality
+        document.querySelector('.search-box input')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                this.form.submit();
+            }
+        });
+
+        // Close sidebar when clicking on a filter option on mobile
+        if (window.innerWidth <= 768) {
+            const filterOptions = document.querySelectorAll('.filter-option input');
+            filterOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    // Add a small delay to allow the form to submit before closing
+                    setTimeout(() => {
+                        toggleSidebar();
+                    }, 100);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -13,8 +13,8 @@ class SellerDetails(models.Model):
     phone_number = models.CharField(max_length=15)
     gst_number = models.CharField(max_length=20, blank=True, null=True)
     bank_account = models.CharField(max_length=50, blank=True, null=True)
-    is_verified = models.BooleanField(default=False)  # ✔ Seller approval
-    is_blocked = models.BooleanField(default=False)  # ✔ Additional
+    is_verified = models.BooleanField(default=False)
+    is_blocked=models.BooleanField(default=False)
 
     def __str__(self):
         return self.shop_name
@@ -30,7 +30,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     color = models.CharField(max_length=50, blank=True, null=True)
     size = models.CharField(max_length=50, blank=True, null=True)
-    is_featured=models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

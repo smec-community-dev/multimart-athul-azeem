@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 24px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 0 15px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            margin-right: 15px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 8px;
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff8c00;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .auth-buttons button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 6px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.7rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 0.9rem;
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .nav-center {
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 10px;
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo i {
+                font-size: 22px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+                margin-right: 8px;
+                padding: 5px 8px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 8px;
+            }
+
+            .header-right {
+                gap: 12px;
+            }
+
+            .icon-btn {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+            }
+
+            .auth-buttons button {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+                gap: 6px;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+
+            .mobile-menu-btn {
+                font-size: 18px;
+                margin-right: 6px;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .icon-btn {
+                font-size: 14px;
+            }
+
+            .badge {
+                width: 14px;
+                height: 14px;
+                font-size: 8px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== CHECKOUT STYLES ========== */
+        .checkout-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .checkout-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-option {
+            transition: all 0.3s ease;
+        }
+
+        .address-option:hover {
+            background-color: #f8f9fa;
+            border-color: #f97316;
+        }
+
+        .address-option.selected {
+            background-color: rgba(249, 115, 22, 0.05);
+            border-color: #f97316;
+        }
+
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* ========== FOOTER STYLES ========== */
+        footer {
+            background: #1f2937 !important;
+            color: white;
+            margin-top: auto;
+        }
+
+        footer a {
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #ff8c00;
+        }
+
+        /* Responsive checkout styles */
+        @media (max-width: 1024px) {
+            .checkout-card {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .checkout-card {
+                margin-bottom: 15px;
+            }
+
+            .address-option {
+                padding: 12px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .flex-col-mobile {
+                flex-direction: column;
+            }
+
+            .gap-8 {
+                gap: 20px;
+            }
+
+            .px-6 {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .py-4 {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .text-3xl {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-cols-1-mobile {
+                grid-template-columns: 1fr;
+            }
+
+            .gap-4 {
+                gap: 12px;
+            }
+
+            .p-6 {
+                padding: 15px;
+            }
+
+            .text-xl {
+                font-size: 18px;
+            }
+
+            .text-lg {
+                font-size: 16px;
+            }
+        }
+
+        /* Mobile table styles */
+        .mobile-product-item {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-table {
+                display: none;
+            }
+
+            .mobile-product-item {
+                display: block;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 15px 0;
+            }
+
+            .mobile-product-item:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <!-- Mobile menu button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <nav class="nav-center">
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
+            </nav>
+
+            <div class="header-right">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'admin_panel:login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'admin_panel:register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Checkout Section -->
+    <section class="container mx-auto px-4 py-6 animate-fade-in flex-1">
+        <div class="flex items-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Checkout</h1>
+        </div>
+
+        {% if items %}
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Order Summary -->
+            <div class="lg:w-2/3">
+                <div class="checkout-card bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden mb-6">
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-4 md:px-6 py-3 md:py-4">
+                        <h2 class="text-lg md:text-xl font-bold text-white">Order Summary</h2>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="w-full desktop-table">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="py-3 md:py-4 px-4 md:px-6 text-left">Product</th>
+                                    <th class="py-3 md:py-4 px-4 md:px-6 text-center">Quantity</th>
+                                    <th class="py-3 md:py-4 px-4 md:px-6 text-right">Price</th>
+                                    <th class="py-3 md:py-4 px-4 md:px-6 text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in items %}
+                                <tr class="border-b">
+                                    <td class="py-3 md:py-4 px-4 md:px-6">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-3 md:mr-4 overflow-hidden">
+                                                {% if item.product.images.first %}
+                                                <img src="{{ item.product.images.first.image.url }}"
+                                                     alt="{{ item.product.name }}"
+                                                     class="max-w-full max-h-full object-cover rounded-lg">
+                                                {% else %}
+                                                <i class="fas fa-box text-gray-400 text-lg"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <h3 class="font-semibold text-gray-900 text-sm md:text-base">{{ item.product.name }}</h3>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="py-3 md:py-4 px-4 md:px-6 text-center">
+                                        <span class="bg-orange-500 text-white px-2 md:px-3 py-1 rounded-full font-medium text-sm">{{ item.quantity }}</span>
+                                    </td>
+
+                                    <td class="py-3 md:py-4 px-4 md:px-6 text-right font-semibold text-gray-900">₹{{ item.product.price }}</td>
+                                    <td class="py-3 md:py-4 px-4 md:px-6 text-right font-semibold text-orange-500">₹{{ item.subtotal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Product List -->
+                    <div class="md:hidden p-4">
+                        {% for item in items %}
+                        <div class="mobile-product-item">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
+                                        {% if item.product.images.first %}
+                                        <img src="{{ item.product.images.first.image.url }}"
+                                             alt="{{ item.product.name }}"
+                                             class="max-w-full max-h-full object-cover rounded-lg">
+                                        {% else %}
+                                        <i class="fas fa-box text-gray-400"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900 text-sm">{{ item.product.name|truncatewords:3 }}</h3>
+                                        <p class="text-gray-600 text-xs">Qty: {{ item.quantity }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-orange-500">₹{{ item.subtotal }}</p>
+                                    <p class="text-gray-600 text-xs">₹{{ item.product.price }} each</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="px-4 md:px-6 py-3 md:py-4 bg-gray-50 border-t">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg md:text-xl font-bold text-gray-900">Total: ₹{{ total }}</h3>
+                            <span class="text-xs md:text-sm text-gray-500">{{ items|length }} item{% if items|length > 1 %}s{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping & Payment -->
+            <div class="lg:w-1/3">
+                <div class="checkout-card bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg mb-6">
+                    <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 flex items-center text-gray-900">
+                        <i class="fas fa-truck mr-2 text-orange-500"></i> Shipping Address
+                    </h2>
+
+                    <form method="POST" action="{% url 'user:place_order' %}">
+                        {% csrf_token %}
+                        {% if buy_now %}
+                        <input type="hidden" name="buy_now_slug" value="{{ items.0.product.slug }}">
+                        <input type="hidden" name="buy_now_qty" value="{{ items.0.quantity }}">
+                        {% endif %}
+
+                        <!-- Saved Addresses -->
+                        <div class="mb-4 md:mb-6">
+                            <label class="block text-gray-700 font-medium mb-2 md:mb-3">Choose Address</label>
+
+                            {% if addresses %}
+                                {% for addr in addresses %}
+                                <label class="address-option flex p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl mb-2 md:mb-3 cursor-pointer">
+                                    <input type="radio" name="selected_address" value="{{ addr.id }}" class="mr-2 md:mr-3 mt-1">
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-gray-900 text-sm md:text-base">{{ addr.full_name }} - {{ addr.phone }}</p>
+                                        <p class="text-gray-600 text-xs md:text-sm mt-1">
+                                          {{ addr.street }},
+                                            {% if addr.landmark %}{{ addr.landmark }}, {% endif %}
+                                            {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                                        </p>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-gray-600 text-xs md:text-sm p-3 bg-gray-50 rounded-lg">No saved addresses. Please add a new address below.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- New Address Option -->
+                        <div class="mb-4 md:mb-6">
+                            <label class="address-option flex p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl mb-2 md:mb-3 cursor-pointer">
+                                <input type="radio" name="use_new_address" value="true" id="newAddressRadio" class="mr-2 md:mr-3 mt-1">
+                                <div>
+                                    <p class="font-semibold text-gray-900 text-sm md:text-base">Use New Address</p>
+                                    <p class="text-gray-600 text-xs md:text-sm mt-1">Enter a new shipping address below.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                       <!-- Add New Address -->
+                        <h3 class="text-base md:text-lg font-semibold mb-2 md:mb-3 mt-4 md:mt-6 flex items-center text-gray-900">
+                            <i class="fas fa-plus-circle mr-2 text-orange-500"></i> Add New Address
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Full Name</label>
+                                <input type="text" name="full_name" placeholder="Enter your full name"
+                                       class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Phone Number</label>
+                                <input type="tel" name="phone" placeholder="Enter phone number"
+                                       pattern="[0-9]{10}" title="Enter 10 digit phone number"
+                                       class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                            </div>
+                        </div>
+
+                        <div class="mt-3 md:mt-4">
+                            <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Address Line 1</label>
+                            <input type="text" name="address_line1" placeholder="Enter address line 1"
+                                   class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                        </div>
+
+                        <div class="mt-3 md:mt-4">
+                            <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Address Line 2 (Optional)</label>
+                            <input type="text" name="address_line2" placeholder="Enter address line 2"
+                                   class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4">
+                            <div>
+                                <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">City</label>
+                                <input type="text" name="city" placeholder="Enter city"
+                                       class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Pincode</label>
+                                <input type="text" name="pincode" placeholder="Enter pincode"
+                                       pattern="[0-9]{6}" title="Enter valid 6-digit pincode"
+                                       class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                            </div>
+                        </div>
+
+                        <div class="mt-3 md:mt-4">
+                            <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">State</label>
+                            <input type="text" name="state" placeholder="Enter state"
+                                   class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                        </div>
+
+                        <div class="mt-3 md:mt-4">
+                            <label class="block text-gray-700 text-xs md:text-sm font-medium mb-1 md:mb-2">Country</label>
+                            <input type="text" name="country" placeholder="Enter country" value="India"
+                                   class="w-full border border-gray-300 rounded-lg p-2 md:p-3 form-input focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 new-address-field text-sm md:text-base">
+                        </div>
+
+                        <!-- Payment Method -->
+                        <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 mt-4 md:mt-6 flex items-center text-gray-900">
+                            <i class="fas fa-credit-card mr-2 text-orange-500"></i> Payment Method
+                        </h2>
+
+                        <div class="mb-4 md:mb-6">
+                            <label class="address-option flex items-center p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl mb-2 md:mb-3 cursor-pointer">
+                                <input type="radio" id="cod" name="payment_method" value="cod" class="mr-2 md:mr-3" checked>
+                                <div class="flex items-center">
+                                    <i class="fas fa-money-bill-wave mr-2 text-orange-500 text-base md:text-lg"></i>
+                                    <span class="font-medium text-gray-900 text-sm md:text-base">Cash on Delivery</span>
+                                </div>
+                            </label>
+                            <label class="address-option flex items-center p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl cursor-pointer">
+                                <input type="radio" id="card" name="payment_method" value="card" class="mr-2 md:mr-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-credit-card mr-2 text-orange-500 text-base md:text-lg"></i>
+                                    <span class="font-medium text-gray-900 text-sm md:text-base">Credit/Debit Card</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button type="button" id="placeOrderBtn"
+                                class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 md:py-3 rounded-lg font-bold transition-all flex items-center justify-center btn-animate text-sm md:text-base">
+                            <i class="fas fa-lock mr-2"></i> Place Order
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Summary Card -->
+                <div class="checkout-card bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg">
+                    <h3 class="text-base md:text-lg font-semibold mb-3 md:mb-4 text-gray-900">Order Summary</h3>
+
+                    <div class="space-y-2 md:space-y-3 mb-3 md:mb-4">
+                        {% for item in items %}
+                        <div class="flex justify-between">
+                           <span class="text-gray-600 text-sm md:text-base">{{ item.product.name|truncatewords:2 }} x {{ item.quantity }}</span>
+                            <span class="font-medium text-gray-900 text-sm md:text-base">₹{{ item.subtotal }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="border-t pt-2 md:pt-3">
+                        <div class="flex justify-between mb-1 md:mb-2">
+                            <span class="text-gray-600 text-sm md:text-base">Subtotal</span>
+                            <span class="font-semibold text-gray-900 text-sm md:text-base">₹{{ total }}</span>
+                        </div>
+                        <div class="flex justify-between mb-1 md:mb-2">
+                            <span class="text-gray-600 text-sm md:text-base">Shipping</span>
+                            <span class="font-semibold text-gray-900 text-sm md:text-base">₹0</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-base md:text-lg mt-2 md:mt-3 pt-2 md:pt-3 border-t">
+                            <span class="text-gray-900">Total</span>
+                            <span class="text-orange-500">₹{{ total }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="bg-white p-6 md:p-8 rounded-xl md:rounded-2xl shadow-lg text-center animate-slide-up">
+            <i class="fas fa-shopping-cart text-4xl md:text-5xl text-gray-300 mb-3 md:mb-4"></i>
+            <h2 class="text-lg md:text-xl font-semibold mb-2 text-gray-900">Your cart is empty</h2>
+            <p class="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">Add some products to your cart before checking out.</p>
+            <a href="{% url 'user:user_home' %}" class="inline-block bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 md:py-2 md:px-6 rounded-lg font-medium transition-all btn-animate text-sm md:text-base">
+                Continue Shopping
+            </a>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-8 sm:py-12 lg:py-14 xl:py-16 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-3 xs:px-4 sm:px-5 lg:px-8">
+            <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-5 sm:gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-3 xs:mb-4 sm:mb-5 lg:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-lg xs:text-xl sm:text-2xl"></i>
+                        <span class="text-lg xs:text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-xs xs:text-sm sm:text-base mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-2 xs:space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Quick Links</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Customer Service</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Contact Info</h3>
+                    <ul class="space-y-1 xs:space-y-2 sm:space-y-3 text-gray-400 text-xs xs:text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-6 sm:mt-8 lg:mt-10 xl:mt-12 pt-4 xs:pt-5 sm:pt-6 lg:pt-8 text-center text-gray-400 text-xs xs:text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById("mobileMenu");
+            mobileMenu.classList.toggle("hidden");
+        }
+
+        // Profile dropdown functionality
+        function toggleProfileMenu() {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            // Toggle dropdown status
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+
+        // Close dropdown on clicking anywhere outside
+        document.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // Your existing checkout JavaScript remains the same
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM Loaded");
+
+            const form = document.querySelector("form[action='{% url 'user:place_order' %}']");
+            const placeBtn = document.getElementById("placeOrderBtn");
+
+            placeBtn.addEventListener("click", function () {
+                console.log("Place Order Button Clicked");
+
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                console.log("Selected Payment:", paymentMethod);
+
+                // ===== Address validation =====
+                const selectedAddress = document.querySelector("input[name='selected_address']:checked");
+                const newAddressRadio = document.getElementById("newAddressRadio");
+                const useNewAddress = newAddressRadio && newAddressRadio.checked;
+                const requiredFields = ["full_name", "phone", "address_line1", "city", "state", "pincode", "country"];
+
+                let addressData = {};
+
+                if (selectedAddress) {
+                    // Saved address selected
+                    addressData['selected_address'] = selectedAddress.value;
+                } else if (useNewAddress) {
+                    // New address mode: validate fields
+                    for (let name of requiredFields) {
+                        let field = form.querySelector(`[name='${name}']`);
+                        if (!field.value.trim()) {
+                            alert("Please fill all required address fields.");
+                            field.focus();
+                            return;
+                        }
+                        addressData[name] = field.value.trim();
+                    }
+                } else {
+                    alert("Please select a saved address or choose to use a new address.");
+                    return;
+                }
+
+                console.log("Address data prepared:", addressData);
+
+                if (paymentMethod === "cod") {
+                    console.log("COD Order submitting...");
+                    form.submit();
+                } else {
+                    console.log("Starting Razorpay...");
+
+                    // For card payments, first save address data, then start payment
+                    saveAddressAndStartPayment(addressData);
+                }
+            });
+
+            function saveAddressAndStartPayment(addressData) {
+                console.log("Saving address data...", addressData);
+
+                // Create form data with address information
+                const formData = new FormData();
+
+                // Add ALL address data to formData (both new and saved addresses)
+                for (const [key, value] of Object.entries(addressData)) {
+                    formData.append(key, value);
+                }
+
+                // Add other required data
+                formData.append('amount', calculateTotalAmount());
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+                // Add buy now data if applicable
+                {% if buy_now %}
+                formData.append('buy_now_slug', '{{ items.0.product.slug }}');
+                formData.append('buy_now_qty', '{{ items.0.quantity }}');
+                {% endif %}
+
+                console.log("Sending form data to create_order...");
+
+                // First save address data by calling create_order
+                fetch("{% url 'user:create_order' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    console.log("Address save response status:", response.status);
+                    if (!response.ok) {
+                        throw new Error('Failed to save address data: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Address save response:", data);
+
+                    if (data.error) {
+                        alert("Error saving address: " + data.error);
+                        return;
+                    }
+
+                    // Now start Razorpay payment with the order data
+                    startRazorpayPayment(data);
+                })
+                .catch(err => {
+                    console.error("Address Save Failed:", err);
+                    alert("Error saving address information. Please try again.");
+                });
+            }
+
+            function calculateTotalAmount() {
+                const totalElement = document.querySelector('.text-orange-500');
+                let totalAmount = 0;
+
+                if (totalElement) {
+                    const totalText = totalElement.textContent.replace('₹', '').trim();
+                    totalAmount = parseFloat(totalText) * 100; // Convert to paise
+                    console.log("Total amount in paise:", totalAmount);
+                }
+                return totalAmount;
+            }
+
+            function startRazorpayPayment(orderData) {
+                console.log("Starting Razorpay with order:", orderData);
+
+                if (orderData.error) {
+                    alert("Error creating order: " + orderData.error);
+                    return;
+                }
+
+                if (!orderData.id) {
+                    alert("Invalid order response from server");
+                    return;
+                }
+
+                var options = {
+                    "key": "{{ RAZORPAY_KEY_ID }}",
+                    "amount": orderData.amount,
+                    "currency": "INR",
+                    "name": "ShopHub",
+                    "description": "Order Payment",
+                    "order_id": orderData.id,
+                    "handler": function (response) {
+                        console.log("Payment Success Response:", response);
+                        verifyPaymentAndCreateOrder(response);
+                    },
+                    "prefill": {
+                        "name": "{{ user.get_full_name }}",
+                        "email": "{{ user.email }}",
+                        "contact": "{{ user.phone_number|default:'9999999999' }}"
+                    },
+                    "theme": {
+                        "color": "#ff8c00"
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            console.log("Payment modal closed by user");
+                        }
+                    }
+                };
+
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            }
+
+            function verifyPaymentAndCreateOrder(paymentResponse) {
+                console.log("Verifying payment...", paymentResponse);
+
+                // Show loading state
+                placeBtn.disabled = true;
+                placeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+
+                fetch("{% url 'user:payment_verify' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: new URLSearchParams({
+                        'razorpay_order_id': paymentResponse.razorpay_order_id,
+                        'razorpay_payment_id': paymentResponse.razorpay_payment_id,
+                        'razorpay_signature': paymentResponse.razorpay_signature
+                    })
+                })
+                .then(res => res.json())
+                .then(verificationResult => {
+                    console.log("Verification Result:", verificationResult);
+
+                    if (verificationResult.success) {
+                        // SUCCESS - Redirect to order success page
+                        console.log("Payment verified successfully! Order ID:", verificationResult.order_id);
+                        window.location.href = "{% url 'user:order_success' 0 %}".replace('0', verificationResult.order_id);
+                    } else {
+                        // FAILED - Show error message
+                        console.error("Payment verification failed:", verificationResult.error);
+                        alert("Payment verification failed: " + (verificationResult.error || "Unknown error"));
+
+                        // Reset button
+                        placeBtn.disabled = false;
+                        placeBtn.innerHTML = '<i class="fas fa-lock mr-2"></i> Place Order';
+                    }
+                })
+                .catch(err => {
+                    console.error("Verification Failed:", err);
+                    alert("Payment verification error. Please contact support.");
+
+                    // Reset button
+                    placeBtn.disabled = false;
+                    placeBtn.innerHTML = '<i class="fas fa-lock mr-2"></i> Place Order';
+                });
+            }
+
+            // Add address selection functionality
+            const addressOptions = document.querySelectorAll('.address-option');
+            addressOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    addressOptions.forEach(opt => opt.classList.remove('selected'));
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    // Check the radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                });
+            });
+
+            // Address toggling logic
+            const savedAddressRadios = document.querySelectorAll("input[name='selected_address']");
+            const newAddressRadio = document.getElementById("newAddressRadio");
+            const newAddressFields = document.querySelectorAll(".new-address-field");
+
+            function enableNewAddress() {
+                savedAddressRadios.forEach(radio => radio.checked = false);
+                newAddressFields.forEach(field => {
+                    field.disabled = false;
+                    field.value = '';  // Optional: clear on switch
+                });
+            }
+
+            function disableNewAddress() {
+                if (newAddressRadio) newAddressRadio.checked = false;
+                newAddressFields.forEach(field => {
+                    field.disabled = true;
+                    field.value = '';
+                });
+            }
+
+            // On saved radio change: disable new
+            savedAddressRadios.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    if (this.checked) disableNewAddress();
+                });
+            });
+
+            // On new radio change: enable new + uncheck saved
+            if (newAddressRadio) {
+                newAddressRadio.addEventListener("change", function () {
+                    if (this.checked) enableNewAddress();
+                });
+            }
+
+            // On new field input: auto-select new radio + enable
+            newAddressFields.forEach(field => {
+                field.addEventListener("input", function () {
+                    if (!newAddressRadio || !newAddressRadio.checked) {
+                        if (newAddressRadio) newAddressRadio.checked = true;
+                        enableNewAddress();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

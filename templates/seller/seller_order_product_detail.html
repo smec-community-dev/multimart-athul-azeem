@@ -1318,7 +1318,7 @@
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -1337,7 +1337,7 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'help_support'  %}">
+                             <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -1371,10 +1371,10 @@
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                                <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"  ><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}" class="active"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                                <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"  ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}" class="active"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
 
             </ul>
         </aside>
@@ -1559,10 +1559,10 @@
 
                 <!-- ACTION BUTTONS -->
                 <div class="action-section">
-                    <a href="{% url 'order' %}" class="back-btn">← Back to Orders</a>
+                    <a href="{% url 'seller:order' %}" class="back-btn">← Back to Orders</a>
 
                     {% if order.status != 'Delivered' and order.status != 'Cancelled' %}
-                    <form method="POST" action="{% url 'update_order_status' order.id %}" style="display: flex; gap: 1rem; align-items: center; flex: 1;">
+                    <form method="POST" action="{% url 'seller:update_order_status' order.id %}" style="display: flex; gap: 1rem; align-items: center; flex: 1;">
                         {% csrf_token %}
                         <select name="status" class="status-select" required>
                             <option value="">Update Status</option>
@@ -1604,21 +1604,20 @@
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                           <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                    <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                             <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
 

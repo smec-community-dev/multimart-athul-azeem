@@ -1378,7 +1378,7 @@
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -1397,7 +1397,7 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'help_support'  %}">
+                             <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -1428,10 +1428,10 @@
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                             <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"  class="active"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                             <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"  class="active"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
             </ul>
         </aside>
 
@@ -1600,7 +1600,7 @@
                 <h2 class="modal-title">✏️ Edit Product</h2>
                 <button type="button" class="close-btn" onclick="closeEditModal()">✕</button>
             </div>
-            <form id="editForm" method="POST" action="{% url 'update' product.slug %}" enctype="multipart/form-data">
+            <form id="editForm" method="POST" action="{% url 'seller:update' product.slug %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Product Name</label>
@@ -1666,10 +1666,10 @@
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                                        <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                   <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -1757,13 +1757,13 @@ function closeEditModal() {
 
 function deleteProduct() {
     if (confirm('Are you sure you want to delete this product?')) {
-        window.location.href = "{% url 'delete' product.slug %}";
+        window.location.href = "{% url 'seller:delete' product.slug %}";
     }
 }
 
 function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        window.location.href = "{% url 'logout' %}";
+        window.location.href = "{% url 'admin_panel:logout' %}";
     }
 }
 

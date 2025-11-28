@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from core.models import  User
 from seller.models import SellerDetails, Product
-from  django.conf import  settings
+from django.conf import settings
 from django.utils import timezone
 # ------------------ CUSTOM USER ------------------
 
@@ -46,7 +46,6 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=50)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     order_date = models.DateTimeField(auto_now_add=True)
-    delivery_date=models.DateTimeField(null=True,blank=True)
     pending_date = models.DateTimeField(default=timezone.now)
     processing_date = models.DateTimeField(null=True, blank=True)
     shipped_date = models.DateTimeField(null=True, blank=True)
@@ -76,7 +75,7 @@ class Review(models.Model):
     rating = models.PositiveIntegerField(default=0)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    is_approved = models.BooleanField(default=False)
+    is_approved=models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.product.name} - {self.rating}⭐"
