@@ -182,7 +182,7 @@ def product_detail(request, slug):
     product = Product.objects.filter(slug=slug).first()
 
     if product is None:
-        return redirect("user_home")
+        return redirect("user:user_home")
 
     # Main & Gallery Images
     main_image = product.images.filter(image_type='Main').first()
@@ -238,7 +238,7 @@ def add_to_cart(request, slug):
         product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
         messages.error(request, "Product not found")
-        return redirect("user_home")
+        return redirect("user:user_home")
 
     quantity = int(request.GET.get("quantity", 1))
 
@@ -258,7 +258,7 @@ def add_to_cart(request, slug):
         cart_item.save()
 
     # messages.success(request, f"{product.name} added to cart")
-    return redirect("cart_page")
+    return redirect("user:cart_page")
 
 
 @login_required(login_url="login")
@@ -267,7 +267,7 @@ def buy_now(request, slug):
         product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
         messages.error(request, "Product not found")
-        return redirect("user_home")
+        return redirect("user:user_home")
 
     quantity = int(request.GET.get("quantity", 1))
 
@@ -281,7 +281,7 @@ def buy_now(request, slug):
         cart_item.quantity = quantity
         cart_item.save()
 
-    return redirect("checkout")
+    return redirect("user:checkout")
 
 
 @login_required(login_url="login")
@@ -310,7 +310,7 @@ def update_cart(request, item_id):
     item = Cart.objects.filter(id=item_id, user=request.user).first()
 
     if not item:
-        return redirect("cart_page")
+        return redirect("user:cart_page")
 
     action = request.POST.get("action")
 
@@ -325,12 +325,12 @@ def update_cart(request, item_id):
         else:
             item.delete()
 
-    return redirect("cart_page")
+    return redirect("user:cart_page")
 
 
 def remove_cart_item(request, item_id):
     Cart.objects.filter(id=item_id, user=request.user).delete()
-    return redirect("cart_page")
+    return redirect("user:cart_page")
 
 from .models import OrderItem  # already imported at top
 @login_required
@@ -346,12 +346,12 @@ def add_review(request, slug):
 
     if not has_bought:
         messages.error(request, "You can review only products you have purchased and are delivered.")
-        return redirect('product_detail', slug=slug)
+        return redirect('user:product_detail', slug=slug)
 
     # Check if user already reviewed
     if Review.objects.filter(user=request.user, product=product).exists():
         messages.error(request, "You already reviewed this product.")
-        return redirect('product_detail', slug=slug)
+        return redirect('user:product_detail', slug=slug)
 
     # Submit review
     if request.method == "POST":
@@ -366,9 +366,9 @@ def add_review(request, slug):
         )
 
         messages.success(request, "Review submitted successfully!")
-        return redirect('product_detail', slug=slug)
+        return redirect('user:product_detail', slug=slug)
 
-    return redirect('product_detail', slug=slug)
+    return redirect('user:product_detail', slug=slug)
 
 
 
@@ -433,7 +433,7 @@ def category_products(request, slug):
 def add_to_wishlist(request, slug):
     product = Product.objects.filter(slug=slug).first()
     if product is None:
-        return redirect("user_home")
+        return redirect("user:user_home")
 
     wishlist_item = Wishlist.objects.filter(user=request.user, product=product)
 
@@ -493,13 +493,13 @@ def checkout(request):
             })
         except Product.DoesNotExist:
             messages.error(request, "Product not found")
-            return redirect("cart_page")
+            return redirect("user:cart_page")
 
     # NORMAL CART CHECKOUT
     items = Cart.objects.filter(user=request.user)
     if not items.exists():
         messages.error(request, "Your cart is empty")
-        return redirect("cart_page")
+        return redirect("user:cart_page")
 
     total = 0
     for item in items:
@@ -734,7 +734,7 @@ def payment_verify(request):
 @login_required(login_url="admin_panel:login")
 def clear_wishlist(request):
     Wishlist.objects.filter(user=request.user).delete()
-    return redirect('wishlist_page')   # change to your wishlist page URL name
+    return redirect('user:wishlist_page')   # change to your wishlist page URL name
 
 @login_required(login_url="admin_panel:login")
 def place_order(request):
@@ -754,7 +754,7 @@ def place_order(request):
                 country = 'India'
             except Address.DoesNotExist:
                 messages.error(request, "Invalid address selected.")
-                return redirect('checkout')
+                return redirect('user:checkout')
         else:
             # New address: strip all to avoid whitespace issues
             full_name = request.POST.get("full_name", "").strip()
@@ -769,7 +769,7 @@ def place_order(request):
             # Validate new address fields
             if not all([full_name, phone, address_line1, city, state, pincode]):
                 messages.error(request, "Please fill all required address fields.")
-                return redirect('checkout')
+                return redirect('user:checkout')
 
         # Final formatted shipping address string
         shipping_address = f"{full_name}, {phone}, {address_line1}"
@@ -805,13 +805,13 @@ def place_order(request):
                 unit_price=product.price
             )
 
-            return redirect("order_success", order_id=order.id)
+            return redirect("user:order_success", order_id=order.id)
 
         # NORMAL CART MODE
         items = Cart.objects.filter(user=request.user)
         if not items.exists():
             messages.error(request, "No items in cart.")
-            return redirect("cart_page")
+            return redirect("user:cart_page")
 
         total = sum(item.product.price * item.quantity for item in items)
 
@@ -833,9 +833,9 @@ def place_order(request):
             )
 
         items.delete()
-        return redirect("order_success", order_id=order.id)
+        return redirect("user:order_success", order_id=order.id)
 
-    return redirect("cart_page")
+    return redirect("user:cart_page")
 
 def order_success(request, order_id):
     order = Order.objects.get(id=order_id)
@@ -908,7 +908,7 @@ def cancel_order(request, order_id):
     else:
         messages.error(request, "Order cannot be cancelled now.")
 
-    return redirect("my_orders")
+    return redirect("user:my_orders")
 
 
 
@@ -928,7 +928,7 @@ def manage_address(request):
         address.save()
 
         messages.success(request, "Address updated successfully!")
-        return redirect("profile")
+        return redirect("user:profile")
 
     return render(request, "user/profile.html", {"address": address})
 
@@ -952,9 +952,9 @@ def update_profile(request):
         user.save()
 
         messages.success(request, "Profile updated successfully!")
-        return redirect("profile")
+        return redirect("user:profile")
 
-    return redirect("profile")
+    return redirect("user:profile")
 
 @login_required(login_url="admin_panel:login")
 def change_password(request):

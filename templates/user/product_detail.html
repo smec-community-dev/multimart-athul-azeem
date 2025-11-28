@@ -614,26 +614,26 @@
 
             <!-- Navigation for medium screens and up -->
             <nav class="nav-center">
-                <a href="{% url 'user_home' %}">Home</a>
-                <a href="{% url 'products_list' %}">Products</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'deals_and_offers' %}">Deals&Offers</a>
-                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
             </nav>
 
             <!-- Search box -->
-            <form method="GET" action="{% url 'user_home' %}" class="search-box">
+            <form method="GET" action="{% url 'user:user_home' %}" class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
             </form>
 
             <div class="header-right">
-                <a href="{% url 'wishlist_page' %}" class="icon-btn">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
                     <i class="fas fa-heart"></i>
                     <span class="badge">{{ wishlist_count }}</span>
                 </a>
 
-                <a href="{% url 'cart_page' %}" class="icon-btn">
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge">{{ cart_count }}</span>
                 </a>
@@ -658,14 +658,14 @@
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'profile' %}" class="dropdown-item">
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
                             <span class="dropdown-item-icon">👤</span>
                             <span class="dropdown-item-label">My Profile</span>
                         </a>
 
                         <div class="dropdown-divider"></div>
 
-                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
                             <span class="dropdown-item-icon">🚪</span>
                             <span class="dropdown-item-label">Logout</span>
                         </a>
@@ -673,10 +673,10 @@
                 </div>
                 {% else %}
                 <div class="auth-buttons">
-                    <a href="{% url 'login' %}">
+                    <a href="{% url 'admin_panel:login' %}">
                         <button class="login-btn">Login</button>
                     </a>
-                    <a href="{% url 'register' %}">
+                    <a href="{% url 'admin_panel:register' %}">
                         <button class="register-btn">Register</button>
                     </a>
                 </div>
@@ -688,14 +688,14 @@
         <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
             <div class="container mx-auto px-4 py-4">
                 <nav class="flex flex-col space-y-4">
-                    <a href="{% url 'user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
-                    <a href="{% url 'products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
-                    <a href="{% url 'about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
-                    <a href="{% url 'deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
-                    <a href="{% url 'contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
 
                     <!-- Mobile search box -->
-                    <form method="GET" action="{% url 'user_home' %}" class="pt-4">
+                    <form method="GET" action="{% url 'user:user_home' %}" class="pt-4">
                         <div class="flex">
                             <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
                                    class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
@@ -715,11 +715,11 @@
         <section class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
                 <nav class="flex space-x-2 text-xs md:text-sm text-gray-600 overflow-x-auto">
-                    <a href="{% url 'user_home' %}" class="hover:text-orange-500 whitespace-nowrap">Home</a>
+                    <a href="{% url 'user:user_home' %}" class="hover:text-orange-500 whitespace-nowrap">Home</a>
                     <span class="text-gray-400">/</span>
-                    <a href="{% url 'products_list' %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.category.name }}</a>
+                    <a href="{% url 'user:products_list' %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.category.name }}</a>
                     <span class="text-gray-400">/</span>
-                    <a href="{% url 'category_products' product.subcategory.category.slug %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.name }}</a>
+                    <a href="{% url 'user:category_products' product.subcategory.category.slug %}" class="hover:text-orange-500 whitespace-nowrap">{{ product.subcategory.name }}</a>
                     <span class="text-gray-400">/</span>
                     <span class="text-gray-900 whitespace-nowrap truncate max-w-[150px]">{{ product.name }}</span>
                 </nav>
@@ -858,7 +858,7 @@
                             <!-- ADD TO CART BUTTON -->
                             <button
                                 id="addCartMain"
-                                data-url="{% url 'add_to_cart' product.slug %}"
+                                data-url="{% url 'user:add_to_cart' product.slug %}"
                                 class="flex-1 px-4 md:px-6 lg:px-8 py-3 md:py-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium text-base md:text-lg flex items-center justify-center btn-primary">
                                 <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
                             </button>
@@ -866,13 +866,13 @@
                             <!-- BUY NOW BUTTON -->
                             <button
                                 id="buyNowBtn"
-                                data-url="{% url 'checkout' %}?buy={{ product.slug }}"
+                                data-url="{% url 'user:checkout' %}?buy={{ product.slug }}"
                                 class="flex-1 px-4 md:px-6 lg:px-8 py-3 md:py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-medium text-base md:text-lg flex items-center justify-center btn-secondary">
                                 Buy Now
                             </button>
                         </div>
                         <div class="flex space-x-4 md:space-x-6 text-gray-600 mt-4">
-                            <a href="{% url 'add_to_wishlist' product.slug %}" class="flex items-center space-x-2 hover:text-orange-500 transition text-sm md:text-base">
+                            <a href="{% url 'user:add_to_wishlist' product.slug %}" class="flex items-center space-x-2 hover:text-orange-500 transition text-sm md:text-base">
                                 <i class="{% if in_wishlist %}fas fa-heart text-orange-500{% else %}far fa-heart text-gray-600{% endif %} text-lg md:text-xl"></i>
                                 <span class="{% if in_wishlist %}text-orange-500{% endif %}">
                                     {% if in_wishlist %}Wishlisted{% else %}Add to Wishlist{% endif %}
@@ -972,7 +972,7 @@
                             <p class="text-gray-500 mt-2 md:mt-3 text-sm md:text-base">You can review only after product is delivered.</p>
                         {% else %}
                             <p class="text-red-500 mt-2 md:mt-3 text-sm md:text-base">
-                                Please <a href="{% url 'login' %}" class="text-orange-500 hover:underline">Login</a> to review.
+                                Please <a href="{% url 'admin_panel:login' %}" class="text-orange-500 hover:underline">Login</a> to review.
                             </p>
                         {% endif %}
                     </div>
@@ -1007,7 +1007,7 @@
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 text-center">You May Also Like</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     {% for p in related_products %}
-                        <a href="{% url 'product_detail' p.slug %}"
+                        <a href="{% url 'user:product_detail' p.slug %}"
                            class="bg-white rounded-lg md:rounded-xl shadow-sm hover:shadow-lg transition group block">
                             <div class="relative h-32 md:h-48 bg-gray-100 overflow-hidden">
                                 <img src="{{ p.images.first.image.url }}"
@@ -1047,20 +1047,20 @@
                 <div class="animate-on-scroll">
                     <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Quick Links</h3>
                     <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Home</a></li>
-                        <li><a href="{% url 'products_list' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Products</a></li>
-                        <li><a href="{% url 'about' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Contact</a></li>
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="animate-on-scroll">
                     <h3 class="text-sm xs:text-base sm:text-lg font-bold mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Customer Service</h3>
                     <ul class="space-y-1 xs:space-y-2 sm:space-y-3">
-                        <li><a href="{% url 'help_center' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Help Center</a></li>
-                        <li><a href="{% url 'returns' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Returns</a></li>
-                        <li><a href="{% url 'shipping_info' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Shipping Info</a></li>
-                        <li><a href="{% url 'privacy_policy' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Privacy Policy</a></li>
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-xs xs:text-sm sm:text-base">Privacy Policy</a></li>
                     </ul>
                 </div>
 
