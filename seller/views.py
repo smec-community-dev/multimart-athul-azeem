@@ -198,7 +198,7 @@ def add_product(request):
                 image_type="Gallery"
             )
 
-        return redirect("seller_dashboard")
+        return redirect("seller:seller_dashboard")
 
 
 
