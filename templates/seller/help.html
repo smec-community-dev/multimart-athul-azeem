@@ -827,10 +827,9 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                           <li><a href="{% url 'seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" ><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                <li><a href="{% url 'seller:add' %}" ><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
                 <li><a href="help-support.html" class="active"><span>❓</span> Help & Support</a></li>
             </ul>
         </div>
@@ -857,7 +856,7 @@
                 </div>
 
 
-                <a href="{% url 'seller_guide' %}">
+                <a href="{% url 'seller:seller_guide' %}">
                       <div class="help-card" onclick="alert('Opening seller guide...')">
                     <span class="help-card-icon">📚</span>
                     <h3>Seller Guide</h3>
@@ -1032,10 +1031,10 @@
                         Empowering sellers to reach customers worldwide with our innovative e-commerce platform.
                     </p>
                     <div class="social-links">
-                        <a href="#" aria-label="Facebook">f</a>
-                        <a href="#" aria-label="Twitter">t</a>
-                        <a href="#" aria-label="Instagram">i</a>
-                        <a href="#" aria-label="LinkedIn">in</a>
+                                      <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
 
@@ -1043,10 +1042,10 @@
                     <h3>For Sellers</h3>
                     <ul>
 
-                <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li
+                <li><a href="% url 'seller:seller_dashboard' %" class="active"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
 
@@ -1054,33 +1053,14 @@
                     <h3>Support</h3>
                     <ul>
                         <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Support</a></li>
-                        <li><a href="#">Community Forum</a></li>
-                        <li><a href="#">API Documentation</a></li>
-                        <li><a href="#">Status Page</a></li>
+                     <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Partnerships</a></li>
-                        <li><a href="#">Legal</a></li>
-                    </ul>
-                </div>
-            </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2023 ShopHub. All rights reserved.</p>
-                <p>
-                    <a href="#">Privacy Policy</a> |
-                    <a href="#">Terms of Service</a> |
-                    <a href="#">Cookie Policy</a>
-                </p>
-            </div>
         </div>
     </div>
 

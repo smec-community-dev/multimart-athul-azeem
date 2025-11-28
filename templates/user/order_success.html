@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully - ShopHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: #ff8c00;
+            font-size: 24px;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 0 15px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .nav-center a:hover {
+            color: #ff8c00;
+        }
+
+        .nav-center a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff8c00;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 200px;
+            margin-right: 15px;
+        }
+
+        .search-box i {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            margin-left: 8px;
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #bbb;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            color: #ff8c00;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff8c00;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .auth-buttons button {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #333;
+        }
+
+        .login-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .register-btn {
+            background: #ff8c00;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-toggle {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 6px;
+            background: rgba(255, 127, 50, 0.1);
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .profile-toggle:hover {
+            background: rgba(255, 127, 50, 0.2);
+            border-color: #ff7f32;
+        }
+
+        .profile-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            line-height: 1;
+        }
+
+        .profile-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 220px;
+            margin-top: 6px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            border: 1px solid #e6e6e6;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(255, 178, 115, 0.1), rgba(255, 127, 50, 0.1));
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .dropdown-header-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-header-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb273, #ff7f32);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .dropdown-header-info h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .dropdown-header-info p {
+            font-size: 0.7rem;
+            color: #777;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 127, 50, 0.1);
+            border-left-color: #ff7f32;
+            color: #ff7f32;
+        }
+
+        .dropdown-item-icon {
+            font-size: 0.9rem;
+            width: 18px;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-label {
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e6e6e6;
+            margin: 5px 0;
+        }
+
+        .dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #f44336;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .nav-center {
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 10px;
+                height: 56px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logo i {
+                font-size: 22px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+                margin-right: 8px;
+                padding: 5px 8px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                margin-right: 8px;
+            }
+
+            .header-right {
+                gap: 12px;
+            }
+
+            .icon-btn {
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .search-box {
+                display: none;
+            }
+
+            .header-right {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                gap: 6px;
+            }
+
+            .auth-buttons button {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+                gap: 6px;
+            }
+
+            .logo i {
+                font-size: 20px;
+            }
+
+            .mobile-menu-btn {
+                font-size: 18px;
+                margin-right: 6px;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .icon-btn {
+                font-size: 14px;
+            }
+
+            .badge {
+                width: 14px;
+                height: 14px;
+                font-size: 8px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== ORDER SUCCESS STYLES ========== */
+        .success-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .success-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-animate {
+            transition: all 0.3s ease;
+        }
+
+        .btn-animate:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* ========== FOOTER STYLES ========== */
+        footer {
+            background: #1f2937 !important;
+            color: white;
+            margin-top: auto;
+        }
+
+        footer a {
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #ff8c00;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <!-- Mobile menu button - visible only on small screens -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="logo">
+                <i class="fas fa-shopping-bag"></i>
+                <span>ShopHub</span>
+            </div>
+
+            <!-- Navigation for medium screens and up -->
+            <nav class="nav-center">
+                <a href="{% url 'user:user_home' %}">Home</a>
+                <a href="{% url 'user:products_list' %}">Products</a>
+                <a href="{% url 'user:about' %}">About</a>
+                <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
+                <a href="{% url 'user:contact' %}">Contact</a>
+            </nav>
+
+            <!-- Search box -->
+            <form method="GET" action="{% url 'user:user_home' %}" class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
+            </form>
+
+            <div class="header-right">
+                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
+                    <i class="fas fa-heart"></i>
+                    <span class="badge">{{ wishlist_count }}</span>
+                </a>
+
+                <a href="{% url 'user:cart_page' %}" class="icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge">{{ cart_count }}</span>
+                </a>
+
+                {% if user.is_authenticated %}
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-toggle" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-header-content">
+                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
+                                <div class="dropdown-header-info">
+                                    <h3>{{ user.username }}</h3>
+                                    <p>{{ user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'user:profile' %}" class="dropdown-item">
+                            <span class="dropdown-item-icon">👤</span>
+                            <span class="dropdown-item-label">My Profile</span>
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
+                            <span class="dropdown-item-icon">🚪</span>
+                            <span class="dropdown-item-label">Logout</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="auth-buttons">
+                    <a href="{% url 'admin_panel:login' %}">
+                        <button class="login-btn">Login</button>
+                    </a>
+                    <a href="{% url 'admin_panel:register' %}">
+                        <button class="register-btn">Register</button>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mobile menu - hidden by default -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
+                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
+                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
+                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
+                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
+
+                    <!-- Mobile search box -->
+                    <form method="GET" action="{% url 'user:user_home' %}" class="pt-4">
+                        <div class="flex">
+                            <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
+                                   class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Order Success Section -->
+    <section class="container mx-auto px-4 py-8 animate-fade-in flex-1">
+        <div class="max-w-4xl mx-auto">
+            <!-- Success Header -->
+            <div class="success-card bg-white rounded-2xl shadow-lg p-8 mb-6 text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-green-500 text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-3">Order Placed Successfully 🎉</h1>
+                <p class="text-gray-600 text-lg">Thank you for your purchase. Your order has been confirmed and will be processed soon.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - Order Details & Shipping -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Order Details -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-receipt mr-2 text-orange-500"></i> Order Details
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-600 text-sm">Order ID</p>
+                                <p class="font-semibold text-gray-900">#ORD-{{ order.id }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Date & Time</p>
+                                <p class="font-semibold text-gray-900">{{ order.order_date|date:"M d, Y" }} at {{ order.order_date|time:"g:i A" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Payment Method</p>
+                                <p class="font-semibold text-gray-900">{{ order.payment_method }}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600 text-sm">Order Status</p>
+                                <p class="font-semibold
+                                    {% if order.status == 'Delivered' %}text-green-500
+                                    {% elif order.status == 'Cancelled' %}text-red-500
+                                    {% else %}text-orange-500{% endif %}">
+                                    {{ order.status }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Ordered -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-box mr-2 text-orange-500"></i> Items Ordered
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="py-3 px-4 text-left">Product</th>
+                                        <th class="py-3 px-4 text-center">Quantity</th>
+                                        <th class="py-3 px-4 text-right">Unit Price</th>
+                                        <th class="py-3 px-4 text-right">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                    <tr class="border-b">
+                                        <td class="py-4 px-4">
+                                            <div class="flex items-center">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                                                    {% with item.product.images.all|first as main_image %}
+                                                        {% if main_image %}
+                                                        <img src="{{ main_image.image.url }}"
+                                                             alt="{{ item.product.name }}"
+                                                             class="max-w-full max-h-full object-cover rounded-lg">
+                                                        {% else %}
+                                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                                            <i class="fas fa-image"></i>
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900">{{ item.product.name }}</h3>
+                                                    {% if item.product.color %}
+                                                    <p class="text-sm text-gray-500">{{ item.product.color }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-4 text-center">
+                                            <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-medium">{{ item.quantity }}</span>
+                                        </td>
+                                        <td class="py-4 px-4 text-right font-semibold text-gray-900">₹{{ item.unit_price }}</td>
+                                        <td class="py-4 px-4 text-right font-semibold text-orange-500">₹{% widthratio item.unit_price 1 item.quantity %}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-900">
+                            <i class="fas fa-map-marker-alt mr-2 text-orange-500"></i> Shipping Address
+                        </h2>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                      <p class="font-semibold text-gray-900 mb-2">{{ address_parts.0 }}</p>     <!-- Full name -->
+                        <p class="text-gray-600">{{ address_parts.1 }}</p>                        <!-- Phone -->
+                        <p class="text-gray-600">{{ address_parts.2 }}</p>                        <!-- Address Line 1 -->
+                        {% if address_parts.3 %}<p class="text-gray-600">{{ address_parts.3 }}</p>{% endif %}  <!-- Address Line 2 (conditional) -->
+                        <p class="text-gray-600">
+                            {% if address_parts.4 %}{{ address_parts.4 }}{% if address_parts.5 %}, {% endif %}{% endif %}
+                            {{ address_parts.5 }} - {{ address_parts.6 }}                           <!-- City, State - Pincode (conditional comma) -->
+                        </p>
+                        <p class="text-gray-600">{{ address_parts.7 }}</p>                          <!-- Country -->
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Price Summary & Actions -->
+                <div class="space-y-6">
+                    <!-- Price Summary -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900">Price Summary</h3>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span class="font-medium text-gray-900">₹{{ order.total_amount }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping Fee</span>
+                                <span class="font-medium text-gray-900">₹0</span>
+                            </div>
+                            <div class="flex justify-between">
+<!--                                <span class="text-gray-600">Tax (18%)</span>-->
+<!--                                <span class="font-medium text-gray-900">₹{% widthratio order.total_amount 100 18 %}</span>-->
+                            </div>
+                        </div>
+                        <div class="border-t pt-3">
+                            <div class="flex justify-between font-bold text-lg">
+                                <span class="text-gray-900">Total Paid</span>
+                                <span class="text-orange-500">₹{{ order.total_amount }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+<!--                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">-->
+<!--                        <div class="flex flex-col space-y-3">-->
+<!--                            <button class="w-full border-2 border-orange-500 text-orange-500 py-3 rounded-lg font-semibold transition-all flex items-center justify-center btn-animate">-->
+<!--                                <i class="fas fa-download mr-2"></i> Download Invoice-->
+<!--                            </button>-->
+<!--                            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-all flex items-center justify-center btn-animate">-->
+<!--                                <i class="fas fa-shipping-fast mr-2"></i> Track Order-->
+<!--                            </button>-->
+<!--                            <a href="{% url 'user:user_home' %}" class="w-full text-center text-orange-500 hover:text-orange-600 py-3 font-semibold transition-all btn-animate">-->
+<!--                                Continue Shopping-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                    <!-- Support Info -->
+                    <div class="success-card bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-900">Need Help?</h3>
+                        <p class="text-gray-600 mb-4">If you have any questions about your order, our customer service team is here to help.</p>
+                        <div class="flex items-center text-gray-600">
+                            <i class="fas fa-phone-alt mr-2 text-orange-500"></i>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 mt-2">
+                            <i class="fas fa-envelope mr-2 text-orange-500"></i>
+                            <span>support@shophub.com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-10 lg:py-16 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                <div class="animate-on-scroll">
+                    <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                        <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
+                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
+                    </div>
+                    <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="flex space-x-3 sm:space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white transition text-sm sm:text-base"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Quick Links</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:user_home' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Home</a></li>
+                        <li><a href="{% url 'user:products_list' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Products</a></li>
+                        <li><a href="{% url 'user:about' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">About Us</a></li>
+                        <li><a href="{% url 'user:contact' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Customer Service</h3>
+                    <ul class="space-y-2 sm:space-y-3">
+                        <li><a href="{% url 'user:help_center' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="{% url 'user:returns' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Returns</a></li>
+                        <li><a href="{% url 'user:shipping_info' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Shipping Info</a></li>
+                        <li><a href="{% url 'user:privacy_policy' %}" class="text-gray-400 hover:text-white transition text-sm sm:text-base">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="animate-on-scroll">
+                    <h3 class="text-base sm:text-lg font-bold mb-4 sm:mb-6">Contact Info</h3>
+                    <ul class="space-y-2 sm:space-y-3 text-gray-400 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-2 sm:mr-3 mt-0.5 sm:mt-1 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>123 Commerce Street, Mumbai, India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
+                            <span>info@shophub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
+                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+    // ===== Make function global so onclick works =====
+    function toggleProfileMenu() {
+        const menu = document.getElementById("dropdownMenu");
+        const parent = document.getElementById("profileDropdown");
+        if (menu && parent) {
+            parent.classList.toggle("active");
+            menu.classList.toggle("show");
+        }
+    }
+
+    // Mobile menu functionality
+    function toggleMobileMenu() {
+        const mobileMenu = document.getElementById("mobileMenu");
+        mobileMenu.classList.toggle("hidden");
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Close dropdown on outside click
+        window.addEventListener("click", function(e) {
+            const menu = document.getElementById("dropdownMenu");
+            const parent = document.getElementById("profileDropdown");
+
+            if (menu && parent && !parent.contains(e.target)) {
+                menu.classList.remove("show");
+                parent.classList.remove("active");
+            }
+        });
+
+        // Add animation to success elements
+        const successElements = document.querySelectorAll('.success-card');
+        successElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 0.1}s`;
+        });
+
+    });
+</script>
+
+</body>
+</html>

@@ -794,7 +794,7 @@
                         <span class="input-icon">👥</span>
                         <select id="role" name="role" required>
                             <option value="">Select your role</option>
-                            <option value="customer">Customer</option>
+                            <option value="user">Customer</option>
                             <option value="seller">Seller</option>
                             <option value="admin">Admin</option>
                         </select>
@@ -958,7 +958,7 @@
             </div>
 
             <div class="form-footer">
-                <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a></p>
+                <p>Already have an account? <a href="{% url 'admin_panel:login' %}">Sign in here</a></p>
             </div>
         </div>
     </div>

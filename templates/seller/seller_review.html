@@ -1134,7 +1134,7 @@
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -1153,7 +1153,7 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'help_support'  %}">
+                             <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -1182,11 +1182,11 @@
     <div class="container">
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="{% url 'seller_dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}" class="{% if request.resolver_match.url_name == 'orders' %}active{% endif %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:seller_dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}" class="{% if request.resolver_match.url_name == 'products' %}active{% endif %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}" class="{% if request.resolver_match.url_name == 'orders' %}active{% endif %}"><span>🛒</span> Orders</a></li>
 
-                <li><a href="{% url 'review' %}" class="active"><span>⭐</span> Reviews</a></li>
+                <li><a href="{% url 'seller:review' %}" class="active"><span>⭐</span> Reviews</a></li>
 
             </ul>
         </div>
@@ -1291,7 +1291,7 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Customer Reviews</div>
-                    <a href="{% url 'download_reviews_csv' %}" class="btn-primary">⬇️ Download CSV</a>
+                    <a href="{% url 'seller:download_reviews_csv' %}" class="btn-primary">⬇️ Download CSV</a>
                 </div>
 
                 <!-- FILTER FORM -->
@@ -1332,7 +1332,7 @@
                         </div>
                         <button type="submit" class="btn-primary">Apply Filter</button>
                         {% if search_query or rating_filter or product_filter or sort_by != "newest" %}
-                        <a href="{% url 'review' %}" class="btn-small" style="background:#eee;color:#666;padding:10px 18px;border-radius:8px;">Clear</a>
+                        <a href="{% url 'seller:review' %}" class="btn-small" style="background:#eee;color:#666;padding:10px 18px;border-radius:8px;">Clear</a>
                         {% endif %}
                     </div>
                 </form>
@@ -1375,7 +1375,7 @@
                             <tr>
                                 <td colspan="6" style="text-align:center;padding:40px;color:var(--light-text);">
                                     {% if search_query or rating_filter or product_filter %}
-                                        No reviews match your filters. <a href="{% url 'review' %}" style="color:var(--primary-color);">Clear filters</a>
+                                        No reviews match your filters. <a href="{% url 'seller:review' %}" style="color:var(--primary-color);">Clear filters</a>
                                     {% else %}
                                         No reviews yet.
                                     {% endif %}
@@ -1502,10 +1502,10 @@
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                                   <li><a href="{% url 'seller_dashboard' %}"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                                   <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                 </ul>
             </div>
 
@@ -1513,11 +1513,10 @@
             <div class="footer-section">
                 <h3>Customer Service</h3>
                 <ul>
-                    <li><a href="#">Shipping Policy</a></li>
-                    <li><a href="#">Returns & Refunds</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Track Your Order</a></li>
+                     <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                 </ul>
             </div>
 
