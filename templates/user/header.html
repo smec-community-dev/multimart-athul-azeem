@@ -4,6 +4,8 @@
         <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
             <i class="fas fa-bars"></i>
         </button>
+        <div id="user-toast" style="position: fixed; top: 20px; right: 20px; display:none; padding:12px; border-radius:6px; background:#0b79ff; color:#fff; z-index:9999;"></div>
+
 
         <div class="logo">
             <i class="fas fa-shopping-bag"></i>
@@ -122,3 +124,25 @@
         </div>
     </div>
 </header>
+
+
+
+<script>
+const userSocket = new WebSocket(
+  (location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/user/notifications/"
+);
+
+userSocket.onmessage = function(e) {
+  const data = JSON.parse(e.data);
+  const title = data.title || "Notification";
+  const body = data.body || "";
+  showToast(title + " — " + body);
+};
+
+function showToast(text) {
+  const el = document.getElementById("user-toast");
+  el.innerText = text;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 4000);
+}
+</script>

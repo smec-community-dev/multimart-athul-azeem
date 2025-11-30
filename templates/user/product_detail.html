@@ -949,7 +949,7 @@
                         {% if user.is_authenticated and has_delivered_order %}
                             {% if not user_review_exists %}
                                 <h3 class="font-semibold mb-2 text-sm md:text-base">Write a Review</h3>
-                                <form method="POST" action="{% url 'add_review' product.slug %}">
+                                <form method="POST" action="{% url 'user:add_review' product.slug %}">
                                     {% csrf_token %}
                                     <label class="block mb-1 text-sm md:text-base">Rating:</label>
                                     <select name="rating" class="border rounded p-2 w-28 md:w-32 mb-2 md:mb-3 text-sm md:text-base">

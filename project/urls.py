@@ -23,7 +23,7 @@ def redirect_to_user_home(request):
     return redirect("user:user_home")   # USER HOME
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('hello/', admin.site.urls),
 
     # Root redirects to user home
     path("", redirect_to_user_home, name="root"),
@@ -40,6 +40,9 @@ urlpatterns = [
 
     # GOOGLE / ALLAUTH
     path("accounts/", include("allauth.urls")),
+
+    path('notifications/', include('notifications.urls', namespace='not')),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
