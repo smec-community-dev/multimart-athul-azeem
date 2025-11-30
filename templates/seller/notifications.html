@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Dashboard - ShopHub</title>
+    <title>Notifications - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -293,6 +293,7 @@
             animation: slideInLeft 0.5s ease;
             overflow-y: auto;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
         }
         .sidebar-overlay {
             display: none;
@@ -335,6 +336,7 @@
             padding: 24px;
             overflow-y: auto;
             max-width: 100%;
+            min-width: 0;
         }
         .header {
             margin-bottom: 24px;
@@ -349,50 +351,123 @@
             color: var(--light-text);
             font-size: 0.95rem;
         }
-        /* ======================== STATS GRID ======================== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            animation: fadeIn 0.6s ease;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
-        .stat-card {
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== FILTER BAR ======================== */
+        .filter-bar {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 24px;
             border-radius: 12px;
             box-shadow: var(--shadow-light);
-            border-left: 4px solid var(--primary-color);
-            transition: all 0.3s ease;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+            border: 1px solid var(--border-color);
         }
-        .stat-card:nth-child(2) { border-left-color: var(--success-color); }
-        .stat-card:nth-child(3) { border-left-color: var(--warning-color); }
-        .stat-card:nth-child(4) { border-left-color: var(--accent-color); }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-medium);
+        .filter-bar form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 16px;
         }
-        .stat-label {
-            color: var(--light-text);
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .stat-value {
-            font-family: var(--font-heading);
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 8px;
-        }
-        .stat-change {
-            font-size: 0.8rem;
-            color: var(--success-color);
+        .filter-group label {
+            font-size: 0.75rem;
             font-weight: 600;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .stat-change.negative { color: var(--danger-color); }
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+        }
+        .filter-group input:hover,
+        .filter-group select:hover {
+            border-color: #d0d0d0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1), 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .filter-submit {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            min-height: 48px;
+        }
+        .filter-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 127, 50, 0.3);
+        }
+        .filter-bar .filter-display {
+            margin-left: auto;
+            align-self: center;
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 127, 50, 0.2);
+        }
+        .clear-filter {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+        .clear-filter:hover { background: #d32f2f; }
         /* ======================== SECTION ======================== */
         .section {
             background: var(--card-bg);
@@ -418,197 +493,131 @@
             font-weight: 700;
             color: var(--text-color);
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
-        }
-        .btn-primary a {
-            color: white;
-        }
         /* ======================== TABLE ======================== */
         .table-container {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin: -5px;
-            padding: 5px;
+            margin: 0;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px var(--border-color);
         }
         table {
-            width: auto;
-            min-width: 600px;
-            margin: 0 auto;
+            width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
-        thead { background-color: rgba(255, 127, 50, 0.05); }
         th {
-            padding: 8px 6px;
+            padding: 12px 8px;
             text-align: left;
             font-weight: 600;
             color: var(--text-color);
             border-bottom: 2px solid var(--border-color);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.3px;
             white-space: nowrap;
         }
+        th:nth-child(1) { width: 120px; }
+        th:nth-child(2) { width: 200px; }
+        th:nth-child(3) { width: calc(100% - 320px); }
+        th:nth-child(4) { width: 100px; }
         td {
-            padding: 8px 6px;
+            padding: 12px 8px;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
+            vertical-align: top;
         }
+        td:nth-child(2) { white-space: normal; word-wrap: break-word; }
+        td:nth-child(3) { white-space: normal; word-wrap: break-word; }
         tr:hover { background-color: rgba(255, 127, 50, 0.03); }
-        .product-name {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        .product-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        .notification-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
             flex-shrink: 0;
-            line-height: 1;
+        }
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+        .notification-body {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
         .status-badge {
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
             display: inline-block;
             text-align: center;
             white-space: nowrap;
         }
-        .status-active {
-            background-color: rgba(76, 175, 80, 0.1);
-            color: var(--success-color);
-        }
-        .status-pending {
+        .status-unread {
             background-color: rgba(255, 193, 7, 0.1);
             color: var(--warning-color);
         }
-        .status-inactive {
-            background-color: rgba(244, 67, 54, 0.1);
-            color: var(--danger-color);
+        .status-read {
+            background-color: rgba(158, 158, 158, 0.1);
+            color: var(--light-text);
         }
-        .status-warning {
-            background-color: rgba(255, 193, 7, 0.1);
-            color: var(--warning-color);
-        }
-        /* ======================== CHART ======================== */
-        .chart-container {
-            height: 280px;
-            background: linear-gradient(135deg, rgba(255, 127, 50, 0.05), rgba(255, 178, 115, 0.05));
-            border-radius: 8px;
+        .action-buttons {
             display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            padding: 16px 12px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            gap: 8px;
-            position: relative;
+            gap: 6px;
         }
-        .chart-container canvas {
-            width: 100% !important;
-            height: 100% !important;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .chart-bar {
-            width: 28px;
-            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-            border-radius: 8px 8px 0 0;
-            position: relative;
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-height: 20px;
-            flex-shrink: 0;
-        }
-        .chart-bar:hover {
-            transform: scaleY(1.05);
-            filter: brightness(1.08);
-        }
-        .chart-label {
-            position: absolute;
-            bottom: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
             color: var(--light-text);
-            white-space: nowrap;
-        }
-        .chart-value {
-            position: absolute;
-            top: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-        /* ======================== ORDER ITEMS ======================== */
-        .order-item {
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
+            justify-content: center;
+        }
+        .action-btn:hover {
+            background: rgba(255, 127, 50, 0.1);
+            color: var(--primary-color);
+            transform: scale(1.05);
+        }
+        /* ======================== PAGINATION ======================== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 0;
+            animation: fadeIn 0.6s ease;
             flex-wrap: wrap;
-            gap: 12px;
         }
-        .order-item:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 3px 10px rgba(255, 127, 50, 0.1);
-        }
-        .order-info {
-            flex: 1;
-            min-width: 160px;
-        }
-        .order-id {
-            font-weight: 700;
+        .pagination a {
+            padding: 8px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
             color: var(--text-color);
-            margin-bottom: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
         }
-        .order-customer {
-            color: var(--light-text);
-            font-size: 0.85rem;
-        }
-        .order-amount {
-            font-family: var(--font-heading);
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            white-space: nowrap;
-        }
-        .order-item-name {
-            color: var(--light-text);
-            font-size: 0.85rem;
-            margin-top: 4px;
+        .pagination a:hover,
+        .pagination a.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
         }
         /* ======================== MODAL ======================== */
         .modal {
@@ -659,32 +668,6 @@
             line-height: 1;
         }
         .close-btn:hover { color: var(--text-color); }
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.9rem;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            font-family: var(--font-body);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
-        }
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -809,13 +792,15 @@
             .sidebar { width: 220px; }
             .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
             .main-content { padding: 20px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .section { padding: 18px; }
             .header h1 { font-size: 1.8rem; }
+            .filter-bar form { grid-template-columns: 1fr 1fr auto; gap: 16px; }
+            .filter-group { min-width: 0; }
+            th:nth-child(3) { width: calc(100% - 280px); }
         }
         @media (max-width: 768px) {
             .hamburger {
-                display: flex;
+                display: flex !important;
             }
             .navbar-title {
                 display: none !important;
@@ -848,31 +833,56 @@
             }
             .header h1 { font-size: 1.5rem; }
             .header p { font-size: 0.9rem; }
-            .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-            .stat-card { padding: 16px; }
-            .stat-value { font-size: 1.5rem; }
+            .filter-bar {
+                padding: 20px;
+            }
+            .filter-bar form {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .filter-bar .filter-display {
+                margin-left: 0;
+                justify-self: start;
+                order: -1;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-submit {
+                width: 100%;
+                justify-self: stretch;
+            }
             .section { padding: 16px; margin-bottom: 20px; }
             .section-title { font-size: 1.1rem; }
             .section-header { gap: 10px; }
             .btn-primary { padding: 7px 14px; font-size: 0.8rem; }
-            table { font-size: 0.85rem; min-width: 500px; }
-            th { padding: 6px 4px; font-size: 0.75rem; }
-            td { padding: 6px 4px; }
-            .product-icon { width: 28px; height: 28px; font-size: 0.9rem; }
-            .product-name { gap: 4px; }
-            .chart-container { height: 240px; padding: 12px 8px; }
-            .chart-bar { width: 24px; }
-            .chart-value { font-size: 0.7rem; top: -18px; }
-            .chart-label { font-size: 0.65rem; bottom: -18px; }
-            .order-item { padding: 12px; gap: 8px; }
-            .order-id { font-size: 0.85rem; }
-            .order-customer { font-size: 0.8rem; }
-            .order-amount { font-size: 1rem; }
-            .modal-content { padding: 20px; }
+            .table-container {
+                margin: 0 -8px;
+                padding: 8px;
+                border-radius: 0;
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+            }
+            table {
+                font-size: 0.85rem;
+                min-width: 600px;
+            }
+            th, td {
+                padding: 10px 6px;
+            }
+            th:nth-child(1), td:nth-child(1) { width: 100px; }
+            th:nth-child(2), td:nth-child(2) { width: 25%; }
+            th:nth-child(3), td:nth-child(3) { width: calc(100% - 225px); }
+            th:nth-child(4), td:nth-child(4) { width: 80px; }
+            .notification-icon { width: 32px; height: 32px; font-size: 1.2rem; }
+            .action-buttons { gap: 4px; }
+            .action-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+            .pagination { gap: 6px; flex-wrap: wrap; }
+            .pagination a { padding: 6px 10px; font-size: 0.85rem; }
+            .modal-content { padding: 20px; margin: 0 8px; }
             .modal-title { font-size: 1.1rem; }
-            .form-group label { font-size: 0.85rem; }
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
             }
         }
         @media (max-width: 480px) {
@@ -891,58 +901,58 @@
             .header { margin-bottom: 16px; }
             .header h1 { font-size: 1.3rem; }
             .header p { font-size: 0.85rem; }
-            .stats-grid { gap: 10px; }
-            .stat-card { padding: 14px; }
-            .stat-label { font-size: 0.7rem; }
-            .stat-value { font-size: 1.4rem; margin-bottom: 6px; }
-            .stat-change { font-size: 0.75rem; }
+            .filter-bar { padding: 16px; }
+            .filter-bar form { gap: 12px; }
+            .filter-group input,
+            .filter-group select { padding: 12px 14px; }
             .section { padding: 14px; margin-bottom: 16px; }
             .section-header { flex-direction: column; align-items: flex-start; padding-bottom: 10px; }
             .section-title { font-size: 1rem; }
             .btn-primary { width: 100%; padding: 8px 12px; }
-            .table-container { margin: -3px; padding: 3px; }
-            table { font-size: 0.8rem; min-width: 400px; }
-            th { padding: 4px 2px; font-size: 0.7rem; }
-            td { padding: 4px 2px; }
-            .product-name { gap: 4px; }
-            .product-icon { width: 24px; height: 24px; font-size: 0.8rem; }
-            .chart-container { height: 200px; padding: 10px 6px; gap: 6px; }
-            .chart-bar { width: 20px; }
-            .chart-value { font-size: 0.65rem; top: -16px; }
-            .chart-label { font-size: 0.6rem; bottom: -16px; }
-            .order-item {
-                padding: 10px;
-                gap: 6px;
-                flex-direction: column;
-                align-items: flex-start;
+            .table-container {
+                margin: 0 -4px;
+                padding: 4px;
             }
-            .order-info {
-                min-width: 0;
-                width: 100%;
-                order: 1;
+            table {
+                font-size: 0.8rem;
+                min-width: 500px;
             }
-            .order-amount {
-                order: 2;
-                font-size: 0.95rem;
-                align-self: flex-end;
+            th, td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
             }
-            .status-badge {
-                order: 3;
-                align-self: flex-end;
-                margin-top: 4px;
+            th:nth-child(1), td:nth-child(1) { width: 90px; }
+            th:nth-child(2), td:nth-child(2) { width: 30%; }
+            th:nth-child(3), td:nth-child(3) { width: calc(100% - 190px); }
+            th:nth-child(4), td:nth-child(4) { width: 70px; }
+            .notification-icon { width: 28px; height: 28px; font-size: 1rem; }
+            .action-buttons {
+                flex-direction: row;
+                gap: 2px;
+                justify-content: center;
             }
-            .order-id { font-size: 0.8rem; }
-            .order-customer { font-size: 0.75rem; }
-            .order-item-name { font-size: 0.75rem; }
-            .modal-content { padding: 16px; }
+            .action-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            .pagination {
+                gap: 4px;
+                padding: 16px 0;
+            }
+            .pagination a {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+                min-width: 32px;
+                text-align: center;
+            }
+            .modal-content {
+                padding: 16px;
+                margin: 0 4px;
+            }
             .modal-header { margin-bottom: 14px; padding-bottom: 10px; }
             .modal-title { font-size: 1rem; }
             .close-btn { font-size: 1.2rem; }
-            .form-group { margin-bottom: 12px; }
-            .form-group label { font-size: 0.8rem; margin-bottom: 4px; }
-            .form-group input,
-            .form-group select,
-            .form-group textarea { padding: 8px; font-size: 0.95rem; }
             .modal-actions { gap: 8px; margin-top: 16px; padding-top: 12px; }
             .modal-actions button { padding: 8px; font-size: 0.8rem; }
             .sidebar-menu a { padding: 8px 10px; font-size: 0.8rem; }
@@ -958,6 +968,7 @@
             .dropdown-item-desc { font-size: 0.65rem; }
             .footer-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
         }
         @media (max-width: 360px) {
@@ -967,155 +978,115 @@
             .navbar-right { gap: 8px; }
             .header h1 { font-size: 1.1rem; }
             .main-content { padding: 10px; }
-            .stats-grid { grid-template-columns: 1fr; gap: 8px; }
-            .stat-card { padding: 12px; }
-            .stat-value { font-size: 1.3rem; }
+            .filter-bar { padding: 12px; }
+            .filter-bar form { gap: 10px; }
             .section { padding: 12px; margin-bottom: 14px; }
             .section-title { font-size: 0.95rem; }
             .btn-primary { font-size: 0.75rem; padding: 6px 10px; }
-            .chart-bar { width: 18px; }
-            table { font-size: 0.75rem; min-width: 300px; }
-            th, td { padding: 3px 1px; }
-            .order-item { padding: 8px; gap: 4px; }
-            .order-info { width: 100%; }
+            .table-container { margin: 0; padding: 2px; }
+            table {
+                font-size: 0.75rem;
+                min-width: 450px;
+            }
+            th, td {
+                padding: 6px 3px;
+                font-size: 0.7rem;
+            }
+            th:nth-child(1), td:nth-child(1) { width: 80px; }
+            th:nth-child(2), td:nth-child(2) { width: 35%; }
+            th:nth-child(3), td:nth-child(3) { width: calc(100% - 155px); }
+            th:nth-child(4), td:nth-child(4) { width: 60px; }
+            .notification-icon { width: 24px; height: 24px; font-size: 0.9rem; }
+            .action-btn { width: 24px; height: 24px; font-size: 0.7rem; }
+            .pagination a {
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                min-width: 28px;
+            }
         }
-        /* ======================== RESPONSIVE TABLE ======================== */
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px; /* desktop */
-}
-
-@media (max-width: 768px) {
-    table {
-        min-width: 500px;
-        font-size: 0.85rem;
-    }
-    th, td {
-        padding: 6px 4px;
-        white-space: nowrap;
-    }
-    .product-icon {
-        width: 26px;
-        height: 26px;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    table {
-        min-width: 420px;
-        font-size: 0.8rem;
-    }
-    th, td {
-        padding: 5px 3px;
-        font-size: 0.75rem;
-    }
-    .product-name {
-        gap: 4px;
-    }
-    .product-icon {
-        width: 22px;
-        height: 22px;
-        font-size: 0.75rem;
-    }
-    .status-badge {
-        padding: 3px 8px;
-        font-size: 0.7rem;
-        border-radius: 12px;
-    }
-}
-
-@media (max-width: 360px) {
-    table {
-        min-width: 350px;
-        font-size: 0.75rem;
-    }
-    th, td {
-        padding: 3px 2px;
-    }
-    .product-icon {
-        width: 20px;
-        height: 20px;
-        font-size: 0.7rem;
-    }
-}
-/* ============================================
-   FINAL RESPONSIVE TABLE FIX (Place at bottom)
-   ============================================ */
-.responsive-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 6px;
-}
-
-.responsive-table-wrapper table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 750px; /* Ensures columns don't squeeze */
-}
-
-.responsive-table-wrapper th,
-.responsive-table-wrapper td {
-    white-space: nowrap;
-    padding: 10px 12px;
-    text-align: left;
-}
-
-/* Medium Devices */
-@media (max-width: 768px) {
-    .responsive-table-wrapper table {
-        min-width: 650px;
-    }
-    .responsive-table-wrapper th,
-    .responsive-table-wrapper td {
-        padding: 8px 10px;
-        font-size: 0.85rem;
-    }
-}
-
-/* Small Devices */
-@media (max-width: 480px) {
-    .responsive-table-wrapper table {
-        min-width: 550px;
-    }
-    .responsive-table-wrapper th,
-    .responsive-table-wrapper td {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-    }
-    .product-icon {
-        width: 24px;
-        height: 24px;
-        font-size: 0.75rem;
-    }
-}
-
-/* Very Small Phones */
-@media (max-width: 360px) {
-    .responsive-table-wrapper table {
-        min-width: 480px;
-    }
-    .responsive-table-wrapper th,
-    .responsive-table-wrapper td {
-        padding: 4px 6px;
-        font-size: 0.75rem;
-    }
-}
-
-
-
+        /* Additional responsive fixes for better mobile experience */
+        @media (max-width: 768px) {
+            .table-container {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            .table-container::-webkit-scrollbar {
+                height: 6px;
+            }
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+            .table-container::-webkit-scrollbar-thumb {
+                background: var(--primary-color);
+                border-radius: 3px;
+            }
+            .dropdown-menu {
+                position: fixed;
+                top: 60px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                min-width: unset;
+            }
+        }
+        @media (max-width: 480px) {
+            .modal {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            .modal-content {
+                margin-top: 20px;
+                max-height: calc(100vh - 40px);
+            }
+            .footer {
+                padding: 2rem 1rem 1rem;
+            }
+            .footer-grid {
+                gap: 1.5rem;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        @media (max-width: 320px) {
+            .navbar {
+                padding: 6px 8px;
+            }
+            .logo {
+                font-size: 1.1rem;
+            }
+            .notification-bell {
+                font-size: 1.1rem;
+            }
+            .profile-avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+            }
+            .main-content {
+                padding: 8px;
+            }
+            .header h1 {
+                font-size: 1rem;
+            }
+        }
+        .profile-name, .profile-role {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        @media (max-width: 768px) {
+            .profile-name, .profile-role {
+                max-width: 80px;
+            }
+        }
     </style>
 </head>
 <body>
+
 <div id="seller-toast" style="position: fixed; bottom: 20px; right: 20px; display:none; padding:12px; border-radius:6px; background:#222; color:#fff; z-index:9999;"></div>
     <!-- NAVBAR -->
     <div class="navbar">
@@ -1132,17 +1103,8 @@ table {
     <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
         🔔
 
-        <div id="notification-badge" class="notification-badge" style="
-            position:absolute;
-            top:-5px;
-            right:-10px;
-            background:red;
-            color:white;
-            padding:2px 6px;
-            border-radius:50%;
-            font-size:12px;
-            display:none;">
-        </div>
+<div id="notification-badge" class="notification-badge" style="display:none;"></div>
+
     </div>
 
 
@@ -1237,207 +1199,120 @@ table {
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
                 <li><a href="{% url 'seller:add' %}"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
-
+                <li><a href="{% url 'seller:notifications' %}" class="active"><span>🔔</span> Notifications</a></li>
             </ul>
         </div>
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
-                <h1>Welcome back! 👋</h1>
-                <p>Here's your store performance overview</p>
+                <h1>Notifications</h1>
+                <p>Stay updated with the latest alerts and messages</p>
             </div>
-            <!-- STATS GRID -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">📊 TOTAL REVENUE</div>
-                    <div class="stat-value">₹{{ total_revenue }}</div>
-                   <div class="stat-change">↑ {{ revenue_growth }}% from yesterday</div>
+            <!-- Search + Filter Bar -->
+            <div class="filter-bar">
+                <form method="get">
+                    <div class="filter-group">
+                        <label for="search-input">Search</label>
+                        <input type="text" id="search-input" name="search" placeholder="Search by title or body..." value="{{ request.GET.search|default:'' }}">
+                    </div>
+                    <div class="filter-group">
+                        <label for="status-select">Status</label>
+                        <select id="status-select" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="unread" {% if request.GET.status == 'unread' %}selected{% endif %}>Unread</option>
+                            <option value="read" {% if request.GET.status == 'read' %}selected{% endif %}>Read</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="filter-submit">Apply Filters</button>
+                </form>
+                {% if request.GET.status or request.GET.search %}
+                <div class="filter-display">
+                    Filters Applied
+                    <button type="button" class="clear-filter" onclick="clearAllFilters()">×</button>
                 </div>
-                <a href="{% url 'seller:order' %}">
-                          <div class="stat-card">
-                    <div class="stat-label">📦TOTAL ORDERS</div>
-                    <div class="stat-value">{{ total_orders }}</div>
-                    <div class="stat-change">↑ {{ new_orders_today }} new orders</div>
-
-
-                </div>
-                </a>
-                <a href="{% url 'seller:add' %}">
-                       <div class="stat-card">
-                    <div class="stat-label">🛍️ PRODUCTS</div>
-                    <div class="stat-value">{{ products_count }}</div>
-                    <div class="stat-change">{{ pending_products }} pending approval</div>
-                </div>
-                </a>
-                <a href="{% url 'seller:review' %}">
-                      <div class="stat-card">
-                    <div class="stat-label">⭐ Rating</div>
-                    <div class="stat-value">{{ avg_rating }}/</div>
-                    <div class="stat-change">{{ rating_count }} reviews</div>
-                </div>
-                </a>
+                {% endif %}
             </div>
-            <!-- SALES CHART -->
+            <!-- Notifications Table -->
             <div class="section">
                 <div class="section-header">
-                    <div class="section-title">Sales This Week</div>
+                    <div class="section-title">Notifications List</div>
+                    <div style="margin-bottom: 24px; text-align: right;">
+                        <button id="mark-all-read-btn" class="btn-primary" onclick="markAllRead()">Mark All Read</button>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="weeklySalesChart"></canvas>
-                </div>
-            </div>
-            <!-- TOP PRODUCTS -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">Top Products</div>
-                    <button class="btn-primary"><a href="{% url 'seller:add' %}">View All</a></button>
-                </div>
-                <div class="responsive-table-wrapper">
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                  <th>Units Sold</th>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Body</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for p in top_products %}
+                            {% for notification in notifications %}
                             <tr>
+                                <td>{{ notification.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <div class="product-name">
-                                        <div class="product-icon">📱</div>
-                                        <span>{{ p.name }}</span>
-                                    </div>
+                                    <div class="notification-title">{{ notification.title }}</div>
                                 </td>
-                                <td>{{ p.subcategory.name}}</td>
-                                <td>₹{{ p.price }}</td>
-                               <td>{{ p.stock }}</td>
-
-<td>
-    <span class="status-badge status-active">
-        {{ p.total_sold }} Sold
-    </span>
-</td>
-
-<td>
-    {% if p.stock > low_stock_threshold %}
-        {% if p.stock > 0 %}
-            <span class="status-badge status-active">Active</span>
-        {% else %}
-            <span class="status-badge status-inactive">Out</span>
-        {% endif %}
-    {% else %}
-        <span class="status-badge status-warning">Low Stock ({{ p.stock }})</span>
-    {% endif %}
-</td>
-
+                                <td>
+                                    <div class="notification-body">{{ notification.body }}</div>
+                                    {% if notification.extra %}
+                                    <div style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Extra: {{ notification.extra }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not notification.is_read %}
+                                    <span class="status-badge status-unread">Unread</span>
+                                    {% else %}
+                                    <span class="status-badge status-read">Read</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" style="text-align:center;">No products found</td>
+                                <td colspan="4" style="text-align: center; padding: 2rem; color: var(--light-text);">No notifications found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                    </div>
             </div>
-            <!-- RECENT ORDERS -->
-            <div class="section">
-                <div class="section-header">
-                    <div class="section-title">Recent Orders</div>
-                    <button class="btn-primary"><a href="{% url 'seller:order' %}">View All</a></button>
-                </div>
-                {% for order in recent_orders %}
-                <div class="order-item">
-                    <div class="order-info">
-                        <!-- ORDER NUMBER -->
-                        <div class="order-id">Order #ORD-{{ order.id|stringformat:"03d" }}</div>
-                        <!-- CUSTOMER NAME -->
-                        <div class="order-customer">{{ order.user.username }}</div>
-                        <!-- ORDER ITEM NAME + STOCK -->
-                        {% with item=order.items.all.0 %}
-                            {% if item %}
-                                <div class="order-item-name">
-                                    {{ item.product.name }}
-                                    (Stock: {{ item.product.stock }})
-                                </div>
-                            {% else %}
-                                <div class="order-item-name">No items</div>
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-                    <!-- ORDER AMOUNT -->
-                    <div class="order-amount">₹{{ order.total_amount }}</div>
-                    <!-- STATUS BADGE -->
-                    {% if order.status == "Delivered" %}
-                        <span class="status-badge status-active">Delivered</span>
-                    {% elif order.status == "Shipped" %}
-                        <span class="status-badge status-active">Shipped</span>
-                    {% elif order.status == "Processing" %}
-                        <span class="status-badge status-active">Processing</span>
-                    {% else %}
-                        <span class="status-badge status-pending">{{ order.status }}</span>
-                    {% endif %}
-                </div>
+            <!-- Pagination -->
+            {% if notifications.has_other_pages %}
+            <div class="pagination">
+                {% if notifications.has_previous %}
+                <a href="?page={{ notifications.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Previous</a>
+                {% endif %}
+                {% for num in notifications.paginator.page_range %}
+                <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}"
+                   class="{% if notifications.number == num %}active{% endif %}">{{ num }}</a>
                 {% endfor %}
+                {% if notifications.has_next %}
+                <a href="?page={{ notifications.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Next</a>
+                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
-    <!-- STORE SETTINGS MODAL -->
-    <div id="storeModal" class="modal">
+    <!-- Mark All Read Confirmation Modal -->
+    <div id="mark-all-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">🏪 Store Settings</h2>
-                <button class="close-btn" onclick="closeStoreModal()">✕</button>
+                <h2 class="modal-title">Mark All as Read?</h2>
+                <button class="close-btn" onclick="closeMarkAllModal()">✕</button>
             </div>
-            <form>
-                <div class="form-group">
-                    <label>Store Name</label>
-                    <input type="text" value="Mobile Store" placeholder="Enter store name">
-                </div>
-                <div class="form-group">
-                    <label>Store Address</label>
-                    <input type="text" value="MG Road, Thrissur" placeholder="Enter address">
-                </div>
-                <div class="form-group">
-                    <label>City</label>
-                    <input type="text" value="Thrissur" placeholder="Enter city">
-                </div>
-                <div class="form-group">
-                    <label>State</label>
-                    <input type="text" value="Kerala" placeholder="Enter state">
-                </div>
-                <div class="form-group">
-                    <label>Business Type</label>
-                    <select>
-                        <option selected>Electronics</option>
-                        <option>Clothing</option>
-                        <option>Food</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>GST Number</label>
-                    <input type="text" value="22AABCT1234H1Z0" placeholder="GST number">
-                </div>
-                <div class="form-group">
-                    <label>Store Description</label>
-                    <textarea placeholder="Describe your store">Authorized Mobile Store with genuine products.</textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeStoreModal()">Cancel</button>
-                    <button type="submit" class="btn-save">Update</button>
-                </div>
-            </form>
+            <p>Are you sure you want to mark all notifications as read?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeMarkAllModal()">Cancel</button>
+                <button type="button" class="btn-save" onclick="confirmMarkAllRead()">Confirm</button>
+            </div>
         </div>
     </div>
     <!-- FOOTER -->
@@ -1447,27 +1322,26 @@ table {
                 <!-- Logo Section -->
                 <div>
                     <div class="footer-logo">
-                        <span>🛍️</span>
+                        <span>🛍</span>
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
-<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
-<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
-<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+                        <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+                        <a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+                        <a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+                        <a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
                 <!-- Quick Links -->
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-
-                <li><a href="#"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
-
+                        <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                        <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                        <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                        <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
+                    </ul>
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
@@ -1492,7 +1366,7 @@ table {
                             +91 98765 43210
                         </li>
                         <li>
-                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
                             support@shophub.com
                         </li>
                     </ul>
@@ -1501,362 +1375,140 @@ table {
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <p>&copy; 2024 ShopHub. All rights reserved.</p>
-                <p>Made with ❤️ for Sellers & Shoppers</p>
+                <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
     </footer>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-/* ========================================================
-   GLOBAL VARIABLES
-   ======================================================== */
-let chartInstance = null;
 
-const chartConfig = {
-    animationDuration: 1600,
-    animationEasing: 'easeOutQuart',
-    tension: 0.45,
-    pointRadius: 5,
-    pointHoverRadius: 7,
-    borderWidth: 3
-};
+const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
 
-/* ========================================================
-   DJANGO-CONNECTED DATASETS (FIXED)
-   ======================================================== */
-const salesDatasets = {
-    week: {
-        labels: {{ sales_labels|safe }},
-        values: {{ sales_values|safe }},
-        comparison: {{ sales_values|safe }}
-    },
-    month: {
-        labels: {{ month_labels|default:"[]"|safe }},
-        values: {{ month_values|default:"[]"|safe }},
-        comparison: {{ month_values|default:"[]"|safe }}
-    },
-    year: {
-        labels: {{ year_labels|default:"[]"|safe }},
-        values: {{ year_values|default:"[]"|safe }},
-        comparison: {{ year_values|default:"[]"|safe }}
+// 🔌 Dynamic WebSocket Path
+const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
+const wsPath = IS_SELLER
+    ? "/ws/seller/notifications/"
+    : "/ws/user/notifications/";
+
+const notifSocket = new WebSocket(wsProtocol + window.location.host + wsPath);
+
+// -------------------------------------------
+// 🔥 When a new WebSocket notification arrives
+// -------------------------------------------
+notifSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+
+    showToast(`🔔 ${data.title}: ${data.body}`);
+    updateUnreadBadge();
+
+    // If dropdown is open reload list
+    if (document.getElementById("notification-box").style.display === "block") {
+        loadDropdownNotifications();
     }
 };
 
-/* ========================================================
-   ON PAGE LOAD
-   ======================================================== */
-document.addEventListener("DOMContentLoaded", function () {
-    initializeChart("week");
-    setupEventListeners();
-});
-
-/* ========================================================
-   INITIALIZE CHART (YOUR ORIGINAL CHART)
-   ======================================================== */
-function initializeChart(period = "week") {
-    const canvas = document.getElementById("weeklySalesChart");
-    if (!canvas) return;
-
-    const c = canvas.getContext("2d");
-    const data = salesDatasets[period];
-
-    if (chartInstance) chartInstance.destroy();
-
-    /* ---------- ORANGE GRADIENT ---------- */
-    const primaryGradient = c.createLinearGradient(0, 0, 0, 300);
-    primaryGradient.addColorStop(0, "rgba(255, 127, 50, 0.45)");
-    primaryGradient.addColorStop(0.5, "rgba(255, 127, 50, 0.15)");
-    primaryGradient.addColorStop(1, "rgba(255, 127, 50, 0.02)");
-
-    /* ---------- GREEN GRADIENT ---------- */
-    const secondaryGradient = c.createLinearGradient(0, 0, 0, 300);
-    secondaryGradient.addColorStop(0, "rgba(52, 211, 153, 0.3)");
-    secondaryGradient.addColorStop(1, "rgba(52, 211, 153, 0.01)");
-
-    /* ---------- CREATE CHART ---------- */
-    chartInstance = new Chart(canvas, {
-        type: "line",
-        data: {
-            labels: data.labels,
-            datasets: [
-                {
-                    label: "Current Period",
-                    data: data.values,
-                    fill: true,
-                    backgroundColor: primaryGradient,
-                    borderColor: "#FF7F32",
-                    borderWidth: chartConfig.borderWidth,
-                    tension: chartConfig.tension,
-                    pointRadius: chartConfig.pointRadius,
-                    pointBackgroundColor: "#FF7F32",
-                    pointBorderColor: "#fff",
-                    pointBorderWidth: 2,
-                    pointHoverRadius: chartConfig.pointHoverRadius,
-                    pointHoverBackgroundColor: "#FFB366",
-                    pointHoverBorderWidth: 3,
-                    segment: {
-                        borderColor: ctx =>
-                            ctx.p0DataIndex % 2 === 0 ? "#FF7F32" : "#FFB366"
-                    }
-                },
-                {
-                    label: "Previous Period",
-                    data: data.comparison,
-                    fill: true,
-                    backgroundColor: secondaryGradient,
-                    borderColor: "#34D399",
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: chartConfig.tension,
-                    pointRadius: 4,
-                    pointBackgroundColor: "#34D399",
-                    pointBorderColor: "#fff",
-                    pointBorderWidth: 1.5,
-                    pointHoverRadius: 6,
-                    pointHoverBackgroundColor: "#6EE7B7",
-                    pointHoverBorderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { intersect: false, mode: "index" },
-
-            plugins: {
-                legend: {
-                    display: true,
-                    position: "top",
-                    labels: {
-                        color: "#777",
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        padding: 20,
-                        font: { size: 12, weight: "600" }
-                    }
-                },
-                tooltip: {
-                    enabled: true,
-                    backgroundColor: "rgba(0,0,0,0.92)",
-                    titleColor: "#FF7F32",
-                    bodyColor: "#fff",
-                    borderColor: "rgba(255,127,50,0.5)",
-                    borderWidth: 1,
-                    padding: 14,
-                    cornerRadius: 12,
-                    displayColors: true,
-                    callbacks: {
-                        title: ctx => ctx[0].label,
-                        label: ctx => {
-                            const value = ctx.parsed.y;
-                            return `${ctx.dataset.label}: ₹${value.toLocaleString()}`;
-                        }
-                    }
-                }
-            },
-
-            scales: {
-                x: {
-                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
-                    ticks: { color: "#777", font: { size: 12 } }
-                },
-                y: {
-                    grid: { color: "rgba(255,127,50,0.08)", lineWidth: 0.5 },
-                    ticks: {
-                        color: "#777",
-                        font: { size: 11 },
-                        callback: value =>
-                            value >= 1000
-                                ? "₹" + (value / 1000).toFixed(0) + "K"
-                                : "₹" + value
-                    }
-                }
-            },
-
-            animation: {
-                duration: chartConfig.animationDuration,
-                easing: chartConfig.animationEasing,
-                delay: ctx =>
-                    ctx.type === "data" ? ctx.dataIndex * 60 : 0
-            }
-        }
-    });
-}
-
-/* ========================================================
-   PERIOD SWITCH BUTTONS
-   ======================================================== */
-function setPeriod(period) {
-    initializeChart(period);
-    updatePeriodButtons(period);
-}
-
-function updatePeriodButtons(activePeriod) {
-    document
-        .querySelectorAll("button[data-period]")
-        .forEach(btn =>
-            btn.classList.toggle("active", btn.dataset.period === activePeriod)
-        );
-}
-
-/* ========================================================
-   FORM HANDLERS
-   ======================================================== */
-function setupEventListeners() {
-    document.querySelectorAll("form").forEach(form => {
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            alert("Changes saved successfully!");
-            const modal = this.closest(".modal");
-            if (modal) modal.classList.remove("show");
-        });
-    });
-}
-
-/* ========================================================
-   PROFILE MENU
-   ======================================================== */
-function toggleProfileMenu() {
-    document.getElementById("dropdownMenu").classList.toggle("show");
-}
-
-/* ========================================================
-   SIDEBAR
-   ======================================================== */
-function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.querySelector(".sidebar-overlay");
-    const menu = document.querySelector(".hamburger");
-
-    sidebar.classList.toggle("show");
-    overlay.classList.toggle("show");
-    menu.classList.toggle("active");
-
-    document.body.style.overflow =
-        sidebar.classList.contains("show") ? "hidden" : "";
-}
-
-function closeSidebar() {
-    document.getElementById("sidebar").classList.remove("show");
-    document.querySelector(".sidebar-overlay").classList.remove("show");
-    document.querySelector(".hamburger").classList.remove("active");
-    document.body.style.overflow = "";
-}
-
-//##########################################################################################################
-  const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
-  // WebSocket: seller or user
-const notifSocket = new WebSocket(
-  (location.protocol === "https:" ? "wss://" : "ws://") +
-  window.location.host +
-  (IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/")
-);
-
-
-// 🔥 When real-time notification arrives
-notifSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    addNotificationToList(data);
-    updateUnreadCount();
-    showToast(data.title + " - " + data.body);
-};
-
-// 🚀 Get unread count on load
-function updateUnreadCount() {
+// -------------------------------------------
+// 🔔 Update Unread Count (badge)
+// -------------------------------------------
+function updateUnreadBadge() {
     fetch("/notifications/unread-count/")
         .then(res => res.json())
         .then(data => {
             const badge = document.getElementById("notification-badge");
-            if (!badge) return;
 
             if (data.unread_count > 0) {
                 badge.innerText = data.unread_count;
-                badge.style.display = "block";
+                badge.style.display = "flex";
             } else {
                 badge.style.display = "none";
             }
         });
 }
-updateUnreadCount();
 
-// 🎯 Show/hide notification dropdown
-function showNotifications() {
-    const box = document.getElementById("notification-box");
+// Call once on page load
+updateUnreadBadge();
 
-    if (box.style.display === "block") {
-        box.style.display = "none";
-        return;
-    }
-
-    box.style.display = "block";
-
-    // Load list from backend
+// -------------------------------------------
+// 📥 Load notification dropdown (latest 5)
+// -------------------------------------------
+function loadDropdownNotifications() {
     fetch("/notifications/list/")
         .then(res => res.json())
         .then(data => {
-            const list = document.getElementById("notification-list");
-            list.innerHTML = "";
+            const box = document.getElementById("notification-list");
+            box.innerHTML = "";
 
-            if (data.notifications.length === 0) {
-                list.innerHTML = "<p style='text-align:center; color:#666;'>No notifications</p>";
+            if (!data.notifications.length) {
+                box.innerHTML = `<p style="text-align:center; color:#777;">No notifications</p>`;
                 return;
             }
 
-            data.notifications.forEach(n => {
-                list.innerHTML += `
-                    <div style="
-                        padding:10px;
-                        border-bottom:1px solid #eee;
-                        background:${n.is_read ? '#fff' : '#f7f9ff'};
-                        cursor:pointer;
-                    " onclick="markRead(${n.id}, this)">
-                        <strong>${n.title}</strong><br>
-                        <small>${n.body}</small>
-                        <br>
-                        <small style='color:#999;'>${n.created_at}</small>
-                    </div>
+            data.notifications.slice(0, 5).forEach(n => {
+                const div = document.createElement("div");
+                div.style.padding = "10px";
+                div.style.borderBottom = "1px solid #eee";
+                div.style.cursor = "pointer";
+                div.style.background = n.is_read ? "#fff" : "#f1f5ff";
+
+                div.setAttribute("onclick", `markRead(${n.id})`);
+
+                div.innerHTML = `
+                    <strong>${n.title}</strong><br>
+                    <span style="color:#666; font-size:0.85rem;">${n.body}</span><br>
+                    <small style="color:#aaa;">${n.created_at}</small>
                 `;
+
+                box.appendChild(div);
             });
         });
-
-    updateUnreadCount();
 }
 
-function markRead(id, item) {
+// -------------------------------------------
+// 👁 Mark a specific notification as read
+// -------------------------------------------
+function markRead(id) {
     fetch(`/notifications/mark-read/${id}/`)
         .then(() => {
-            item.style.background = "#fff";
-            updateUnreadCount();
+            loadDropdownNotifications();
+            updateUnreadBadge();
         });
 }
 
-// 🔥 Toast popup
-function showToast(msg) {
-    const toast = document.createElement("div");
-    toast.innerText = msg;
+// -------------------------------------------
+// 🔽 Toggle dropdown
+// -------------------------------------------
+function showNotifications() {
+    const box = document.getElementById("notification-box");
+    box.style.display = box.style.display === "block" ? "none" : "block";
 
-    toast.style.cssText = `
-        position:fixed;
-        bottom:20px;
-        right:20px;
-        background:#333;
-        color:#fff;
-        padding:12px 18px;
-        border-radius:4px;
-        z-index:99999;
-    `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
+    if (box.style.display === "block") {
+        loadDropdownNotifications();
+    }
 }
 
+// -------------------------------------------
+// 🍞 Toast message
+// -------------------------------------------
+function showToast(message) {
+    const toast = document.getElementById("seller-toast");
+    toast.innerText = message;
+    toast.style.display = "block";
+
+    setTimeout(() => {
+        toast.style.display = "none";
+    }, 3500);
+}
+  // Close when clicking outside
+document.addEventListener("click", function(e) {
+    const bell = document.querySelector(".notification-bell");
+    const box = document.getElementById("notification-box");
+
+    if (!bell.contains(e.target) && !box.contains(e.target)) {
+        box.style.display = "none";
+    }
+});
+
+
 </script>
-
-
 
 </body>
 </html>

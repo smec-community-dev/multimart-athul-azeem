@@ -1009,7 +1009,7 @@
                     </span>
                 </td>
 
-                <td><a href="{% url 'seller_order_view' order.id %}" class="action-btn">View</a></td>
+                <td><a href="{% url 'seller:seller_order_view' order.id %}" class="action-btn">View</a></td>
             </tr>
         {% endfor %}
     {% else %}
@@ -1050,37 +1050,36 @@
                 <!-- Logo Section -->
                 <div>
                     <div class="footer-logo">
-                        <span>🛍️</span>
+                        <span>🛍</span>
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                        <a href="#" title="Facebook">f</a>
-                        <a href="#" title="Twitter">𝕏</a>
-                        <a href="#" title="Instagram">📷</a>
-                        <a href="#" title="LinkedIn">💼</a>
+                                 <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
                 <!-- Quick Links -->
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
+
+                  <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Track Your Order</a></li>
+                        <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
@@ -1096,7 +1095,7 @@
                             +91 98765 43210
                         </li>
                         <li>
-                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
                             support@shophub.com
                         </li>
                     </ul>
@@ -1105,7 +1104,7 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <p>&copy; 2024 ShopHub. All rights reserved.</p>
-                <p>Made with ❤️ for Sellers & Shoppers</p>
+                <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
     </footer>
