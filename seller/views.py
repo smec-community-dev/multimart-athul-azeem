@@ -33,6 +33,14 @@ from user.models import Order, Review, OrderItem
 @seller_required
 def view_product(request):
     seller = request.user.seller_details
+    print("LOGIN USER:", request.user)
+    print("LOGIN USER ID:", request.user.id)
+    print("LOGIN USERNAME:", request.user.username)
+    print("LOGIN USER EMAIL:", request.user.email)
+    print("SELLER DETAILS ID:",
+          request.user.seller_details.id if hasattr(request.user, 'seller_details') else 'NO SELLER DETAILS')
+    print("SELLER SHOP NAME:",
+          request.user.seller_details.shop_name if hasattr(request.user, 'seller_details') else 'NO SHOP NAME')
 
     total_revenue = (
         OrderItem.objects.filter(order__seller=seller)

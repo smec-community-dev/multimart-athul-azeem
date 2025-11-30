@@ -2,9 +2,53 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import Notification
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from .models import Notification
+
+
 @login_required
 def seller_notifications_page(request):
-    return render(request, "seller/notifications.html")
+    """Render the seller full notification page with search + filters."""
+
+    user = request.user
+    print(user)
+
+    notifications = Notification.objects.filter(user=user).order_by("-created_at")
+    print(notifications)
+
+    # ----- SEARCH -----
+    search_q = request.GET.get("search")
+    if search_q:
+        notifications = notifications.filter(
+            title__icontains=search_q
+        ) | notifications.filter(
+            body__icontains=search_q
+        )
+
+    # ----- STATUS FILTER -----
+    status = request.GET.get("status")
+    if status == "unread":
+        notifications = notifications.filter(is_read=False)
+    elif status == "read":
+        notifications = notifications.filter(is_read=True)
+
+    # ----- PAGINATION -----
+    paginator = Paginator(notifications, 10)   # 10 per page
+    page_number = request.GET.get("page")
+    notifications_page = paginator.get_page(page_number)
+    print("REQUEST USER ID:", request.user.id)
+    print("REQUEST USERNAME:", request.user.username)
+
+    return render(
+        request,
+        "seller/notifications.html",
+        {
+            "notifications": notifications_page,
+        }
+    )
+
 
 
 # 📌 1) Return full notification list (latest first)
