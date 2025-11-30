@@ -1116,6 +1116,7 @@ table {
     </style>
 </head>
 <body>
+<div id="seller-toast" style="position: fixed; bottom: 20px; right: 20px; display:none; padding:12px; border-radius:6px; background:#222; color:#fff; z-index:9999;"></div>
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="navbar-left">
@@ -1127,11 +1128,33 @@ table {
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
-        <div class="navbar-right">
-            <div class="notification-bell" onclick="showNotifications()">
-                🔔
-                <div class="notification-badge">3</div>
-            </div>
+     <div class="navbar-right">
+    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+        🔔
+
+        <div id="notification-badge" class="notification-badge" style="
+            position:absolute;
+            top:-5px;
+            right:-10px;
+            background:red;
+            color:white;
+            padding:2px 6px;
+            border-radius:50%;
+            font-size:12px;
+            display:none;">
+        </div>
+        <!-- Notification dropdown -->
+<div id="notification-box"
+     style="display:none; position:absolute; top:40px; right:0; width:320px;
+            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
+    <div id="notification-list" style="padding:8px;">
+        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+</div>
+
+    </div>
+
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
@@ -1158,7 +1181,7 @@ table {
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -1169,7 +1192,8 @@ table {
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'not:seller_notifications_page' %}">Notifications</a></div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
@@ -1177,7 +1201,7 @@ table {
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                            <a href="{% url 'help_support'  %}">
+                            <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -1202,6 +1226,7 @@ table {
             </div>
         </div>
     </div>
+    </div>
     <!-- SIDEBAR OVERLAY -->
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
     <!-- MAIN CONTAINER -->
@@ -1210,9 +1235,9 @@ table {
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
                 <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span>⭐</span> Reviews</a></li>
+                <li><a href="{% url 'seller:add' %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
 
             </ul>
         </div>
@@ -1229,7 +1254,7 @@ table {
                     <div class="stat-value">₹{{ total_revenue }}</div>
                    <div class="stat-change">↑ {{ revenue_growth }}% from yesterday</div>
                 </div>
-                <a href="{% url 'order' %}">
+                <a href="{% url 'seller:order' %}">
                           <div class="stat-card">
                     <div class="stat-label">📦TOTAL ORDERS</div>
                     <div class="stat-value">{{ total_orders }}</div>
@@ -1238,14 +1263,14 @@ table {
 
                 </div>
                 </a>
-                <a href="{% url 'add' %}">
+                <a href="{% url 'seller:add' %}">
                        <div class="stat-card">
                     <div class="stat-label">🛍️ PRODUCTS</div>
                     <div class="stat-value">{{ products_count }}</div>
                     <div class="stat-change">{{ pending_products }} pending approval</div>
                 </div>
                 </a>
-                <a href="{% url 'review' %}">
+                <a href="{% url 'seller:review' %}">
                       <div class="stat-card">
                     <div class="stat-label">⭐ Rating</div>
                     <div class="stat-value">{{ avg_rating }}/</div>
@@ -1266,7 +1291,7 @@ table {
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Top Products</div>
-                    <button class="btn-primary"><a href="{% url 'add' %}">View All</a></button>
+                    <button class="btn-primary"><a href="{% url 'seller:add' %}">View All</a></button>
                 </div>
                 <div class="responsive-table-wrapper">
                 <div class="table-container">
@@ -1327,7 +1352,7 @@ table {
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Recent Orders</div>
-                    <button class="btn-primary"><a href="{% url 'order' %}">View All</a></button>
+                    <button class="btn-primary"><a href="{% url 'seller:order' %}">View All</a></button>
                 </div>
                 {% for order in recent_orders %}
                 <div class="order-item">
@@ -1436,19 +1461,19 @@ table {
                     <ul>
 
                 <li><a href="#"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'review' %}"><span></span> Reviews</a></li>
+                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
 
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
                     <h3>Customer Service</h3>
                     <ul>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
-                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
-                        <li><a href="{% url 'service' %}">Service</a></li>
-                        <li><a href="{% url 'feedback' %}">Feed Back</a></li>
+                        <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <!-- Contact Us -->
@@ -1715,8 +1740,175 @@ function closeSidebar() {
     document.querySelector(".hamburger").classList.remove("active");
     document.body.style.overflow = "";
 }
-</script>
 
+//##########################################################################################################
+const IS_SELLER =
+    {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
+
+let notifSocket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+);
+
+// ✔ Connected
+notifSocket.onopen = () => console.log("WebSocket Connected!");
+
+// ❌ Error
+notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+
+// 📩 Receive notification
+notifSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+
+    addNotificationToList(data);
+    updateUnreadCount();
+    showToast(`${data.title} - ${data.body}`);
+};
+
+// 🔄 Reconnect if closed
+notifSocket.onclose = () => {
+    console.warn("WebSocket closed… reconnecting in 2s");
+    setTimeout(() => connectWS(), 2000);
+};
+
+
+// 🔥 When real-time notification arrives
+notifSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    addNotificationToList(data);
+    updateUnreadCount();
+    showToast(data.title + " - " + data.body);
+};
+
+// 🚀 Get unread count on load
+function updateUnreadCount() {
+    fetch("/not/unread-count/")
+        .then(res => res.json())
+        .then(data => {
+            const badge = document.getElementById("notification-badge");
+            if (!badge) return;
+
+            if (data.unread_count > 0) {
+                badge.innerText = data.unread_count;
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+        });
+}
+updateUnreadCount();
+
+// 🎯 Show/hide notification dropdown
+function showNotifications() {
+    const box = document.getElementById("notification-box");
+
+    if (box.style.display === "block") {
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+
+    // Load list from backend
+    fetch("/not/list/")
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById("notification-list");
+            list.innerHTML = "";
+
+            if (data.notifications.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:#666;'>No notifications</p>";
+                return;
+            }
+
+            data.notifications.forEach(n => {
+                list.innerHTML += `
+                    <div style="
+                        padding:10px;
+                        border-bottom:1px solid #eee;
+                        background:${n.is_read ? '#fff' : '#f7f9ff'};
+                        cursor:pointer;
+                    " onclick="markRead(${n.id}, this)">
+                        <strong>${n.title}</strong><br>
+                        <small>${n.body}</small>
+                        <br>
+                        <small style='color:#999;'>${n.created_at}</small>
+                    </div>
+                `;
+            });
+        });
+
+    updateUnreadCount();
+}
+
+function markRead(id, item) {
+    fetch(`/not/mark-read/${id}/`)
+        .then(() => {
+            item.style.background = "#fff";
+            updateUnreadCount();
+        });
+}
+
+// 🔥 Toast popup
+function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.innerText = msg;
+
+    toast.style.cssText = `
+        position:fixed;
+        bottom:20px;
+        right:20px;
+        background:#333;
+        color:#fff;
+        padding:12px 18px;
+        border-radius:4px;
+        z-index:99999;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function addNotificationToList(data) {
+    const list = document.getElementById("notification-list");
+    const div = document.createElement("div");
+    div.style.cssText = "padding:10px; border-bottom:1px solid #eee; background:#f7f9ff; cursor:pointer;";
+    div.innerHTML = `<strong>${data.title}</strong><br><small>${data.body}</small><br><small style='color:#999;'>${new Date().toLocaleString()}</small>`;
+    div.onclick = () => markRead(data.id, div);
+    list.insertBefore(div, list.firstChild);
+}
+
+function connectWS() {
+    // Reinitialize WebSocket
+    notifSocket = new WebSocket(
+        (location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+    );
+    // Re-attach event handlers
+    notifSocket.onopen = () => console.log("WebSocket Reconnected!");
+    notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+    notifSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        addNotificationToList(data);
+        updateUnreadCount();
+        showToast(`${data.title} - ${data.body}`);
+    };
+    notifSocket.onclose = () => {
+        console.warn("WebSocket closed… reconnecting in 2s");
+        setTimeout(() => connectWS(), 2000);
+    };
+}
+
+function closeStoreModal() {
+    document.getElementById("storeModal").classList.remove("show");
+}
+
+</script>
 
 
 </body>

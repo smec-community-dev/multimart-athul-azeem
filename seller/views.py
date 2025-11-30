@@ -33,6 +33,14 @@ from user.models import Order, Review, OrderItem
 @seller_required
 def view_product(request):
     seller = request.user.seller_details
+    print("LOGIN USER:", request.user)
+    print("LOGIN USER ID:", request.user.id)
+    print("LOGIN USERNAME:", request.user.username)
+    print("LOGIN USER EMAIL:", request.user.email)
+    print("SELLER DETAILS ID:",
+          request.user.seller_details.id if hasattr(request.user, 'seller_details') else 'NO SELLER DETAILS')
+    print("SELLER SHOP NAME:",
+          request.user.seller_details.shop_name if hasattr(request.user, 'seller_details') else 'NO SHOP NAME')
 
     total_revenue = (
         OrderItem.objects.filter(order__seller=seller)
@@ -125,8 +133,8 @@ def view_product(request):
         "top_products": top_products,
         "recent_orders": recent_orders,
         "low_stock_threshold": low_stock_threshold,
-    "sales_labels": sales_labels,
-    "sales_values": sales_values,
+        "sales_labels": sales_labels,
+        "sales_values": sales_values,
     }
 
     return render(request, "seller/sellerdashboard.html", context)
@@ -144,63 +152,84 @@ def sanitize_filename(filename):
     timestamp = int(time.time())
     return f"{base}_{timestamp}{ext}"
 
-@login_required()
+@login_required
 @seller_required
 def add_product(request):
-    seller = SellerDetails.objects.get(user=request.user)
+    seller = get_object_or_404(SellerDetails, user=request.user)
 
     if request.method == "POST":
-        seller = SellerDetails.objects.get(user=request.user)
-
         name = request.POST.get('name')
         subcat_id = request.POST.get('subcategory')
-        description = request.POST.get('description')
-        price = request.POST.get('price')
-        stock = request.POST.get('stock')
-        color = request.POST.get('color')
-        size = request.POST.get('size')
+        description = request.POST.get('description', '')
+        price_str = request.POST.get('price')
+        stock_str = request.POST.get('stock')
+        color = request.POST.get('color', '')
+        size = request.POST.get('size', '')
 
         main_image = request.FILES.get('main_image')
         gallery_images = request.FILES.getlist('gallery_images')
 
-        subcategory = SubCategory.objects.get(id=subcat_id)
-        print(subcategory)
+        # Validate required fields
+        if not all([name, subcat_id, price_str, stock_str]):
+            messages.error(request, "Please fill in all required fields: name, subcategory, price, and stock.")
+        else:
+            try:
+                price = float(price_str)
+                stock = int(stock_str)
+                subcategory = SubCategory.objects.get(id=subcat_id)
+            except ValueError:
+                messages.error(request, "Invalid price or stock value. Price must be a number, stock must be an integer.")
+            except SubCategory.DoesNotExist:
+                messages.error(request, "Invalid subcategory selected.")
+            else:
+                try:
+                    # Check for duplicate name first for better UX, but create will enforce unique
+                    if Product.objects.filter(seller=seller, name=name).exists():
+                        raise IntegrityError("Duplicate name")
 
-        product = Product.objects.create(
-            seller=seller,
-            subcategory=subcategory,
-            name=name,
-            description=description,
-            price=price,
-            stock=stock,
-            color=color,
-            size=size,
-            slug=slugify(name)  # Ensure slug is set
-        )
+                    product = Product.objects.create(
+                        seller=seller,
+                        subcategory=subcategory,
+                        name=name,
+                        description=description,
+                        price=price,
+                        stock=stock,
+                        color=color,
+                        size=size,
+                        slug=slugify(name)
+                    )
 
-        # Sanitize and save main image
-        if main_image:
-            sanitized_filename = sanitize_filename(main_image.name)
-            main_image.name = sanitized_filename
-            ProductImage.objects.create(
-                product=product,
-                image=main_image,
-                image_type="Main"
-            )
+                    # Sanitize and save main image
+                    if main_image:
+                        sanitized_filename = sanitize_filename(main_image.name)
+                        main_image.name = sanitized_filename
+                        ProductImage.objects.create(
+                            product=product,
+                            image=main_image,
+                            image_type="Main"
+                        )
 
-        # Sanitize and save gallery images
-        for img in gallery_images:
-            sanitized_filename = sanitize_filename(img.name)
-            img.name = sanitized_filename
-            ProductImage.objects.create(
-                product=product,
-                image=img,
-                image_type="Gallery"
-            )
+                    # Sanitize and save gallery images
+                    for img in gallery_images:
+                        if img:  # Skip empty files
+                            sanitized_filename = sanitize_filename(img.name)
+                            img.name = sanitized_filename
+                            ProductImage.objects.create(
+                                product=product,
+                                image=img,
+                                image_type="Gallery"
+                            )
 
-        return redirect("seller:seller_dashboard")
+                    messages.success(request, f'Product "{name}" added successfully!')
+                    return redirect("seller:seller_dashboard")
 
-
+                except IntegrityError as e:
+                    if "Duplicate entry" in str(e) and "name" in str(e):
+                        messages.error(request, "A product with this name already exists. Please choose a unique name.")
+                    else:
+                        messages.error(request, "An error occurred while adding the product. Please try again.")
+                except Exception as e:
+                    messages.error(request, f"An unexpected error occurred: {str(e)}")
 
     # GET request - handle filtering and pagination
     products_qs = Product.objects.filter(seller=seller).order_by('-id')
@@ -208,9 +237,9 @@ def add_product(request):
     # Search filter
     search = request.GET.get('search', '').strip()
     if search:
-        products_qs = products_qs.filter(name__icontains=search)
+        products_qs = products_qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
 
-    # Category filter (assuming Category exists and SubCategory has category field)
+    # Category filter
     category_id = request.GET.get('category')
     if category_id:
         products_qs = products_qs.filter(subcategory__category_id=category_id)
@@ -225,7 +254,7 @@ def add_product(request):
         products_qs = products_qs.filter(stock__lte=0)
 
     # Pagination
-    paginator = Paginator(products_qs, 10)  # Show 10 products per page
+    paginator = Paginator(products_qs, 10)
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
@@ -248,12 +277,15 @@ def add_product(request):
     }
     return render(request, "seller/features.html", context)
 
+
+
 @login_required()
 @seller_required
 def update_product(request, slug):
     product = get_object_or_404(Product, slug=slug)
 
     if request.method == "POST":
+        # Update basic product info
         product.name = request.POST.get("name")
         product.description = request.POST.get("description")
         product.price = request.POST.get("price")
@@ -268,23 +300,43 @@ def update_product(request, slug):
             product.slug = None  # regenerate
             product.name = new_name
 
-        if "main_image" in request.FILES:
+        # Handle main image
+        if "main_image" in request.FILES and request.FILES["main_image"]:
             ProductImage.objects.create(
                 product=product,
                 image=request.FILES["main_image"],
                 image_type="Main"
             )
 
-        if "gallery_images" in request.FILES:
+        # Handle gallery images - NEW FILES
+        if "gallery_images" in request.FILES and request.FILES.getlist("gallery_images"):
             for img in request.FILES.getlist("gallery_images"):
-                ProductImage.objects.create(product=product, image=img, image_type="Gallery")
+                ProductImage.objects.create(
+                    product=product,
+                    image=img,
+                    image_type="Gallery"
+                )
+
+        # Handle removed gallery images
+        remaining_images = request.POST.get("remaining_images", "[]")
+        try:
+            remaining_urls = json.loads(remaining_images)
+            # Delete images that are NOT in the remaining list
+            all_gallery_images = ProductImage.objects.filter(product=product, image_type="Gallery")
+            for img in all_gallery_images:
+                if img.image.url not in remaining_urls:
+                    img.delete()
+        except json.JSONDecodeError:
+            pass
 
         product.save()
-
-        return redirect("add")
+        return redirect("seller:add")
 
     subcategories = SubCategory.objects.all()
-    return render(request, "seller/update_product.html", {"product": product, "subcategories": subcategories})
+    return render(request, "seller/features.html", {
+        "product": product,
+        "subcategories": subcategories
+    })
 
 
 
@@ -294,7 +346,6 @@ def delete_product(request, slug):
     product = get_object_or_404(Product, slug=slug)
     product.delete()
     return redirect("add")
-
 
 
 def seller_registration(request):
@@ -348,12 +399,6 @@ def seller_registration(request):
         return redirect('login')
 
     return render(request, "seller/registration.html")
-
-
-
-
-
-
 
 
 @login_required()
@@ -422,14 +467,7 @@ def order_product(request):
             "current_status": status if status else 'all'
         }
     )
-from django.utils import timezone
-from django.db.models import Sum
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-# Assume @seller_required is custom decorator
 
-# ... (other imports/models)
 
 @seller_required
 @login_required
@@ -520,35 +558,33 @@ def update_order_status(request, id):
         order.save()
 
         # Redirect back to the order detail page (re-triggers fallbacks for past)
-        return redirect("seller_order_view", id=id)
+        return redirect("seller:seller_order_view", id=id)
 
     # If GET request, redirect to order detail page
-    return redirect("seller_order_view", id=id)
-
-
+    return redirect("seller:seller_order_view", id=id)
 
 
 def login_seller(request):
-    if request.method =="POST":
-        username=request.POST.get("username")
-        password=request.POST.get("password")
-        print(username,password)
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        print(username, password)
 
-
-        user=authenticate(request,username=username,password=password)
+        user = authenticate(request, username=username, password=password)
         print(user)
         if user is not None:
             login(request, user)
 
-            is_seller=SellerDetails.objects.filter(user=user).exists()
+            is_seller = SellerDetails.objects.filter(user=user).exists()
             if is_seller:
                 print(".............")
                 return redirect('seller_dashboard')
 
             else:
                 return redirect('home')
-        return render(request,"seller/login.html",{"error":"invalid username or password"})
-    return render(request,"seller/login.html")
+        return render(request, "seller/login.html", {"error": "invalid username or password"})
+    return render(request, "seller/login.html")
+
 
 def logout_seller(request):
     logout(request)
@@ -556,8 +592,7 @@ def logout_seller(request):
 
 
 def home(request):
-    return render(request,"seller/seller_home.html")
-
+    return render(request, "seller/seller_home.html")
 
 
 @login_required()
@@ -626,6 +661,7 @@ def seller_profile_view(request):
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
+
 @login_required()
 @seller_required
 def product_details(request, slug):
@@ -668,23 +704,10 @@ def product_details(request, slug):
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
-    "images": images,
-    "main_image": main_image,
+            "images": images,
+            "main_image": main_image,
         }
     )
-
-
-# views.py
-
-
-# views.py - Review Dashboard (Compatible with your Review model)
-
-
-
-
-
-
-
 
 
 @login_required
@@ -997,6 +1020,8 @@ def download_reviews_csv(request):
         ])
 
     return response
+
+
 @login_required
 @seller_required
 def review_analytics(request):
@@ -1006,7 +1031,7 @@ def review_analytics(request):
     try:
         seller = SellerDetails.objects.get(user=request.user)
     except SellerDetails.DoesNotExist:
-        return redirect('admin_panel:ogin')
+        return redirect('admin_panel:login')
 
     seller_products = Product.objects.filter(seller=seller)
     all_reviews = Review.objects.filter(product__in=seller_products)
@@ -1052,6 +1077,7 @@ def choose_role(request):
 
     return render(request, "auth/choose_role.html")
 
+
 @login_required
 def complete_registration(request):
     role = request.user.role
@@ -1080,7 +1106,6 @@ def complete_registration(request):
         return redirect_role_dashboard(role)
 
     return render(request, "auth/complete_registration.html", {"role": role})
-
 
 
 @login_required
@@ -1167,6 +1192,7 @@ def help_support(request):
     }
     return render(request, 'seller/help.html', context)
 
+
 @login_required
 def seller_guide(request):
     """
@@ -1177,19 +1203,22 @@ def seller_guide(request):
     }
     return render(request, 'seller/seller_guide.html', context)
 
+
 @login_required
 def privacypolicy(request):
-    return render(request,"seller/privacypolicy.html")
+    return render(request, "seller/privacypolicy.html")
+
+
 @login_required
 def contact(request):
-    return render(request,"seller/contact.html")
+    return render(request, "seller/contact.html")
+
+
 @login_required
 def service(request):
-    return render(request,"seller/service.html")
+    return render(request, "seller/service.html")
+
+
 @login_required
 def feedback(request):
-    return render(request,"seller/feedback.html")
-
-
-
-
+    return render(request, "seller/feedback.html")
