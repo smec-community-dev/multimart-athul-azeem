@@ -126,19 +126,31 @@
 </header>
 
 
-
 <script>
-const userSocket = new WebSocket(
-  (location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/user/notifications/"
-);
+let userSocket;
 
-userSocket.onmessage = function(e) {
-  const data = JSON.parse(e.data);
-  const title = data.title || "Notification";
-  const body = data.body || "";
-  showToast(title + " — " + body);
-};
+function connectUserWS() {
 
+  userSocket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://")
+    + window.location.host
+    + "/ws/user/notifications/"
+  );
+
+  userSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    showToast(`${data.title || "Notification"} — ${data.body || ""}`);
+  };
+
+  // Auto reconnect on disconnect
+  userSocket.onclose = function() {
+    setTimeout(connectUserWS, 2000);
+  };
+}
+
+connectUserWS();
+
+// Toast popup
 function showToast(text) {
   const el = document.getElementById("user-toast");
   el.innerText = text;

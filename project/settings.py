@@ -98,7 +98,7 @@ RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 WSGI_APPLICATION = "project.wsgi.application"
-ASGI_APPLICATION = "yourproject.asgi.application"
+ASGI_APPLICATION = "project.asgi.application"
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.sqlite3",

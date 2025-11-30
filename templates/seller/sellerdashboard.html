@@ -1745,13 +1745,35 @@ function closeSidebar() {
 }
 
 //##########################################################################################################
-  const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
-  // WebSocket: seller or user
-const notifSocket = new WebSocket(
-  (location.protocol === "https:" ? "wss://" : "ws://") +
-  window.location.host +
-  (IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/")
+const IS_SELLER =
+    {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
+
+let notifSocket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    (IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/")
 );
+
+// ✔ Connected
+notifSocket.onopen = () => console.log("WebSocket Connected!");
+
+// ❌ Error
+notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+
+// 📩 Receive notification
+notifSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+
+    addNotificationToList(data);
+    updateUnreadCount();
+    showToast(`${data.title} - ${data.body}`);
+};
+
+// 🔄 Reconnect if closed
+notifSocket.onclose = () => {
+    console.warn("WebSocket closed… reconnecting in 2s");
+    setTimeout(() => connectWS(), 2000);
+};
 
 
 // 🔥 When real-time notification arrives
