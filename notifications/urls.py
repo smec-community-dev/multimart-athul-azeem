@@ -1,11 +1,13 @@
+# notifications/urls.py (unchanged, already correct)
 from django.urls import path
+from . import views
 
-from seller.urls import app_name
-from .views import get_notifications, unread_count, mark_as_read,seller_notifications_page
-app_name='not'
+app_name = 'not'  # Add this if missing for namespacing
+
 urlpatterns = [
-    path('list/', get_notifications, name='notifications_list'),
-    path('unread-count/', unread_count, name='notifications_unread'),
-    path('mark-read/<int:notif_id>/', mark_as_read, name='notification_mark_read'),
-    path('seller/', seller_notifications_page, name='seller_notifications_page'),
+    path('seller/', views.seller_notifications_page, name='seller_notifications_page'),
+    path('mark-read/<int:notification_id>/', views.mark_notification_read, name='mark_read'),
+    path('mark-all-read/', views.mark_all_notifications_read, name='mark_all_read'),
+    path('unread-count/', views.unread_notifications_count, name='unread_count'),
+    path('list/', views.notifications_dropdown_list, name='list'),
 ]

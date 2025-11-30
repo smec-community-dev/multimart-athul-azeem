@@ -1,7 +1,10 @@
 from django.urls import re_path
-from .consumers import SellerNotificationConsumer, UserNotificationConsumer
+from . import consumers  # Assuming consumers.py is in the same app
 
 websocket_urlpatterns = [
-    re_path(r"ws/seller/notifications/$", SellerNotificationConsumer.as_asgi()),
-    re_path(r"ws/user/notifications/$", UserNotificationConsumer.as_asgi()),
+    # ← UPDATED: Both paths point to the same generic consumer
+    re_path(r'ws/seller/not/$', consumers.NotificationConsumer.as_asgi()),
+    re_path(r'ws/user/not/$', consumers.NotificationConsumer.as_asgi()),
+    # ← NEW: Optional unified path for future JS updates
+    re_path(r'ws/not/$', consumers.NotificationConsumer.as_asgi()),
 ]

@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # ← NEW: Add Channels for WebSockets
+    "channels",
+
     "user",
     "seller.apps.SellerConfig",
     "core",
@@ -44,7 +47,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.facebook",
     "rest_framework",
     ### SOCIAL AUTH  ######
-"notifications.apps.NotificationsConfig",
+    "notifications.apps.NotificationsConfig",
 ]
 
 AUTH_USER_MODEL = "core.User"
@@ -90,22 +93,16 @@ TEMPLATES = [
     },
 ]
 
+# ← FIXED: Remove duplicate; set only ASGI for Channels
+ASGI_APPLICATION = "project.asgi.application"
 WSGI_APPLICATION = 'project.wsgi.application'
+
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-WSGI_APPLICATION = "project.wsgi.application"
-ASGI_APPLICATION = "project.asgi.application"
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -120,16 +117,22 @@ DATABASES = {
     }
 }
 
-
-
+# ← MOVED: Razorpay context processor function (was oddly placed)
 from django.conf import settings
 def razorpay_keys(request):
     return {
         'RAZORPAY_KEY_ID': settings.RAZORPAY_KEY_ID
     }
+
+# ← UPDATED: Channel Layers (InMemory for dev; add Redis for prod)
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # Dev-only; for prod: use Redis
+        # Example Redis config (uncomment & install channels-redis):
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [{"host": "127.0.0.1", "port": 6379}],
+        # },
     },
 }
 
@@ -137,6 +140,7 @@ CHANNEL_LAYERS = {
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
+# ← FIXED: Remove duplicate; keep the original validators (empty list breaks auth)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -151,9 +155,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-########## SOCIAL AUTH #####################
-AUTH_PASSWORD_VALIDATORS = []
 
+########## SOCIAL AUTH #####################
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True

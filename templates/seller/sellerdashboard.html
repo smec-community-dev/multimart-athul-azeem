@@ -1143,11 +1143,7 @@ table {
             font-size:12px;
             display:none;">
         </div>
-    </div>
-
-
-
-         <!-- Notification dropdown -->
+        <!-- Notification dropdown -->
 <div id="notification-box"
      style="display:none; position:absolute; top:40px; right:0; width:320px;
             background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
@@ -1157,7 +1153,7 @@ table {
     </div>
 </div>
 
-</div>
+    </div>
 
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
@@ -1229,6 +1225,7 @@ table {
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!-- SIDEBAR OVERLAY -->
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
@@ -1751,7 +1748,7 @@ const IS_SELLER =
 let notifSocket = new WebSocket(
     (location.protocol === "https:" ? "wss://" : "ws://") +
     window.location.host +
-    (IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/")
+    (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
 );
 
 // ✔ Connected
@@ -1786,7 +1783,7 @@ notifSocket.onmessage = function(e) {
 
 // 🚀 Get unread count on load
 function updateUnreadCount() {
-    fetch("/notifications/unread-count/")
+    fetch("/not/unread-count/")
         .then(res => res.json())
         .then(data => {
             const badge = document.getElementById("notification-badge");
@@ -1814,7 +1811,7 @@ function showNotifications() {
     box.style.display = "block";
 
     // Load list from backend
-    fetch("/notifications/list/")
+    fetch("/not/list/")
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById("notification-list");
@@ -1846,7 +1843,7 @@ function showNotifications() {
 }
 
 function markRead(id, item) {
-    fetch(`/notifications/mark-read/${id}/`)
+    fetch(`/not/mark-read/${id}/`)
         .then(() => {
             item.style.background = "#fff";
             updateUnreadCount();
@@ -1876,8 +1873,42 @@ function showToast(msg) {
     }, 3000);
 }
 
-</script>
+function addNotificationToList(data) {
+    const list = document.getElementById("notification-list");
+    const div = document.createElement("div");
+    div.style.cssText = "padding:10px; border-bottom:1px solid #eee; background:#f7f9ff; cursor:pointer;";
+    div.innerHTML = `<strong>${data.title}</strong><br><small>${data.body}</small><br><small style='color:#999;'>${new Date().toLocaleString()}</small>`;
+    div.onclick = () => markRead(data.id, div);
+    list.insertBefore(div, list.firstChild);
+}
 
+function connectWS() {
+    // Reinitialize WebSocket
+    notifSocket = new WebSocket(
+        (location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+    );
+    // Re-attach event handlers
+    notifSocket.onopen = () => console.log("WebSocket Reconnected!");
+    notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+    notifSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        addNotificationToList(data);
+        updateUnreadCount();
+        showToast(`${data.title} - ${data.body}`);
+    };
+    notifSocket.onclose = () => {
+        console.warn("WebSocket closed… reconnecting in 2s");
+        setTimeout(() => connectWS(), 2000);
+    };
+}
+
+function closeStoreModal() {
+    document.getElementById("storeModal").classList.remove("show");
+}
+
+</script>
 
 
 </body>
