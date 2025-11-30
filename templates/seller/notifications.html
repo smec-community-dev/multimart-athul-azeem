@@ -1099,30 +1099,22 @@
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
-     <div class="navbar-right">
-    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
-        🔔
-
-<div id="notification-badge" class="notification-badge" style="display:none;"></div>
-
-    </div>
-
-
-
-         <!-- Notification dropdown -->
-<div id="notification-box"
-     style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
-        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
-    </div>
-</div>
-
-</div>
-
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+                🔔
+                <div id="notification-badge" class="notification-badge" style="display:none;"></div>
+            </div>
+            <!-- Notification dropdown -->
+            <div id="notification-box"
+                 style="display:none; position:absolute; top:40px; right:0; width:320px;
+                        background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+                        z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
+                <div id="notification-list" style="padding:8px;">
+                    <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+                </div>
+            </div>
             <div class="profile-dropdown" id="profileDropdown">
-                <div class="profile-toggle" onclick="toggleProfileMenu()">
+                <div class="profile-toggle" onclick="toggleProfileMenu(event)">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
                     <div class="profile-info-text">
                         <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
@@ -1153,29 +1145,28 @@
                             </div>
                         </div>
                         <!-- STORE SETTINGS -->
-    <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider"></div>
                         <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'not:seller_notifications_page' %}">Notifications</a></div>
+                                    <a href="{% url 'not:seller_notifications_page' %}">Notifications</a>
+                                </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-
-                        <div class="dropdown-item" onclick="alert('Opening Help & Support')">
+                        <div class="dropdown-item">
                             <span class="dropdown-item-icon">❓</span>
-                            <a href="{% url 'seller:help_support'  %}">
-                                    <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Help & Support</div>
+                            <div class="dropdown-item-text">
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'seller:help_support'  %}">Help & Support</a>
+                                </div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
                             </div>
-                            </a>
                         </div>
                         <!-- HELP -->
-
                         <div class="dropdown-divider"></div>
                         <!-- LOGOUT -->
                         <div class="dropdown-item logout">
@@ -1215,6 +1206,7 @@
             <!-- Search + Filter Bar -->
             <div class="filter-bar">
                 <form method="get">
+                    {% csrf_token %}
                     <div class="filter-group">
                         <label for="search-input">Search</label>
                         <input type="text" id="search-input" name="search" placeholder="Search by title or body..." value="{{ request.GET.search|default:'' }}">
@@ -1269,7 +1261,7 @@
                                 </td>
                                 <td>
                                     {% if not notification.is_read %}
-                                    <span class="status-badge status-unread">Unread</span>
+                                    <span class="status-badge status-unread" onclick="markSingleRead({{ notification.id }})" style="cursor: pointer;">Unread</span>
                                     {% else %}
                                     <span class="status-badge status-read">Read</span>
                                     {% endif %}
@@ -1380,136 +1372,323 @@
         </div>
     </footer>
 <script>
+try {
+    const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
 
-const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
+    // 🔌 Dynamic WebSocket Path
+    const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
+    const wsPath = IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/";
+    let notifSocket = new WebSocket(wsProtocol + window.location.host + wsPath);
 
-// 🔌 Dynamic WebSocket Path
-const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
-const wsPath = IS_SELLER
-    ? "/ws/seller/notifications/"
-    : "/ws/user/notifications/";
+    // WebSocket connection handlers
+    notifSocket.onopen = function(e) {
+        console.log("Connected to notification WebSocket");
+    };
 
-const notifSocket = new WebSocket(wsProtocol + window.location.host + wsPath);
+    notifSocket.onerror = function(e) {
+        console.error("WebSocket error:", e);
+    };
 
-// -------------------------------------------
-// 🔥 When a new WebSocket notification arrives
-// -------------------------------------------
-notifSocket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
+    notifSocket.onclose = function(e) {
+        console.log("WebSocket connection closed. Reconnecting in 5s...");
+        setTimeout(() => {
+            notifSocket = new WebSocket(wsProtocol + window.location.host + wsPath);  // Reconnect
+        }, 5000);
+    };
 
-    showToast(`🔔 ${data.title}: ${data.body}`);
-    updateUnreadBadge();
-
-    // If dropdown is open reload list
-    if (document.getElementById("notification-box").style.display === "block") {
-        loadDropdownNotifications();
+    // ------------------------------------------- Utility: Get CSRF Token -------------------------------------------
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
-};
 
-// -------------------------------------------
-// 🔔 Update Unread Count (badge)
-// -------------------------------------------
-function updateUnreadBadge() {
-    fetch("/notifications/unread-count/")
-        .then(res => res.json())
-        .then(data => {
-            const badge = document.getElementById("notification-badge");
+    // ------------------------------------------- When a new WebSocket notification arrives -------------------------------------------
+    notifSocket.onmessage = function (e) {
+        try {
+            const data = JSON.parse(e.data);
+            showToast(`🔔 ${data.title}: ${data.body}`);
+            updateUnreadBadge();
 
-            if (data.unread_count > 0) {
-                badge.innerText = data.unread_count;
-                badge.style.display = "flex";
-            } else {
-                badge.style.display = "none";
+            // If dropdown is open, reload list
+            if (document.getElementById("notification-box").style.display === "block") {
+                loadDropdownNotifications();
             }
-        });
-}
+        } catch (err) {
+            console.error("Error parsing WebSocket message:", err);
+        }
+    };
 
-// Call once on page load
-updateUnreadBadge();
+    // ------------------------------------------- Update Unread Count (badge) -------------------------------------------
+    function updateUnreadBadge() {
+        fetch("/not/unread-count/")
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById("notification-badge");
+                if (!badge) return;
 
-// -------------------------------------------
-// 📥 Load notification dropdown (latest 5)
-// -------------------------------------------
-function loadDropdownNotifications() {
-    fetch("/notifications/list/")
-        .then(res => res.json())
-        .then(data => {
-            const box = document.getElementById("notification-list");
-            box.innerHTML = "";
+                if (data.unread_count > 0) {
+                    badge.innerText = data.unread_count;
+                    badge.style.display = "flex";
+                } else {
+                    badge.style.display = "none";
+                }
+            }).catch(err => console.error('Error updating badge:', err));
+    }
 
-            if (!data.notifications.length) {
-                box.innerHTML = `<p style="text-align:center; color:#777;">No notifications</p>`;
-                return;
+    // ------------------------------------------- Load notification dropdown (latest 5) -------------------------------------------
+    function loadDropdownNotifications() {
+        fetch("/not/list/")
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById("notification-list");
+                if (!box) return;
+                box.innerHTML = "";
+
+                if (!data.notifications || !data.notifications.length) {
+                    box.innerHTML = `<p style="text-align:center; color:#777;">No notifications</p>`;
+                    return;
+                }
+
+                data.notifications.slice(0, 5).forEach(n => {
+                    const div = document.createElement("div");
+                    div.style.padding = "10px";
+                    div.style.borderBottom = "1px solid #eee";
+                    div.style.cursor = "pointer";
+                    div.style.background = n.is_read ? "#fff" : "#f1f5ff";
+
+                    div.setAttribute("onclick", `markRead(${n.id})`);
+
+                    div.innerHTML = `
+                        <strong>${n.title}</strong><br>
+                        <span style="color:#666; font-size:0.85rem;">${n.body}</span><br>
+                        <small style="color:#aaa;">${n.created_at}</small>
+                    `;
+
+                    box.appendChild(div);
+                });
+            }).catch(err => console.error('Error loading dropdown:', err));
+    }
+
+    // ------------------------------------------- Mark a specific notification as read (for dropdown) -------------------------------------------
+    function markRead(id) {
+        const url = `/not/mark-read/${id}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             }
-
-            data.notifications.slice(0, 5).forEach(n => {
-                const div = document.createElement("div");
-                div.style.padding = "10px";
-                div.style.borderBottom = "1px solid #eee";
-                div.style.cursor = "pointer";
-                div.style.background = n.is_read ? "#fff" : "#f1f5ff";
-
-                div.setAttribute("onclick", `markRead(${n.id})`);
-
-                div.innerHTML = `
-                    <strong>${n.title}</strong><br>
-                    <span style="color:#666; font-size:0.85rem;">${n.body}</span><br>
-                    <small style="color:#aaa;">${n.created_at}</small>
-                `;
-
-                box.appendChild(div);
-            });
-        });
-}
-
-// -------------------------------------------
-// 👁 Mark a specific notification as read
-// -------------------------------------------
-function markRead(id) {
-    fetch(`/notifications/mark-read/${id}/`)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
         .then(() => {
             loadDropdownNotifications();
             updateUnreadBadge();
+            showToast('Notification marked as read');
+        })
+        .catch(err => {
+            console.error('Error marking read:', err);
+            showToast('Failed to mark as read');
         });
-}
-
-// -------------------------------------------
-// 🔽 Toggle dropdown
-// -------------------------------------------
-function showNotifications() {
-    const box = document.getElementById("notification-box");
-    box.style.display = box.style.display === "block" ? "none" : "block";
-
-    if (box.style.display === "block") {
-        loadDropdownNotifications();
     }
-}
 
-// -------------------------------------------
-// 🍞 Toast message
-// -------------------------------------------
-function showToast(message) {
-    const toast = document.getElementById("seller-toast");
-    toast.innerText = message;
-    toast.style.display = "block";
-
-    setTimeout(() => {
-        toast.style.display = "none";
-    }, 3500);
-}
-  // Close when clicking outside
-document.addEventListener("click", function(e) {
-    const bell = document.querySelector(".notification-bell");
-    const box = document.getElementById("notification-box");
-
-    if (!bell.contains(e.target) && !box.contains(e.target)) {
-        box.style.display = "none";
+    // ------------------------------------------- Mark a single notification as read (for table) -------------------------------------------
+    function markSingleRead(id) {
+        const url = `/not/mark-read/${id}/`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(() => {
+            location.reload();
+        })
+        .catch(err => {
+            console.error('Error marking single read:', err);
+            showToast('Failed to mark as read');
+        });
     }
-});
 
+    // ------------------------------------------- Mark ALL notifications as read -------------------------------------------
+    function markAllRead() {
+        const modal = document.getElementById('mark-all-modal');
+        if (modal) modal.classList.add('show');
+    }
 
+    // ------------------------------------------- Close mark all modal -------------------------------------------
+    function closeMarkAllModal() {
+        const modal = document.getElementById('mark-all-modal');
+        if (modal) modal.classList.remove('show');
+    }
 
+    // ------------------------------------------- Confirm mark all as read -------------------------------------------
+    function confirmMarkAllRead() {
+        const url = '/not/mark-all-read/';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(() => {
+            closeMarkAllModal();
+            updateUnreadBadge();
+            showToast('All notifications marked as read');
+            location.reload();
+        })
+        .catch(err => {
+            console.error('Error marking all read:', err);
+            showToast('Failed to mark all as read');
+        });
+    }
+
+    // ------------------------------------------- Toggle notifications dropdown -------------------------------------------
+    function showNotifications() {
+        const box = document.getElementById("notification-box");
+        if (!box) return;
+        box.style.display = box.style.display === "block" ? "none" : "block";
+
+        if (box.style.display === "block") {
+            loadDropdownNotifications();
+        }
+    }
+
+    // ------------------------------------------- Clear all filters -------------------------------------------
+    function clearAllFilters() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('search');
+        currentUrl.searchParams.delete('status');
+        window.location.href = currentUrl.toString();
+    }
+
+    // ------------------------------------------- Toast message -------------------------------------------
+    function showToast(message) {
+        const toast = document.getElementById("seller-toast");
+        if (!toast) return;
+        toast.innerText = message;
+        toast.style.display = "block";
+
+        setTimeout(() => {
+            toast.style.display = "none";
+        }, 3500);
+    }
+
+    // ------------------------------------------- Sidebar functions -------------------------------------------
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+    }
+
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (sidebar && overlay) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+    }
+
+    // ------------------------------------------- Profile dropdown -------------------------------------------
+    function toggleProfileMenu(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById('dropdownMenu');
+        const dropdown = document.getElementById('profileDropdown');
+        if (!menu || !dropdown) return;
+        const isOpen = menu.classList.contains('show');
+
+        // Close notification box if open
+        const notifBox = document.getElementById("notification-box");
+        if (notifBox) notifBox.style.display = "none";
+
+        if (isOpen) {
+            menu.classList.remove('show');
+            dropdown.classList.remove('active');
+        } else {
+            menu.classList.add('show');
+            dropdown.classList.add('active');
+        }
+    }
+
+    // Unified click handler (profile, notifications, modals)
+    document.addEventListener('click', function(e) {
+        const profileDropdown = document.getElementById('profileDropdown');
+        const profileMenu = document.getElementById('dropdownMenu');
+
+        // Close profile on link click inside dropdown
+        if (profileDropdown && profileDropdown.contains(e.target)) {
+            const link = e.target.closest('a');
+            if (link) {
+                setTimeout(() => {
+                    if (profileMenu) profileMenu.classList.remove('show');
+                    if (profileDropdown) profileDropdown.classList.remove('active');
+                }, 100);
+            }
+        }
+
+        // Close profile if outside
+        if (profileDropdown && !profileDropdown.contains(e.target)) {
+            if (profileMenu) profileMenu.classList.remove('show');
+            if (profileDropdown) profileDropdown.classList.remove('active');
+        }
+
+        // Close notifications if outside
+        const bell = document.querySelector(".notification-bell");
+        const box = document.getElementById("notification-box");
+        if (bell && !bell.contains(e.target) && box && !box.contains(e.target)) {
+            box.style.display = "none";
+        }
+
+        // Close modal if outside
+        const modal = document.getElementById('mark-all-modal');
+        if (modal && e.target === modal) {
+            closeMarkAllModal();
+        }
+    });
+
+    // DOM ready fixes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Avatar fallback
+        const avatars = document.querySelectorAll('.profile-avatar, .dropdown-header-avatar');
+        avatars.forEach(avatar => {
+            if (!avatar.textContent.trim()) {
+                avatar.textContent = 'U';
+            }
+        });
+
+        // Initial badge update
+        updateUnreadBadge();
+    });
+
+} catch (err) {
+    console.error('Script load error:', err);
+}
 </script>
-
 </body>
 </html>
