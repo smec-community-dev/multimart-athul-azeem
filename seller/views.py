@@ -4,6 +4,7 @@ import json
 import csv
 from datetime import datetime, timedelta
 
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -278,7 +279,6 @@ def add_product(request):
     return render(request, "seller/features.html", context)
 
 
-
 @login_required()
 @seller_required
 def update_product(request, slug):
@@ -302,6 +302,9 @@ def update_product(request, slug):
 
         # Handle main image
         if "main_image" in request.FILES and request.FILES["main_image"]:
+            # Delete existing main images
+            ProductImage.objects.filter(product=product, image_type="Main").delete()
+            # Create new main image
             ProductImage.objects.create(
                 product=product,
                 image=request.FILES["main_image"],
@@ -662,10 +665,9 @@ def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
 
-@login_required()
+@login_required
 @seller_required
 def product_details(request, slug):
-
     product = get_object_or_404(
         Product,
         slug=slug,
@@ -681,18 +683,31 @@ def product_details(request, slug):
         .select_related("user")
         .order_by("-created_at")
     )
-
     avg_rating = reviews.aggregate(avg=Avg("rating"))["avg"] or 0
 
+    # Order statistics
     order_items = OrderItem.objects.filter(product=product)
-
-    total_quantity_sold = (
-        order_items.aggregate(q=Sum("quantity"))["q"] or 0
-    )
-
+    total_quantity_sold = order_items.aggregate(q=Sum("quantity"))["q"] or 0
     order_count = order_items.values("order").distinct().count()
-    images = product.images.all()
-    main_image = product.images.first()
+
+    # FIXED: Image handling with proper fallback logic
+    all_product_images = ProductImage.objects.filter(product=product).order_by('id')
+
+    # Get main image (explicit Main type first, fallback to first image)
+    main_image = all_product_images.filter(image_type="Main").first()
+    if not main_image and all_product_images.exists():
+        main_image = all_product_images.first()
+
+    # Get gallery images (all Gallery types, excluding main if it's the first)
+    if main_image:
+        # Get all Gallery type images
+        gallery_images = all_product_images.filter(image_type="Gallery")
+
+        # If main_image is not explicitly marked as Main, exclude it from gallery
+        if all_product_images.filter(image_type="Main").count() == 0 and gallery_images.count() == 0:
+            gallery_images = all_product_images.exclude(id=main_image.id)
+    else:
+        gallery_images = all_product_images
 
     return render(
         request,
@@ -704,11 +719,10 @@ def product_details(request, slug):
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
-            "images": images,
-            "main_image": main_image,
+            "images": gallery_images,  # Gallery images
+            "main_image": main_image,  # Main image
         }
     )
-
 
 @login_required
 @seller_required

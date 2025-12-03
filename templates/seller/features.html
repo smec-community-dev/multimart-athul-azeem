@@ -1904,11 +1904,9 @@
             previewImage(this, 'add-main-preview', true);
         });
 
-        // Updated gallery listener for add
+        // Updated gallery listener for add - FIXED: Set files directly without clearing input
         document.getElementById('add-gallery-images').addEventListener('change', function() {
-            const newFiles = Array.from(this.files);
-            addGalleryFiles = addGalleryFiles.concat(newFiles);
-            this.value = '';
+            addGalleryFiles = Array.from(this.files);
             renderAddGalleryPreviews();
         });
 
@@ -1916,11 +1914,9 @@
             previewImage(this, 'edit-main-preview', true);
         });
 
-        // Updated gallery listener for edit
+        // Updated gallery listener for edit - FIXED: Set files directly without clearing input
         document.querySelector('#edit-modal input[name="gallery_images"]').addEventListener('change', function() {
-            const newFiles = Array.from(this.files);
-            editNewFiles = editNewFiles.concat(newFiles);
-            this.value = '';
+            editNewFiles = Array.from(this.files);
             renderEditGalleryPreviews();
         });
 

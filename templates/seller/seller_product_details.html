@@ -988,6 +988,31 @@
             font-size: 0.9rem;
         }
 
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -1502,6 +1527,7 @@
                 <div class="product-section">
                     <!-- Slideshow Container -->
                     <div class="slideshow-container">
+                        <!-- Slideshow Slides -->
                         <div class="slideshow-slides">
                             <div class="slideshow-slide active">
                                 {% if main_image %}
@@ -1514,20 +1540,27 @@
                             <div class="slideshow-slide">
                                 <img src="{{ img.image.url }}" alt="Product Image">
                             </div>
+                            {% empty %}
+                            <!-- Debug: Add this temporarily to see if loop runs -->
+                            <div style="color: red; font-size: 12px;">DEBUG: No gallery images</div>
                             {% endfor %}
                         </div>
 
-                        {% if images|length > 0 %}
+                        <!-- Arrows & Dots: Show only if total >1 -->
+                        {% with total_images=main_image|yesno:"1,0"|add:images|length %}
+                        {% if total_images > 1 %}
                         <button class="slideshow-arrow prev" onclick="changeSlide(-1)">❮</button>
                         <button class="slideshow-arrow next" onclick="changeSlide(1)">❯</button>
-
                         <div class="slideshow-nav">
                             <div class="slideshow-dot active" onclick="currentSlide(0)"></div>
                             {% for img in images %}
                             <div class="slideshow-dot" onclick="currentSlide({{ forloop.counter }})"></div>
+                            {% empty %}
+                            <!-- No extra dots if no gallery -->
                             {% endfor %}
                         </div>
                         {% endif %}
+                        {% endwith %}
                     </div>
 
                     <!-- Thumbnails -->
@@ -1543,6 +1576,9 @@
                         <div class="thumbnail" onclick="currentSlide({{ forloop.counter }})">
                             <img src="{{ img.image.url }}" alt="Thumbnail">
                         </div>
+                        {% empty %}
+                        <!-- Debug: Add this temporarily -->
+                        <div style="color: red; font-size: 12px;">DEBUG: No gallery thumbnails</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -1693,7 +1729,7 @@
                     <label>Gallery Images</label>
                     <input type="file" name="gallery_images" id="edit-gallery-images" multiple accept="image/*">
                     <div class="thumbnails-container" id="edit-gallery-preview"></div>
-                    <input type="hidden" name="remaining_images" id="remaining-images" value="{% for img in images %}{% if not forloop.first %}'{{ img.image.url|escapejs }}',{% endif %}{% endfor %}">
+                    <input type="hidden" name="remaining_images" id="remaining-images" value="[]">
                     <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Add new images or remove existing ones below.</p>
                 </div>
                 <div class="modal-actions">
@@ -1713,6 +1749,12 @@
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+                        <a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
+                        <a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
+                        <a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+                    </div>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
@@ -1726,10 +1768,10 @@
                 <div class="footer-section">
                     <h4>Customer Service</h4>
                     <ul>
-                                <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
-<a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
-<a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
-<a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
+                        <li><a href="{% url 'seller:contact' %}">Contact</a></li>
+                        <li><a href="{% url 'seller:privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% url 'seller:service' %}">Service</a></li>
+                        <li><a href="{% url 'seller:feedback' %}">Feed Back</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -1748,6 +1790,56 @@
     </footer>
 
     <script>
+        // Gallery management variables
+        let editNewFiles = [];
+        let remainingUrls = [];
+
+        function createPreviewContainer(src, isMain = false, type = 'existing') {
+            const div = document.createElement('div');
+            div.className = `thumbnail-container${isMain ? ' current-main' : ''}`;
+            div.dataset.type = type;
+            div.innerHTML = `
+                <img src="${src}" alt="Preview">
+                <span class="delete-img">×</span>
+            `;
+            return div;
+        }
+
+        function renderEditGalleryPreviews() {
+            const container = document.getElementById('edit-gallery-preview');
+            container.innerHTML = '';
+
+            // Render existing images from database
+            remainingUrls.forEach((url, index) => {
+                const imgContainer = createPreviewContainer(url, false, 'existing');
+                imgContainer.dataset.index = index;
+                const deleteBtn = imgContainer.querySelector('.delete-img');
+                deleteBtn.addEventListener('click', () => {
+                    remainingUrls.splice(index, 1);
+                    document.getElementById('remaining-images').value = JSON.stringify(remainingUrls);
+                    renderEditGalleryPreviews();
+                });
+                container.appendChild(imgContainer);
+            });
+
+            // Render new files
+            editNewFiles.forEach((file, index) => {
+                const imgContainer = createPreviewContainer('', false, 'new');
+                imgContainer.dataset.index = index;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imgContainer.querySelector('img').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                const deleteBtn = imgContainer.querySelector('.delete-img');
+                deleteBtn.addEventListener('click', () => {
+                    editNewFiles.splice(index, 1);
+                    renderEditGalleryPreviews();
+                });
+                container.appendChild(imgContainer);
+            });
+        }
+
         /* -------------------------------
            🔥 FIXED SLIDESHOW SCRIPT
         --------------------------------*/
@@ -1788,7 +1880,10 @@
             // Activate dots & thumbnails
             dots[currentSlideIndex]?.classList.add('active');
             thumbnails[currentSlideIndex]?.classList.add('active');
+
+            console.log('DEBUG JS: Switching to slide', n, 'out of', slides.length);
         }
+
         setInterval(() => {
             changeSlide(1);
         }, 3000);
@@ -1804,27 +1899,25 @@
             const mainImageUrl = "{% if main_image %}{{ main_image.image.url|escapejs }}{% else %}''{% endif %}";
             const mainPreview = document.getElementById('edit-main-preview');
             mainPreview.innerHTML = '';
-            if (mainImageUrl) {
+            if (mainImageUrl && mainImageUrl !== "''") {
                 const imgContainer = document.createElement('div');
                 imgContainer.className = 'thumbnail-container current-main';
                 imgContainer.innerHTML = `<img src="${mainImageUrl}" alt="Current Main Image">`;
                 mainPreview.appendChild(imgContainer);
             }
 
-            // Handle gallery images preview
-            const galleryUrls = [{% for img in images %}{% if not forloop.first %}'{{ img.image.url|escapejs }}',{% endif %}{% endfor %}].filter(Boolean);
-            const galleryPreview = document.getElementById('edit-gallery-preview');
-            galleryPreview.innerHTML = '';
-            galleryUrls.forEach((url, index) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'thumbnail-container';
-                imgContainer.innerHTML = `
-                    <img src="${url}" alt="Gallery Image ${index + 1}">
-                    <span class="delete-img" onclick="deleteGalleryImage(this, ${index})">×</span>
-                `;
-                galleryPreview.appendChild(imgContainer);
-            });
-            document.getElementById('remaining-images').value = JSON.stringify(galleryUrls);
+            // Handle gallery images preview - FIXED
+            const galleryUrlsRaw = "{% for img in images %}'{{ img.image.url|escapejs }}',{% endfor %}";
+            let galleryUrls = [];
+            if (galleryUrlsRaw.trim() !== '') {
+                const cleaned = galleryUrlsRaw.replace(/'/g, '').split(',').map(url => url.trim()).filter(url => url);
+                galleryUrls = cleaned;
+            }
+            remainingUrls = galleryUrls;
+
+            editNewFiles = [];
+            document.getElementById('remaining-images').value = JSON.stringify(remainingUrls);
+            renderEditGalleryPreviews();
 
             document.getElementById('editModal').classList.add('show');
             closeSidebar();
@@ -1833,13 +1926,6 @@
 
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('show');
-        }
-
-        function deleteGalleryImage(btn, index) {
-            btn.parentElement.remove();
-            let remaining = JSON.parse(document.getElementById('remaining-images').value);
-            remaining.splice(index, 1);
-            document.getElementById('remaining-images').value = JSON.stringify(remaining);
         }
 
         function deleteProduct() {
@@ -1938,8 +2024,10 @@
         });
 
         document.getElementById('edit-gallery-images').addEventListener('change', function() {
-            previewImage(this, 'edit-gallery-preview');
-            // Append new files to remaining, but since new, they will be uploaded separately
+            const newFiles = Array.from(this.files);
+            editNewFiles = editNewFiles.concat(newFiles);
+            this.value = '';
+            renderEditGalleryPreviews();
         });
 
         /* -------------------------------
@@ -1980,6 +2068,15 @@
         function showNotifications() {
             alert("Notifications: 3 new orders! (Implement modal or redirect here)");
         }
+
+        // After currentSlide function, add this debug
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slideshow-slide');
+            const thumbs = document.querySelectorAll('.thumbnail');
+            console.log('DEBUG JS: Total slides:', slides.length);
+            console.log('DEBUG JS: Total thumbs:', thumbs.length);
+            console.log('DEBUG JS: Images var length:', {{ images|length }});  // Django var to JS
+        });
     </script>
 
 </body>
