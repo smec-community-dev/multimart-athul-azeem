@@ -1,4 +1,6 @@
 # main/urls.py (corrected)
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
@@ -9,7 +11,7 @@ def redirect_to_user_home(request):
         if hasattr(request.user, 'seller_details') and request.user.seller_details:
             return redirect('seller:seller_dashboard')
         else:
-            return redirect('user:home')
+            return redirect('user:user_home')
     return redirect('admin_panel:login')  # Or registration
 
 urlpatterns = [
@@ -32,3 +34,6 @@ urlpatterns = [
 
     path('not/', include('notifications.urls', namespace='not')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

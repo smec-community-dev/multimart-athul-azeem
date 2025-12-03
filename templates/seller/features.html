@@ -1377,20 +1377,21 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-btn edit"
-                                                data-product-slug="{{ product.slug }}"
-                                                data-name="{{ product.name|escapejs }}"
-                                                data-subcategory-id="{{ product.subcategory.id|default:0 }}"
-                                                data-price="{{ product.price }}"
-                                                data-stock="{{ product.stock }}"
-                                                data-description="{{ product.description|escapejs|default:'' }}"
-                                                data-color="{{ product.color|escapejs|default:'' }}"
-                                                data-size="{{ product.size|escapejs|default:'' }}"
-                                                data-main-image="{% with main_img=product.images.first %}{% if main_img %}{{ main_img.image.url|escapejs }}{% endif %}{% endwith %}"
-                                                data-gallery-images="[{% for img in product.images.all %}{% if not forloop.first %}'{{ img.image.url|escapejs }}',{% endif %}{% endfor %}]"
-                                                data-update-url="{% url 'seller:update' product.slug %}"
-                                                data-view-url="{% url 'seller:product_details' product.slug %}"
-                                                title="Edit">✏</button>
+                                  <button class="action-btn edit"
+        data-product-slug="{{ product.slug }}"
+        data-name="{{ product.name|escapejs }}"
+        data-subcategory-id="{{ product.subcategory.id|default:0 }}"
+        data-price="{{ product.price }}"
+        data-stock="{{ product.stock }}"
+        data-description="{{ product.description|escapejs|default:'' }}"
+        data-color="{{ product.color|escapejs|default:'' }}"
+        data-size="{{ product.size|escapejs|default:'' }}"
+        data-main-image="{% with main_img=product.images.first %}{% if main_img %}{{ main_img.image.url|escapejs }}{% endif %}{% endwith %}"
+        data-gallery-images='[{% for img in product.images.all %}{% if img.image_type == "Gallery" %}"{{ img.image.url|escapejs }}"{% if not forloop.last %},{% endif %}{% endif %}{% endfor %}]'
+        data-update-url="{% url 'seller:update' product.slug %}"
+        data-view-url="{% url 'seller:product_details' product.slug %}"
+        title="Edit">✏</button>
+
                                         <button class="action-btn delete"
                                                 data-delete-url="{% url 'seller:delete' product.slug %}"
                                                 title="Delete">🗑</button>

@@ -4,6 +4,7 @@ import json
 import csv
 from datetime import datetime, timedelta
 
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -152,6 +153,7 @@ def sanitize_filename(filename):
     timestamp = int(time.time())
     return f"{base}_{timestamp}{ext}"
 
+
 @login_required
 @seller_required
 def add_product(request):
@@ -237,7 +239,7 @@ def add_product(request):
     # Search filter
     search = request.GET.get('search', '').strip()
     if search:
-        products_qs = products_qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+        products_qs = products_qs.filter(Q(name_icontains=search) | Q(description_icontains=search))
 
     # Category filter
     category_id = request.GET.get('category')
@@ -249,7 +251,7 @@ def add_product(request):
     if status == 'active':
         products_qs = products_qs.filter(stock__gt=10)
     elif status == 'low_stock':
-        products_qs = products_qs.filter(stock__gt=0, stock__lte=10)
+        products_qs = products_qs.filter(stock_gt=0, stock_lte=10)
     elif status == 'out_of_stock':
         products_qs = products_qs.filter(stock__lte=0)
 
@@ -278,7 +280,6 @@ def add_product(request):
     return render(request, "seller/features.html", context)
 
 
-
 @login_required()
 @seller_required
 def update_product(request, slug):
@@ -301,7 +302,9 @@ def update_product(request, slug):
             product.name = new_name
 
         # Handle main image
+        # Handle main image (replace existing instead of adding)
         if "main_image" in request.FILES and request.FILES["main_image"]:
+            ProductImage.objects.filter(product=product, image_type="Main").delete()
             ProductImage.objects.create(
                 product=product,
                 image=request.FILES["main_image"],
@@ -343,9 +346,12 @@ def update_product(request, slug):
 @login_required()
 @seller_required
 def delete_product(request, slug):
+    print("dlete....")
     product = get_object_or_404(Product, slug=slug)
+    print("varindaa")
+    print(product)
     product.delete()
-    return redirect("add")
+    return redirect("seller:add")
 
 
 def seller_registration(request):
@@ -396,7 +402,7 @@ def seller_registration(request):
         )
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('login')
+        return redirect('admin_panel:login')
 
     return render(request, "seller/registration.html")
 
@@ -578,7 +584,7 @@ def login_seller(request):
             is_seller = SellerDetails.objects.filter(user=user).exists()
             if is_seller:
                 print(".............")
-                return redirect('seller_dashboard')
+                return redirect('seller:seller_dashboard')
 
             else:
                 return redirect('home')
@@ -588,7 +594,7 @@ def login_seller(request):
 
 def logout_seller(request):
     logout(request)
-    return redirect('home')
+    return redirect('user:user_home')
 
 
 def home(request):
@@ -661,7 +667,6 @@ def seller_profile_view(request):
 def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
-
 @login_required()
 @seller_required
 def product_details(request, slug):
@@ -709,7 +714,6 @@ def product_details(request, slug):
         }
     )
 
-
 @login_required
 @seller_required
 def review_dashboard(request):
@@ -717,7 +721,7 @@ def review_dashboard(request):
     try:
         seller = SellerDetails.objects.get(user=request.user)
     except SellerDetails.DoesNotExist:
-        return redirect('seller_login')
+        return redirect('admin_panel:login')
 
     seller_products = Product.objects.filter(seller=seller)
 

@@ -157,4 +157,29 @@ function showToast(text) {
   el.style.display = "block";
   setTimeout(() => el.style.display = "none", 4000);
 }
+function toggleProfileMenu() {
+    const menu = document.getElementById("dropdownMenu");
+    const parent = document.getElementById("profileDropdown");
+
+    parent.classList.toggle("active");
+    menu.classList.toggle("show");
+}
+
+// Close dropdown when clicking outside profile menu
+window.addEventListener("click", function(event) {
+    const menu = document.getElementById("dropdownMenu");
+    const parent = document.getElementById("profileDropdown");
+
+    if (menu && parent && !parent.contains(event.target)) {
+        menu.classList.remove("show");
+        parent.classList.remove("active");
+    }
+});
+
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById("mobileMenu");
+    mobileMenu.classList.toggle("hidden");
+}
+
 </script>
