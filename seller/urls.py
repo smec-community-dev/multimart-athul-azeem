@@ -21,7 +21,7 @@ urlpatterns = [
     path("seller_dashboard/product/<slug:slug>/", views.product_details, name='product_details'),
     path("seller_dashboard/reviews/", views.review_dashboard, name='review'),
     path("seller_dashboard/reviews/delete/<int:review_id>/", views.delete_review, name="delete_review"),
-    path("seller_dashboard/reviews/download/csv/", views.download_reviews_csv, name='download_reviews_csv'),
+    path("seller_dashboard/reviews/download /csv/", views.download_reviews_csv, name='download_reviews_csv'),
     path("seller_dashboard/help-support/", views.help_support, name='help_support'),
     path("seller_dashboard/seller-guide/", views.seller_guide, name='seller_guide'),
 

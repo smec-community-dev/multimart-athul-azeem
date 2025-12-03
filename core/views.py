@@ -848,7 +848,7 @@ def delete_product(request, product_id):
         'current_stock_status': current_stock_status,
     }
 
-    return render(request, 'admin/delete_product_confirm.html', context)
+    return render(request, 'admin/delete_product.html', context)
 # ============================================================================
 # ORDERS MANAGEMENT
 # ============================================================================
@@ -1682,8 +1682,8 @@ def admin_subcategory_add(request):
 
 
 
-def admin_subcategory_edit(request, pk):
-    subcategory = get_object_or_404(SubCategory, pk=pk)
+def admin_subcategory_edit(request, subcategory_id):
+    subcategory = get_object_or_404(SubCategory, id=subcategory_id)
     categories = Category.objects.all()
 
     if request.method == 'POST':
@@ -1724,8 +1724,8 @@ def admin_subcategory_edit(request, pk):
 
 
 
-def admin_subcategory_delete(request, pk):
-    subcategory = get_object_or_404(SubCategory, pk=pk)
+def admin_subcategory_delete(request, subcategory_id):
+    subcategory = get_object_or_404(SubCategory, id=subcategory_id)
     if request.method == 'POST':
         subcategory.delete()
         messages.success(request, 'Subcategory deleted successfully.')
