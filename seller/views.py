@@ -662,10 +662,9 @@ def not_seller(request):
     return HttpResponse("⛔ You are not allowed to access seller pages.")
 
 
-@login_required()
+@login_required
 @seller_required
 def product_details(request, slug):
-
     product = get_object_or_404(
         Product,
         slug=slug,
@@ -687,12 +686,27 @@ def product_details(request, slug):
     order_items = OrderItem.objects.filter(product=product)
 
     total_quantity_sold = (
-        order_items.aggregate(q=Sum("quantity"))["q"] or 0
+            order_items.aggregate(q=Sum("quantity"))["q"] or 0
     )
 
     order_count = order_items.values("order").distinct().count()
-    images = product.images.all()
-    main_image = product.images.first()
+
+    # Fetch images based on type
+    main_image = product.images.filter(image_type='Main').first()
+    gallery_images = product.images.filter(image_type='Gallery').order_by('id')
+
+    # Fallback: If no explicit Main image, use the first image as Main (if any exist)
+    # This prevents the page from looking broken if the user forgot to set a Main image.
+    if not main_image and product.images.exists():
+        main_image = product.images.first()
+        # If we promoted a gallery image to main, exclude it from gallery to avoid duplication
+        # However, typically we just want to ensure at least one image shows.
+        # If strict type adherence is desired, we strictly use the filtered sets.
+        # But for robustness:
+        if main_image in gallery_images:
+            gallery_images = gallery_images.exclude(id=main_image.id)
+
+    total_images_count = (1 if main_image else 0) + gallery_images.count()
 
     return render(
         request,
@@ -704,8 +718,9 @@ def product_details(request, slug):
             "avg_rating": round(avg_rating, 1),
             "total_quantity_sold": total_quantity_sold,
             "order_count": order_count,
-            "images": images,
             "main_image": main_image,
+            "gallery_images": gallery_images,
+            "total_images_count": total_images_count,
         }
     )
 

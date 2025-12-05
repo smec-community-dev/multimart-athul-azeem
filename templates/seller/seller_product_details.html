@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-color: #FF7F32;
@@ -20,8 +23,8 @@
             --bg-color: #F5F5F5;
             --card-bg: #FFFFFF;
             --border-color: #E0E0E0;
-            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-medium: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Open Sans', sans-serif;
         }
@@ -32,7 +35,8 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             overflow-x: hidden;
@@ -152,8 +156,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         .profile-toggle {
@@ -240,6 +251,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -429,6 +441,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -553,6 +566,7 @@
                 opacity: 0;
                 transform: scale(0.95);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -652,18 +666,36 @@
             animation: slideUp 0.5s ease-out backwards;
         }
 
-        .thumbnail:nth-child(1) { animation-delay: 0.1s; }
-        .thumbnail:nth-child(2) { animation-delay: 0.15s; }
-        .thumbnail:nth-child(3) { animation-delay: 0.2s; }
-        .thumbnail:nth-child(4) { animation-delay: 0.25s; }
-        .thumbnail:nth-child(5) { animation-delay: 0.3s; }
-        .thumbnail:nth-child(6) { animation-delay: 0.35s; }
+        .thumbnail:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .thumbnail:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .thumbnail:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .thumbnail:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .thumbnail:nth-child(5) {
+            animation-delay: 0.3s;
+        }
+
+        .thumbnail:nth-child(6) {
+            animation-delay: 0.35s;
+        }
 
         @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -843,9 +875,17 @@
             animation: fadeInUp 0.6s ease backwards;
         }
 
-        .review-item:nth-child(1) { animation-delay: 0.5s; }
-        .review-item:nth-child(2) { animation-delay: 0.55s; }
-        .review-item:nth-child(3) { animation-delay: 0.6s; }
+        .review-item:nth-child(1) {
+            animation-delay: 0.5s;
+        }
+
+        .review-item:nth-child(2) {
+            animation-delay: 0.55s;
+        }
+
+        .review-item:nth-child(3) {
+            animation-delay: 0.6s;
+        }
 
         .review-item:last-child {
             border-bottom: none;
@@ -1036,6 +1076,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -1407,6 +1448,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <div class="navbar-left">
@@ -1455,7 +1497,7 @@
                             </div>
                         </div>
                         <!-- STORE SETTINGS -->
-    <div class="dropdown-divider"></div>
+                        <div class="dropdown-divider"></div>
                         <!-- NOTIFICATIONS -->
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
@@ -1468,11 +1510,11 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                             <a href="{% url 'seller:help_support'  %}">
-                                    <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Help & Support</div>
-                                <div class="dropdown-item-desc">FAQs & contact support</div>
-                            </div>
+                            <a href="{% url 'seller:help_support'  %}">
+                                <div class="dropdown-item-text">
+                                    <div class="dropdown-item-label">Help & Support</div>
+                                    <div class="dropdown-item-desc">FAQs & contact support</div>
+                                </div>
                             </a>
                         </div>
                         <!-- HELP -->
@@ -1499,8 +1541,8 @@
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                             <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'seller:add' %}"  class="active"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}" class="active"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
             </ul>
@@ -1531,54 +1573,44 @@
                         <div class="slideshow-slides">
                             <div class="slideshow-slide active">
                                 {% if main_image %}
-                                    <img src="{{ main_image.image.url }}" alt="Main Product Image">
+                                <img src="{{ main_image.image.url }}" alt="Main Product Image">
                                 {% else %}
-                                    <span class="slideshow-placeholder">📱</span>
+                                <span class="slideshow-placeholder">📱</span>
                                 {% endif %}
                             </div>
-                            {% for img in images %}
+                            {% for img in gallery_images %}
                             <div class="slideshow-slide">
                                 <img src="{{ img.image.url }}" alt="Product Image">
                             </div>
-                            {% empty %}
-                            <!-- Debug: Add this temporarily to see if loop runs -->
-                            <div style="color: red; font-size: 12px;">DEBUG: No gallery images</div>
                             {% endfor %}
                         </div>
 
                         <!-- Arrows & Dots: Show only if total >1 -->
-                        {% with total_images=main_image|yesno:"1,0"|add:images|length %}
-                        {% if total_images > 1 %}
+                        {% if total_images_count > 1 %}
                         <button class="slideshow-arrow prev" onclick="changeSlide(-1)">❮</button>
                         <button class="slideshow-arrow next" onclick="changeSlide(1)">❯</button>
                         <div class="slideshow-nav">
                             <div class="slideshow-dot active" onclick="currentSlide(0)"></div>
-                            {% for img in images %}
+                            {% for img in gallery_images %}
                             <div class="slideshow-dot" onclick="currentSlide({{ forloop.counter }})"></div>
-                            {% empty %}
-                            <!-- No extra dots if no gallery -->
                             {% endfor %}
                         </div>
                         {% endif %}
-                        {% endwith %}
                     </div>
 
                     <!-- Thumbnails -->
                     <div class="thumbnail-grid">
                         <div class="thumbnail active" onclick="currentSlide(0)">
                             {% if main_image %}
-                                <img src="{{ main_image.image.url }}" alt="Thumbnail">
+                            <img src="{{ main_image.image.url }}" alt="Thumbnail">
                             {% else %}
-                                📱
+                            📱
                             {% endif %}
                         </div>
-                        {% for img in images %}
+                        {% for img in gallery_images %}
                         <div class="thumbnail" onclick="currentSlide({{ forloop.counter }})">
                             <img src="{{ img.image.url }}" alt="Thumbnail">
                         </div>
-                        {% empty %}
-                        <!-- Debug: Add this temporarily -->
-                        <div style="color: red; font-size: 12px;">DEBUG: No gallery thumbnails</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -1682,7 +1714,8 @@
                 <h2 class="modal-title">✏️ Edit Product</h2>
                 <button type="button" class="close-btn" onclick="closeEditModal()">✕</button>
             </div>
-            <form id="editForm" method="POST" action="{% url 'seller:update' product.slug %}" enctype="multipart/form-data">
+            <form id="editForm" method="POST" action="{% url 'seller:update' product.slug %}"
+                enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-group">
                     <label>Product Name</label>
@@ -1723,14 +1756,16 @@
                     <label>Main Image</label>
                     <input type="file" name="main_image" id="edit-main-image" accept="image/*">
                     <div class="thumbnails-container" id="edit-main-preview"></div>
-                    <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Leave empty to keep current image.</p>
+                    <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Leave empty to keep current
+                        image.</p>
                 </div>
                 <div class="form-group">
                     <label>Gallery Images</label>
                     <input type="file" name="gallery_images" id="edit-gallery-images" multiple accept="image/*">
                     <div class="thumbnails-container" id="edit-gallery-preview"></div>
                     <input type="hidden" name="remaining_images" id="remaining-images" value="[]">
-                    <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Add new images or remove existing ones below.</p>
+                    <p style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Add new images or remove
+                        existing ones below.</p>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
@@ -1748,7 +1783,8 @@
                         <span>🛍️</span>
                         <span>ShopHub</span>
                     </div>
-                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
+                    <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and
+                        more.</p>
                     <div class="social-links">
                         <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
                         <a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
@@ -1759,10 +1795,10 @@
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
-                   <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
-                <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
-                <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
-                <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
+                        <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
+                        <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
+                        <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
+                        <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -1907,7 +1943,7 @@
             }
 
             // Handle gallery images preview - FIXED
-            const galleryUrlsRaw = "{% for img in images %}'{{ img.image.url|escapejs }}',{% endfor %}";
+            const galleryUrlsRaw = "{% for img in gallery_images %}'{{ img.image.url|escapejs }}',{% endfor %}";
             let galleryUrls = [];
             if (galleryUrlsRaw.trim() !== '') {
                 const cleaned = galleryUrlsRaw.replace(/'/g, '').split(',').map(url => url.trim()).filter(url => url);
@@ -1941,7 +1977,7 @@
         }
 
         document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === this) {
                     this.classList.remove('show');
                 }
@@ -1957,7 +1993,7 @@
         /* -------------------------------
            📌 FORM SUBMIT WITH AJAX
         --------------------------------*/
-        document.getElementById('editForm').addEventListener('submit', function(e) {
+        document.getElementById('editForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const formData = new FormData(this);
@@ -1969,25 +2005,25 @@
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
                 }
             })
-            .then(response => {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    return response.json().then(data => {
-                        if (data.success) {
-                            alert('Product updated successfully!');
-                            closeEditModal();
-                            location.reload();
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating product');
-            });
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        return response.json().then(data => {
+                            if (data.success) {
+                                alert('Product updated successfully!');
+                                closeEditModal();
+                                location.reload();
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating product');
+                });
         });
 
         // Image Preview Functions
@@ -1999,7 +2035,7 @@
                 Array.from(files).forEach((file, index) => {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             const imgContainer = document.createElement('div');
                             imgContainer.className = 'thumbnail-container' + (isMain && index === 0 ? ' current-main' : '');
                             imgContainer.innerHTML = `
@@ -2019,11 +2055,11 @@
         }
 
         // Event Listeners for file inputs
-        document.getElementById('edit-main-image').addEventListener('change', function() {
+        document.getElementById('edit-main-image').addEventListener('change', function () {
             previewImage(this, 'edit-main-preview', true);
         });
 
-        document.getElementById('edit-gallery-images').addEventListener('change', function() {
+        document.getElementById('edit-gallery-images').addEventListener('change', function () {
             const newFiles = Array.from(this.files);
             editNewFiles = editNewFiles.concat(newFiles);
             this.value = '';
@@ -2033,7 +2069,7 @@
         /* -------------------------------
            ⌨ Keyboard Navigation
         --------------------------------*/
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'ArrowLeft') changeSlide(-1);
             if (e.key === 'ArrowRight') changeSlide(1);
         });
@@ -2070,14 +2106,15 @@
         }
 
         // After currentSlide function, add this debug
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const slides = document.querySelectorAll('.slideshow-slide');
             const thumbs = document.querySelectorAll('.thumbnail');
             console.log('DEBUG JS: Total slides:', slides.length);
             console.log('DEBUG JS: Total thumbs:', thumbs.length);
-            console.log('DEBUG JS: Images var length:', {{ images|length }});  // Django var to JS
+            console.log('DEBUG JS: Images var length:', {{ gallery_images| length }});  // Django var to JS
         });
     </script>
 
 </body>
+
 </html>
