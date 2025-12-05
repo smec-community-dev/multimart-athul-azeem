@@ -1608,8 +1608,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button class="btn-primary" onclick="openEditModal()">✏ Edit</button>
-                        <button class="btn-danger" onclick="deleteProduct()">🗑 Delete</button>
+                        <button class="btn-primary" onclick="openEditModal()">✏️ Edit</button>
+                        <button class="btn-danger" onclick="deleteProduct()">🗑️ Delete</button>
                     </div>
                 </div>
             </div>
@@ -1679,7 +1679,7 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">✏ Edit Product</h2>
+                <h2 class="modal-title">✏️ Edit Product</h2>
                 <button type="button" class="close-btn" onclick="closeEditModal()">✕</button>
             </div>
             <form id="editForm" method="POST" action="{% url 'seller:update' product.slug %}" enctype="multipart/form-data">
@@ -1745,7 +1745,7 @@
             <div class="footer-grid">
                 <div>
                     <div class="footer-logo">
-                        <span>🛍</span>
+                        <span>🛍️</span>
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
@@ -1779,12 +1779,12 @@
                     <ul>
                         <li>📍 123 Shopping Street, Mumbai, India</li>
                         <li>📞 +91 98765 43210</li>
-                        <li>✉ support@shophub.com</li>
+                        <li>✉️ support@shophub.com</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                © 2024 ShopHub. All rights reserved. Made with ❤ for Sellers & Shoppers
+                © 2024 ShopHub. All rights reserved. Made with ❤️ for Sellers & Shoppers
             </div>
         </div>
     </footer>
@@ -1902,7 +1902,7 @@
             if (mainImageUrl && mainImageUrl !== "''") {
                 const imgContainer = document.createElement('div');
                 imgContainer.className = 'thumbnail-container current-main';
-                imgContainer.innerHTML = <img src="${mainImageUrl}" alt="Current Main Image">;
+                imgContainer.innerHTML = `<img src="${mainImageUrl}" alt="Current Main Image">`;
                 mainPreview.appendChild(imgContainer);
             }
 
