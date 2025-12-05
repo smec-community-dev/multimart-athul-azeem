@@ -840,7 +840,7 @@
 
                             {% if addresses %}
                                 {% for addr in addresses %}
-                                <label class="address-option flex p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl mb-2 md:mb-3 cursor-pointer">
+                                <label class="address-option saved-address-option flex p-3 md:p-4 border-2 border-gray-200 rounded-lg md:rounded-xl mb-2 md:mb-3 cursor-pointer">
                                     <input type="radio" name="selected_address" value="{{ addr.id }}" class="mr-2 md:mr-3 mt-1">
                                     <div class="flex-1">
                                         <p class="font-semibold text-gray-900 text-sm md:text-base">{{ addr.full_name }} - {{ addr.phone }}</p>
@@ -978,7 +978,7 @@
                         </div>
                         <div class="flex justify-between font-bold text-base md:text-lg mt-2 md:mt-3 pt-2 md:pt-3 border-t">
                             <span class="text-gray-900">Total</span>
-                            <span class="text-orange-500">₹{{ total }}</span>
+                           <span id="finalTotal" class="text-orange-500">₹{{ total }}</span>
                         </div>
                     </div>
                 </div>
@@ -1106,6 +1106,26 @@
                 const newAddressRadio = document.getElementById("newAddressRadio");
                 const useNewAddress = newAddressRadio && newAddressRadio.checked;
                 const requiredFields = ["full_name", "phone", "address_line1", "city", "state", "pincode", "country"];
+                // Extra validation for phone & pincode
+                if (useNewAddress) {
+                    let phoneField = form.querySelector("input[name='phone']");
+                    let pinField = form.querySelector("input[name='pincode']");
+
+                    let phone = phoneField.value.trim();
+                    let pincode = pinField.value.trim();
+
+                    if (!/^[0-9]{10}$/.test(phone)) {
+                        alert("Please enter a valid 10-digit phone number.");
+                        phoneField.focus();
+                        return;
+                    }
+
+                    if (!/^[0-9]{6}$/.test(pincode)) {
+                        alert("Please enter a valid 6-digit pincode.");
+                        pinField.focus();
+                        return;
+                    }
+                }
 
                 let addressData = {};
 
@@ -1154,7 +1174,6 @@
 
                 // Add other required data
                 formData.append('amount', calculateTotalAmount());
-                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
                 // Add buy now data if applicable
                 {% if buy_now %}
@@ -1168,7 +1187,7 @@
                 fetch("{% url 'user:create_order' %}", {
                     method: "POST",
                     headers: {
-                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
                         "X-Requested-With": "XMLHttpRequest"
                     },
                     body: formData
@@ -1196,11 +1215,9 @@
                     alert("Error saving address information. Please try again.");
                 });
             }
-
             function calculateTotalAmount() {
-                const totalElement = document.querySelector('.text-orange-500');
+                const totalElement = document.getElementById("finalTotal");
                 let totalAmount = 0;
-
                 if (totalElement) {
                     const totalText = totalElement.textContent.replace('₹', '').trim();
                     totalAmount = parseFloat(totalText) * 100; // Convert to paise
@@ -1300,20 +1317,24 @@
             }
 
             // Add address selection functionality
-            const addressOptions = document.querySelectorAll('.address-option');
-            addressOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Remove selected class from all options
-                    addressOptions.forEach(opt => opt.classList.remove('selected'));
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                    // Check the radio button
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
-                    }
-                });
+            const addressOptions = document.querySelectorAll('.saved-address-option');
+           addressOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                addressOptions.forEach(opt => opt.classList.remove('selected'));
+
+                this.classList.add('selected');
+
+                // Select saved address radio
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+
+                // VERY IMPORTANT FIX:
+                // Disable new address fields when saved address selected
+                if (newAddressRadio) newAddressRadio.checked = false;
+                disableNewAddress();
             });
+        });
+
 
             // Address toggling logic
             const savedAddressRadios = document.querySelectorAll("input[name='selected_address']");
@@ -1345,9 +1366,13 @@
 
             // On new radio change: enable new + uncheck saved
             if (newAddressRadio) {
-                newAddressRadio.addEventListener("change", function () {
-                    if (this.checked) enableNewAddress();
-                });
+               newAddressRadio.addEventListener("change", function () {
+                if (this.checked) {
+                    enableNewAddress();
+                    // Remove highlight from saved address boxes
+                    addressOptions.forEach(opt => opt.classList.remove('selected'));
+                }
+            });
             }
 
             // On new field input: auto-select new radio + enable
