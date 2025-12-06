@@ -1,411 +1,411 @@
-{% extends "user/base.html" %}
-{% block content %}
-    <!-- Hero Section with Slider -->
-    <section id="home" class="bg-white py-6 lg:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="slider rounded-2xl overflow-hidden h-64 sm:h-72 md:h-80 lg:h-96 relative">
-                {% for product in slider_products %}
-                <div class="slide {% if forloop.first %}active{% endif %} w-full h-full absolute top-0 left-0">
-                    <div class="w-full h-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 lg:px-16 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
-                        <div class="flex-1 fade-in text-center sm:text-left py-6 sm:py-0">
-                            <!-- Product Title -->
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
-                                {{ product.name }}
-                            </h1>
+    {% extends "user/base.html" %}
+    {% block content %}
+        <!-- Hero Section with Slider -->
+        <section id="home" class="bg-white py-6 lg:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="slider rounded-2xl overflow-hidden h-64 sm:h-72 md:h-80 lg:h-96 relative">
+                    {% for product in slider_products %}
+                    <div class="slide {% if forloop.first %}active{% endif %} w-full h-full absolute top-0 left-0">
+                        <div class="w-full h-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 lg:px-16 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
+                            <div class="flex-1 fade-in text-center sm:text-left py-6 sm:py-0">
+                                <!-- Product Title -->
+                                <h1 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+                                    {{ product.name }}
+                                </h1>
 
-                            <!-- Short line under title -->
-                            <p class="text-sm sm:text-base lg:text-lg text-purple-100 mb-6 sm:mb-8 font-medium">
-                                Latest trending deal from {{ product.subcategory.category.name }}
-                            </p>
+                                <!-- Short line under title -->
+                                <p class="text-sm sm:text-base lg:text-lg text-purple-100 mb-6 sm:mb-8 font-medium">
+                                    Latest trending deal from {{ product.subcategory.category.name }}
+                                </p>
 
-                            <!-- Button -->
-                            <a href="{% url 'user:product_detail' product.slug %}">
-                                <button class="px-6 py-2 sm:px-8 sm:py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate text-sm sm:text-base">
-                                    {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' %}
-                                </button>
-                            </a>
-                        </div>
+                                <!-- Button -->
+                                <a href="{% url 'user:product_detail' product.slug %}">
+                                    <button class="px-6 py-2 sm:px-8 sm:py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate text-sm sm:text-base">
+                                        {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' %}
+                                    </button>
+                                </a>
+                            </div>
 
-                        <!-- Product Main Image -->
-                        <div class="flex-1 text-center hidden sm:block">
-                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
-                                 class="w-40 h-40 sm:w-48 sm:h-48 lg:w-64 lg:h-64 object-cover rounded-lg shadow-lg mx-auto">
+                            <!-- Product Main Image -->
+                            <div class="flex-1 text-center hidden sm:block">
+                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
+                                     class="w-40 h-40 sm:w-48 sm:h-48 lg:w-64 lg:h-64 object-cover rounded-lg shadow-lg mx-auto">
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
+
+                    <!-- Slider controls -->
+                    <button class="arrow arrow-left" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="arrow arrow-right" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+
+                    <!-- Dots -->
+                    <div class="slider-nav">
+                        {% for product in slider_products %}
+                        <span class="dot {% if forloop.first %}active{% endif %}" onclick="currentSlide({{ forloop.counter0 }})"></span>
+                        {% endfor %}
+                    </div>
                 </div>
-                {% endfor %}
+            </div>
+        </section>
 
-                <!-- Slider controls -->
-                <button class="arrow arrow-left" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="arrow arrow-right" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+        {% if query %}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10">
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 text-center">
+                Search Results for "{{ query }}"
+            </h2>
 
-                <!-- Dots -->
-                <div class="slider-nav">
-                    {% for product in slider_products %}
-                    <span class="dot {% if forloop.first %}active{% endif %}" onclick="currentSlide({{ forloop.counter0 }})"></span>
+            <div class="mt-6 sm:mt-10">
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                    {% for product in products %}
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
+                        <a href="{% url 'user:product_detail' product.slug %}">
+                            <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
+                                <img src="{{ product.images.first.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                            </div>
+                            <div class="p-4 sm:p-6">
+                                <span class="inline-block px-2 py-1 sm:px-3 sm:py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-2 sm:mb-3">
+                                    {{ product.subcategory.category.name }}
+                                </span>
+                                <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 truncate">{{ product.name }}</h3>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">₹{{ product.price }}</p>
+                            </div>
+                        </a>
+                    </div>
+                    {% empty %}
+                    <p class="col-span-full text-center text-gray-500 text-base sm:text-lg py-8">
+                        No products found.
+                    </p>
                     {% endfor %}
                 </div>
             </div>
         </div>
-    </section>
+        {% endif %}
 
-    {% if query %}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10">
-        <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 text-center">
-            Search Results for "{{ query }}"
-        </h2>
+        <!-- Features / Highlights Section -->
+        <section class="bg-gray-50 py-12 lg:py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Why Choose ShopHub?</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                        <div class="text-4xl sm:text-5xl mb-4 text-orange-500">🚚</div>
+                        <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Free Shipping</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">On all orders over ₹500. Fast and reliable delivery</p>
+                    </div>
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                        <div class="text-4xl sm:text-5xl mb-4 text-orange-500">💳</div>
+                        <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Secure Payment</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">Multiple payment methods with 100% security</p>
+                    </div>
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                        <div class="text-4xl sm:text-5xl mb-4 text-orange-500">🔄</div>
+                        <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Easy Returns</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">30-day hassle-free return policy guaranteed</p>
+                    </div>
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
+                        <div class="text-4xl sm:text-5xl mb-4 text-orange-500">💬</div>
+                        <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">24/7 Support</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">Dedicated team ready to help anytime</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <div class="mt-6 sm:mt-10">
-            <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {% for product in products %}
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
-                    <a href="{% url 'user:product_detail' product.slug %}">
-                        <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
-                            <img src="{{ product.images.first.image.url }}"
-                                 alt="{{ product.name }}"
-                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+        <!-- Category Strip -->
+        <section class="bg-white border-b border-gray-200 py-10 lg:py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Shop by Category</h2>
+                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+                    <a href="{% url 'user:category_products' 'electronics' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-purple-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                📱
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Electronics</p>
                         </div>
-                        <div class="p-4 sm:p-6">
-                            <span class="inline-block px-2 py-1 sm:px-3 sm:py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-2 sm:mb-3">
-                                {{ product.subcategory.category.name }}
-                            </span>
-                            <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 truncate">{{ product.name }}</h3>
-                            <p class="text-xl sm:text-2xl font-bold text-gray-900">₹{{ product.price }}</p>
+                    </a>
+                    <a href="{% url 'user:category_products' 'fashion' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                👗
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Fashion</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'user:category_products' 'cosmetics' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3050/3050159.png" alt="Cosmetic"
+                                    class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 object-contain" />
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Cosmetics</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'user:category_products' 'gaming' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-green-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                🎮
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Gaming</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'user:category_products' 'books' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-yellow-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                📚
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Books</p>
+                        </div>
+                    </a>
+                    <a href="{% url 'user:category_products' 'wearables' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-red-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                ⌚
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Wearables</p>
                         </div>
                     </a>
                 </div>
-                {% empty %}
-                <p class="col-span-full text-center text-gray-500 text-base sm:text-lg py-8">
-                    No products found.
-                </p>
-                {% endfor %}
             </div>
-        </div>
-    </div>
-    {% endif %}
+        </section>
 
-    <!-- Features / Highlights Section -->
-    <section class="bg-gray-50 py-12 lg:py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Why Choose ShopHub?</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
-                    <div class="text-4xl sm:text-5xl mb-4 text-orange-500">🚚</div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Free Shipping</h3>
-                    <p class="text-gray-600 text-sm sm:text-base">On all orders over ₹500. Fast and reliable delivery</p>
+        <!-- Best Sellers Section -->
+        <section id="best-sellers" class="py-12 lg:py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12">
+                    <div class="mb-4 sm:mb-0">
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Best Sellers</h2>
+                        <p class="text-gray-600 text-sm sm:text-base">Popular items customers love</p>
+                    </div>
+
+                    <a href="{% url 'user:products_list' %}"
+                       class="text-orange-500 font-bold hover:text-orange-600 text-sm sm:text-base">
+                       View All <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
                 </div>
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
-                    <div class="text-4xl sm:text-5xl mb-4 text-orange-500">💳</div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Secure Payment</h3>
-                    <p class="text-gray-600 text-sm sm:text-base">Multiple payment methods with 100% security</p>
-                </div>
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
-                    <div class="text-4xl sm:text-5xl mb-4 text-orange-500">🔄</div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">Easy Returns</h3>
-                    <p class="text-gray-600 text-sm sm:text-base">30-day hassle-free return policy guaranteed</p>
-                </div>
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
-                    <div class="text-4xl sm:text-5xl mb-4 text-orange-500">💬</div>
-                    <h3 class="text-lg sm:text-xl font-bold mb-3 text-gray-900">24/7 Support</h3>
-                    <p class="text-gray-600 text-sm sm:text-base">Dedicated team ready to help anytime</p>
+
+                <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                    {% for product in bestseller_products %}
+                    <a href="{% url 'user:product_detail' product.slug %}" class="block">
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
+                            <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
+                                {% if product.images.first %}
+                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
+                                     class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                                {% endif %}
+                            </div>
+
+                            <div class="p-4 sm:p-6">
+                                <span class="inline-block px-2 py-1 sm:px-3 sm:py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-2 sm:mb-3">
+                                    {{ product.subcategory.category.name }}
+                                </span>
+
+                                <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 truncate">{{ product.name }}</h3>
+
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">₹{{ product.price }}</p>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p class="text-center col-span-full text-red-500 font-bold py-8">No Best Sellers Available</p>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Category Strip -->
-    <section class="bg-white border-b border-gray-200 py-10 lg:py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Shop by Category</h2>
-            <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-                <a href="{% url 'user:category_products' 'electronics' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-purple-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            📱
-                        </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Electronics</p>
+        <!-- About Section -->
+        <section id="about" class="py-12 lg:py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <div class="animate-on-scroll order-2 lg:order-1">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                            alt="About ShopHub" class="rounded-xl shadow-lg w-full">
                     </div>
-                </a>
-                <a href="{% url 'user:category_products' 'fashion' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            👗
+                    <div class="animate-on-scroll order-1 lg:order-2">
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">About ShopHub</h2>
+                        <p class="text-gray-600 text-base sm:text-lg mb-4">ShopHub is your ultimate e-commerce destination, bringing
+                            together the best products from trusted brands and sellers worldwide.</p>
+                        <p class="text-gray-600 text-base sm:text-lg mb-6">We believe in providing exceptional shopping experiences with
+                            quality products, competitive prices, and outstanding customer service.</p>
+                        <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                            <div class="bg-orange-50 p-4 sm:p-6 rounded-lg">
+                                <h3 class="text-2xl sm:text-3xl font-bold text-orange-500 mb-2">10M+</h3>
+                                <p class="text-gray-600 text-sm sm:text-base">Happy Customers</p>
+                            </div>
+                            <div class="bg-orange-50 p-4 sm:p-6 rounded-lg">
+                                <h3 class="text-2xl sm:text-3xl font-bold text-orange-500 mb-2">50K+</h3>
+                                <p class="text-gray-600 text-sm sm:text-base">Products Available</p>
+                            </div>
                         </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Fashion</p>
+                        <a href="{% url 'user:about' %}">
+                            <button class="px-6 py-2 sm:px-8 sm:py-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition btn-animate text-sm sm:text-base">
+                                Learn More
+                            </button>
+                        </a>
                     </div>
-                </a>
-                <a href="{% url 'user:category_products' 'cosmetics' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-pink-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3050/3050159.png" alt="Cosmetic"
-                                class="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 object-contain" />
-                        </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Cosmetics</p>
-                    </div>
-                </a>
-                <a href="{% url 'user:category_products' 'gaming' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-green-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            🎮
-                        </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Gaming</p>
-                    </div>
-                </a>
-                <a href="{% url 'user:category_products' 'books' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-yellow-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            📚
-                        </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Books</p>
-                    </div>
-                </a>
-                <a href="{% url 'user:category_products' 'wearables' %}">
-                    <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-red-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
-                            ⌚
-                        </div>
-                        <p class="font-semibold text-xs sm:text-sm lg:text-base">Wearables</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Best Sellers Section -->
-    <section id="best-sellers" class="py-12 lg:py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12">
-                <div class="mb-4 sm:mb-0">
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Best Sellers</h2>
-                    <p class="text-gray-600 text-sm sm:text-base">Popular items customers love</p>
                 </div>
-
-                <a href="{% url 'user:products_list' %}"
-                   class="text-orange-500 font-bold hover:text-orange-600 text-sm sm:text-base">
-                   View All <i class="fas fa-arrow-right ml-2"></i>
-                </a>
             </div>
+        </section>
 
-            <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {% for product in bestseller_products %}
-                <a href="{% url 'user:product_detail' product.slug %}" class="block">
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
-                        <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
-                            {% if product.images.first %}
-                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
-                                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
-                            {% endif %}
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="py-12 lg:py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">What Our Customers Say</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
+                                AR
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-sm sm:text-base">Arjun Reddy</h3>
+                                <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
+                            </div>
                         </div>
-
-                        <div class="p-4 sm:p-6">
-                            <span class="inline-block px-2 py-1 sm:px-3 sm:py-1 bg-orange-100 text-orange-600 text-xs font-bold rounded-full mb-2 sm:mb-3">
-                                {{ product.subcategory.category.name }}
-                            </span>
-
-                            <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 truncate">{{ product.name }}</h3>
-
-                            <p class="text-xl sm:text-2xl font-bold text-gray-900">₹{{ product.price }}</p>
-                        </div>
+                        <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
+                        <p class="text-gray-600 text-sm sm:text-base">"Great products and fast shipping! The customer service is amazing and resolved my issue within minutes."</p>
                     </div>
-                </a>
-                {% empty %}
-                <p class="text-center col-span-full text-red-500 font-bold py-8">No Best Sellers Available</p>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-12 lg:py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-                <div class="animate-on-scroll order-2 lg:order-1">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
-                        alt="About ShopHub" class="rounded-xl shadow-lg w-full">
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
+                                PS
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-sm sm:text-base">Priya Singh</h3>
+                                <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
+                            </div>
+                        </div>
+                        <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
+                        <p class="text-gray-600 text-sm sm:text-base">"Best prices I've found online. The return process is so simple and hassle-free. Highly recommend!"</p>
+                    </div>
+
+                    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
+                                RK
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 text-sm sm:text-base">Rajesh Kumar</h3>
+                                <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
+                            </div>
+                        </div>
+                        <div class="text-yellow-400 text-sm mb-4">★★★★☆</div>
+                        <p class="text-gray-600 text-sm sm:text-base">"Wide variety of products at reasonable prices. Delivery was on time and packaging was excellent."</p>
+                    </div>
                 </div>
-                <div class="animate-on-scroll order-1 lg:order-2">
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">About ShopHub</h2>
-                    <p class="text-gray-600 text-base sm:text-lg mb-4">ShopHub is your ultimate e-commerce destination, bringing
-                        together the best products from trusted brands and sellers worldwide.</p>
-                    <p class="text-gray-600 text-base sm:text-lg mb-6">We believe in providing exceptional shopping experiences with
-                        quality products, competitive prices, and outstanding customer service.</p>
-                    <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                        <div class="bg-orange-50 p-4 sm:p-6 rounded-lg">
-                            <h3 class="text-2xl sm:text-3xl font-bold text-orange-500 mb-2">10M+</h3>
-                            <p class="text-gray-600 text-sm sm:text-base">Happy Customers</p>
-                        </div>
-                        <div class="bg-orange-50 p-4 sm:p-6 rounded-lg">
-                            <h3 class="text-2xl sm:text-3xl font-bold text-orange-500 mb-2">50K+</h3>
-                            <p class="text-gray-600 text-sm sm:text-base">Products Available</p>
-                        </div>
-                    </div>
-                    <a href="{% url 'user:about' %}">
-                        <button class="px-6 py-2 sm:px-8 sm:py-3 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition btn-animate text-sm sm:text-base">
-                            Learn More
+            </div>
+        </section>
+
+        <!-- CTA Banner Section -->
+        <section class="py-12 lg:py-20 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 animate-on-scroll">Ready to Start Shopping?</h2>
+                <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-orange-100 animate-on-scroll">Join millions of happy customers and discover amazing deals today!</p>
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                    <a href="{% url 'user:products_list' %}">
+                        <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
+                            Start Shopping Now
+                        </button>
+                    </a>
+                    <a href="{% url 'user:products_list' %}">
+                        <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
+                            View All Deals
                         </button>
                     </a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    {% endblock %}
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-12 lg:py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">What Our Customers Say</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
-                            AR
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-sm sm:text-base">Arjun Reddy</h3>
-                            <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
-                    <p class="text-gray-600 text-sm sm:text-base">"Great products and fast shipping! The customer service is amazing and resolved my issue within minutes."</p>
-                </div>
+    {% block scripts %}
+    {{ block.super }}
+    <script>
+        // Slider functionality
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const slideCount = slides.length;
 
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
-                            PS
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-sm sm:text-base">Priya Singh</h3>
-                            <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 text-sm mb-4">★★★★★</div>
-                    <p class="text-gray-600 text-sm sm:text-base">"Best prices I've found online. The return process is so simple and hassle-free. Highly recommend!"</p>
-                </div>
-
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition animate-on-scroll">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-3 sm:mr-4">
-                            RK
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-sm sm:text-base">Rajesh Kumar</h3>
-                            <p class="text-xs sm:text-sm text-gray-600">Verified Buyer</p>
-                        </div>
-                    </div>
-                    <div class="text-yellow-400 text-sm mb-4">★★★★☆</div>
-                    <p class="text-gray-600 text-sm sm:text-base">"Wide variety of products at reasonable prices. Delivery was on time and packaging was excellent."</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Banner Section -->
-    <section class="py-12 lg:py-20 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 animate-on-scroll">Ready to Start Shopping?</h2>
-            <p class="text-lg sm:text-xl mb-6 sm:mb-8 text-orange-100 animate-on-scroll">Join millions of happy customers and discover amazing deals today!</p>
-            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                <a href="{% url 'user:products_list' %}">
-                    <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
-                        Start Shopping Now
-                    </button>
-                </a>
-                <a href="{% url 'user:products_list' %}">
-                    <button class="px-6 py-2 sm:px-8 sm:py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-orange-600 transition btn-animate text-sm sm:text-base w-full sm:w-auto">
-                        View All Deals
-                    </button>
-                </a>
-            </div>
-        </div>
-    </section>
-{% endblock %}
-
-{% block scripts %}
-{{ block.super }}
-<script>
-    // Slider functionality
-    let currentSlideIndex = 0;
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    const slideCount = slides.length;
-
-    // Initialize slider
-    if (slides.length > 0) {
-        showSlide(currentSlideIndex);
-    }
-
-    // Function to change slide
-    function changeSlide(n) {
-        showSlide(currentSlideIndex + n);
-    }
-
-    // Function to show a specific slide
-    function currentSlide(n) {
-        showSlide(n);
-    }
-
-    // Main function to display slides
-    function showSlide(n) {
-        if (slides.length === 0) return;
-
-        // Update current slide index
-        currentSlideIndex = (n + slideCount) % slideCount;
-
-        // Hide all slides and remove active class from dots
-        slides.forEach(slide => {
-            slide.classList.remove('active');
-            slide.style.display = 'none';
-        });
-        dots.forEach(dot => dot.classList.remove('active'));
-
-        // Show current slide and activate corresponding dot
-        slides[currentSlideIndex].classList.add('active');
-        slides[currentSlideIndex].style.display = 'flex';
-        dots[currentSlideIndex].classList.add('active');
-    }
-
-    // Auto slide change every 5 seconds
-    if (slides.length > 0) {
-        setInterval(() => {
-            changeSlide(1);
-        }, 5000);
-    }
-
-    // Scroll animations
-    document.addEventListener('DOMContentLoaded', function () {
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
-
-        // Function to check if element is in viewport
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
-                rect.bottom >= 0
-            );
+        // Initialize slider
+        if (slides.length > 0) {
+            showSlide(currentSlideIndex);
         }
 
-        // Function to handle scroll event
-        function handleScroll() {
-            animatedElements.forEach(element => {
-                if (isInViewport(element)) {
-                    element.classList.add('animated');
-                }
+        // Function to change slide
+        function changeSlide(n) {
+            showSlide(currentSlideIndex + n);
+        }
+
+        // Function to show a specific slide
+        function currentSlide(n) {
+            showSlide(n);
+        }
+
+        // Main function to display slides
+        function showSlide(n) {
+            if (slides.length === 0) return;
+
+            // Update current slide index
+            currentSlideIndex = (n + slideCount) % slideCount;
+
+            // Hide all slides and remove active class from dots
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
             });
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // Show current slide and activate corresponding dot
+            slides[currentSlideIndex].classList.add('active');
+            slides[currentSlideIndex].style.display = 'flex';
+            dots[currentSlideIndex].classList.add('active');
         }
 
-        // Initial check on page load
-        handleScroll();
-
-        // Check on scroll
-        window.addEventListener('scroll', handleScroll);
-    });
-
-    // Mobile menu functionality
-    function toggleMobileMenu() {
-        const menu = document.getElementById("mobileMenu");
-        if (menu) {
-            menu.classList.toggle("hidden");
+        // Auto slide change every 5 seconds
+        if (slides.length > 0) {
+            setInterval(() => {
+                changeSlide(1);
+            }, 5000);
         }
-    }
-</script>
-{% endblock %}
+
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                    rect.bottom >= 0
+                );
+            }
+
+            // Function to handle scroll event
+            function handleScroll() {
+                animatedElements.forEach(element => {
+                    if (isInViewport(element)) {
+                        element.classList.add('animated');
+                    }
+                });
+            }
+
+            // Initial check on page load
+            handleScroll();
+
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobileMenu");
+            if (menu) {
+                menu.classList.toggle("hidden");
+            }
+        }
+    </script>
+    {% endblock %}

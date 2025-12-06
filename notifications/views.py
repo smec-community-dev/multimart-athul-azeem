@@ -114,3 +114,31 @@ def notifications_dropdown_list(request):  # ← Renamed for consistency
         for n in notifications
     ]
     return JsonResponse({"notifications": data})
+
+@login_required
+def user_notifications_page(request):
+    user = request.user
+
+    notifications = Notification.objects.filter(user=user).order_by("-created_at")
+
+    search_q = request.GET.get("search")
+    if search_q:
+        notifications = notifications.filter(
+            Q(title__icontains=search_q) | Q(body__icontains=search_q)
+        )
+
+    status = request.GET.get("status")
+    if status == "unread":
+        notifications = notifications.filter(is_read=False)
+    elif status == "read":
+        notifications = notifications.filter(is_read=True)
+
+    paginator = Paginator(notifications, 10)
+    notifications_page = paginator.get_page(request.GET.get("page"))
+
+    context = {
+        "notifications": notifications_page,
+        "is_seller": False,
+    }
+
+    return render(request, "user/notifications.html", context)

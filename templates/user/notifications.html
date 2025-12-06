@@ -1,0 +1,661 @@
+
+{% extends "user/base.html" %}
+
+{% block extra_css %}
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .fade-in {
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .slide-in {
+        animation: slideInLeft 0.6s ease-out;
+    }
+
+    /* Animation for elements on scroll */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .animate-on-scroll.animated {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Animation for notification items */
+    .notification-item {
+        transition: all 0.3s ease;
+    }
+
+    .notification-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mark all as read button */
+    .mark-all-read-btn {
+        background: #ff8c00;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .mark-all-read-btn:hover:not(:disabled) {
+        background: #e67e00;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    .mark-all-read-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Single read button */
+    .mark-read-btn {
+        background: none;
+        border: none;
+        color: #ff8c00;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: color 0.3s ease;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+    }
+
+    .mark-read-btn:hover {
+        color: #e67e00;
+        background: rgba(255, 140, 0, 0.1);
+    }
+
+    .no-notifications-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .notification-container {
+            padding: 1rem;
+        }
+
+        .notification-item {
+            padding: 1rem;
+        }
+
+        .mark-all-read-btn {
+            padding: 8px 16px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+        }
+    }
+
+    /* Success message */
+    .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #c3e6cb;
+        display: none;
+    }
+
+    /* Toast for AJAX success */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+        transform: translateX(0);
+    }
+
+    .unread-badge {
+        display: inline-block;
+        background: #ff8c00;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 notification-container">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 sm:mb-8 fade-in text-center sm:text-left">
+        Notifications
+        {% if notifications.paginator.count %}
+            <span class="unread-badge">{{ notifications.paginator.count }}</span>
+        {% endif %}
+    </h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success-message" style="display: block;">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        {% if notifications %}
+            <div class="flex justify-between items-center mb-4 sm:mb-6">
+                <div class="text-sm text-gray-600">
+                    Showing <strong>{{ notifications.start_index }}</strong> to <strong>{{ notifications.end_index }}</strong> of <strong>{{ notifications.paginator.count }}</strong> notifications
+                </div>
+                <button id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}">Mark all as read</button>
+            </div>
+        {% else %}
+            <div class="flex justify-end mb-4 sm:mb-6">
+                <button id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}" disabled>Mark all as read</button>
+            </div>
+        {% endif %}
+
+        <div id="successToast" class="toast"></div>
+
+        {% if notifications %}
+            <div class="space-y-3 sm:space-y-4 animate-on-scroll">
+                {% for notification in notifications %}
+                    <div class="p-4 sm:p-5 rounded-lg bg-white border border-gray-200 notification-item {% if not notification.is_read %}bg-blue-50 border-blue-200{% endif %}" data-notification-id="{{ notification.id }}">
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ notification.title }}</h3>
+                                    {% if not notification.is_read %}
+                                        <span class="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-gray-700 mb-2 text-sm sm:text-base line-clamp-3">{{ notification.body }}</p>
+                                <span class="text-xs sm:text-sm text-gray-500 font-medium">{{ notification.created_at|date:"M d, Y H:i" }}</span>
+                            </div>
+                            {% if not notification.is_read %}
+                                <button class="mark-read-btn flex-shrink-0 whitespace-nowrap" data-notification-id="{{ notification.id }}" data-url="{% url 'not:mark_read' notification.id %}" title="Mark as read">
+                                    ✓
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if notifications.has_other_pages %}
+                <nav class="mt-6 sm:mt-8 flex justify-center">
+                    <ul class="flex flex-wrap gap-2 justify-center">
+                        {% if notifications.has_previous %}
+                            <li>
+                                <a href="?page={{ notifications.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors duration-200 text-sm">
+                                    Previous
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in notifications.paginator.page_range %}
+                            {% if notifications.number == num %}
+                                <li>
+                                    <span class="px-3 py-2 bg-orange-500 text-white rounded font-medium text-sm">{{ num }}</span>
+                                </li>
+                            {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                                <li>
+                                    <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors duration-200 text-sm">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if notifications.has_next %}
+                            <li>
+                                <a href="?page={{ notifications.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors duration-200 text-sm">
+                                    Next
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-12 sm:py-16 text-center">
+                <div class="no-notifications-icon">🔔</div>
+                <p class="text-gray-500 text-lg sm:text-xl font-medium">No notifications yet</p>
+                <p class="text-gray-400 text-sm sm:text-base mt-2">You're all caught up!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Pre-generate URLs for AJAX calls
+    window.NOTIFICATION_URLS = {
+        unreadCount: "{% url 'not:unread_count' %}",
+        markAllRead: "{% url 'not:mark_all_read' %}",
+        notificationsList: "{% url 'not:user_notifications' %}"
+    };
+</script>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    // Get CSRF token
+    function getCSRFToken() {
+        const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return tokenElement ? tokenElement.value : '';
+    }
+
+    // Update notification badge
+    function updateBadge(count) {
+        const badge = document.querySelector('.notification-badge');
+        const bell = document.querySelector('.notification-bell');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'flex';
+                if (bell) bell.classList.add('has-unread');
+            } else {
+                badge.style.display = 'none';
+                if (bell) bell.classList.remove('has-unread');
+            }
+        }
+    }
+
+    // Fetch and update badge count
+    function fetchAndUpdateBadge() {
+        fetch(window.NOTIFICATION_URLS.unreadCount, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateBadge(data.unread_count);
+        })
+        .catch(error => {
+            console.error('Error fetching unread count:', error);
+        });
+    }
+
+    // Show toast
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        if (toast) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Scroll animations
+    document.addEventListener('DOMContentLoaded', function () {
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                rect.bottom >= 0
+            );
+        }
+
+        function handleScroll() {
+            animatedElements.forEach(element => {
+                if (isInViewport(element)) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll);
+        fetchAndUpdateBadge();
+    });
+
+    // Mark single notification as read
+    document.addEventListener('DOMContentLoaded', function() {
+        const markReadButtons = document.querySelectorAll('.mark-read-btn');
+        markReadButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const notificationId = this.dataset.notificationId;
+                const notificationUrl = this.dataset.url;
+                const notificationItem = this.closest('.notification-item');
+                const btn = this;
+
+                fetch(notificationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        notificationItem.classList.remove('bg-blue-50', 'border-blue-200');
+                        btn.remove();
+                        showToast('Notification marked as read');
+                        fetchAndUpdateBadge();
+                    } else {
+                        throw new Error(data.error || 'Failed to mark as read');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error marking notification as read');
+                });
+            });
+        });
+    });
+
+    // Mark all as read
+    document.addEventListener('DOMContentLoaded', function() {
+        const markAllBtn = document.getElementById('markAllReadBtn');
+        if (markAllBtn) {
+            const markAllUrl = markAllBtn.dataset.url;
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const originalText = this.textContent;
+                this.disabled = true;
+                this.textContent = 'Marking...';
+
+                fetch(markAllUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item').forEach(item => {
+                            item.classList.remove('bg-blue-50', 'border-blue-200');
+                        });
+                        document.querySelectorAll('.mark-read-btn').forEach(btn => btn.remove());
+
+                        const count = data.updated_count || 0;
+                        showToast(`All ${count} notifications marked as read`);
+                        fetchAndUpdateBadge();
+
+                        this.textContent = 'All marked as read';
+                        setTimeout(() => {
+                            this.disabled = false;
+                            this.textContent = originalText;
+                        }, 2000);
+                    } else {
+                        throw new Error(data.error || 'Failed to mark all as read');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error marking notifications as read');
+                    this.disabled = false;
+                    this.textContent = originalText;
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+
+<script>
+    // Get CSRF token
+    function getCSRFToken() {
+        const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return tokenElement ? tokenElement.value : '';
+    }
+
+    // Update notification badge
+    function updateBadge(count) {
+        const badge = document.querySelector('.notification-badge');
+        const bell = document.querySelector('.notification-bell');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'flex';
+                if (bell) bell.classList.add('has-unread');
+            } else {
+                badge.style.display = 'none';
+                if (bell) bell.classList.remove('has-unread');
+            }
+        }
+    }
+
+    // Fetch and update badge count
+    function fetchAndUpdateBadge() {
+        fetch(window.NOTIFICATION_URLS.unreadCount, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateBadge(data.unread_count);
+        })
+        .catch(error => {
+            console.error('Error fetching unread count:', error);
+        });
+    }
+
+    // Show toast
+    function showToast(message) {
+        const toast = document.getElementById('successToast');
+        if (toast) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    // Scroll animations
+    document.addEventListener('DOMContentLoaded', function () {
+        const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+        function isInViewport(element) {
+            const rect = element.getBoundingClientRect();
+            return (
+                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
+                rect.bottom >= 0
+            );
+        }
+
+        function handleScroll() {
+            animatedElements.forEach(element => {
+                if (isInViewport(element)) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+
+        handleScroll();
+        window.addEventListener('scroll', handleScroll);
+        fetchAndUpdateBadge();
+    });
+
+    // Mark single notification as read
+    document.addEventListener('DOMContentLoaded', function() {
+        const markReadButtons = document.querySelectorAll('.mark-read-btn');
+        markReadButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const notificationId = this.dataset.notificationId;
+                const notificationUrl = this.dataset.url;
+                const notificationItem = this.closest('.notification-item');
+                const btn = this;
+
+                fetch(notificationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        notificationItem.classList.remove('bg-blue-50', 'border-blue-200');
+                        btn.remove();
+                        showToast('Notification marked as read');
+                        fetchAndUpdateBadge();
+                    } else {
+                        throw new Error(data.error || 'Failed to mark as read');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error marking notification as read');
+                });
+            });
+        });
+    });
+
+    // Mark all as read
+    document.addEventListener('DOMContentLoaded', function() {
+        const markAllBtn = document.getElementById('markAllReadBtn');
+        if (markAllBtn) {
+            const markAllUrl = markAllBtn.dataset.url;
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const originalText = this.textContent;
+                this.disabled = true;
+                this.textContent = 'Marking...';
+
+                fetch(markAllUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item').forEach(item => {
+                            item.classList.remove('bg-blue-50', 'border-blue-200');
+                        });
+                        document.querySelectorAll('.mark-read-btn').forEach(btn => btn.remove());
+
+                        const count = data.updated_count || 0;
+                        showToast(`All ${count} notifications marked as read`);
+                        fetchAndUpdateBadge();
+
+                        this.textContent = 'All marked as read';
+                        setTimeout(() => {
+                            this.disabled = false;
+                            this.textContent = originalText;
+                        }, 2000);
+                    } else {
+                        throw new Error(data.error || 'Failed to mark all as read');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error marking notifications as read');
+                    this.disabled = false;
+                    this.textContent = originalText;
+                });
+            });
+        }
+    });
+</script>
