@@ -19,7 +19,7 @@
                             </p>
 
                             <!-- Button -->
-                            <a href="{% url 'product_detail' product.slug %}">
+                            <a href="{% url 'user:product_detail' product.slug %}">
                                 <button class="px-6 py-2 sm:px-8 sm:py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate text-sm sm:text-base">
                                     {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' %}
                                 </button>

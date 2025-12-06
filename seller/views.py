@@ -278,66 +278,147 @@ def add_product(request):
     return render(request, "seller/features.html", context)
 
 
-
 @login_required()
 @seller_required
 def update_product(request, slug):
+    """
+    Update product details, images, and manage main/gallery images safely.
+
+    Fixes:
+    - Proper slug regeneration based on name change
+    - Replace main image instead of duplicating
+    - ID-based gallery deletion (not URL-based)
+    - Filename sanitization for all uploads
+    - Type conversion and validation for price/stock
+    - Correct redirect to product details
+    """
     product = get_object_or_404(Product, slug=slug)
 
     if request.method == "POST":
-        # Update basic product info
-        product.name = request.POST.get("name")
-        product.description = request.POST.get("description")
-        product.price = request.POST.get("price")
-        product.stock = request.POST.get("stock")
-        product.color = request.POST.get("color")
-        product.size = request.POST.get("size")
-        product.subcategory_id = request.POST.get("subcategory")
+        # Get form data
+        name = request.POST.get("name", "").strip()
+        description = request.POST.get("description", "")
+        price_str = request.POST.get("price", "")
+        stock_str = request.POST.get("stock", "")
+        color = request.POST.get("color", "")
+        size = request.POST.get("size", "")
+        subcat_id = request.POST.get("subcategory")
 
-        # Update slug if name changed
-        new_name = request.POST.get("name")
-        if new_name != product.name:
-            product.slug = None  # regenerate
-            product.name = new_name
+        main_image = request.FILES.get("main_image")
+        gallery_images = request.FILES.getlist("gallery_images")
+        gallery_images_to_delete = request.POST.get("gallery_images_to_delete", "[]")
 
-        # Handle main image
-        if "main_image" in request.FILES and request.FILES["main_image"]:
-            ProductImage.objects.create(
-                product=product,
-                image=request.FILES["main_image"],
-                image_type="Main"
-            )
+        # Validate required fields
+        if not all([name, subcat_id, price_str, stock_str]):
+            messages.error(request, "Please fill in all required fields: name, subcategory, price, and stock.")
+        else:
+            try:
+                # Type conversion and validation
+                price = float(price_str)
+                stock = int(stock_str)
 
-        # Handle gallery images - NEW FILES
-        if "gallery_images" in request.FILES and request.FILES.getlist("gallery_images"):
-            for img in request.FILES.getlist("gallery_images"):
-                ProductImage.objects.create(
-                    product=product,
-                    image=img,
-                    image_type="Gallery"
-                )
+                if price < 0:
+                    raise ValueError("Price cannot be negative.")
+                if stock < 0:
+                    raise ValueError("Stock cannot be negative.")
 
-        # Handle removed gallery images
-        remaining_images = request.POST.get("remaining_images", "[]")
-        try:
-            remaining_urls = json.loads(remaining_images)
-            # Delete images that are NOT in the remaining list
-            all_gallery_images = ProductImage.objects.filter(product=product, image_type="Gallery")
-            for img in all_gallery_images:
-                if img.image.url not in remaining_urls:
-                    img.delete()
-        except json.JSONDecodeError:
-            pass
+                subcategory = SubCategory.objects.get(id=subcat_id)
 
-        product.save()
-        return redirect("seller:add")
+            except ValueError as e:
+                messages.error(request, f"Invalid input: {str(e)}")
+            except SubCategory.DoesNotExist:
+                messages.error(request, "Invalid subcategory selected.")
+            else:
+                try:
+                    # Update basic product fields
+                    product.name = name
+                    product.description = description
+                    product.price = price
+                    product.stock = stock
+                    product.color = color
+                    product.size = size
+                    product.subcategory = subcategory
 
+                    # FIX #1: Properly regenerate slug if name changed
+                    old_name = Product.objects.get(id=product.id).name
+                    if name != old_name:
+                        product.slug = slugify(name)
+
+                    # FIX #2: Handle main image replacement (not duplication)
+                    if main_image:
+                        # Sanitize filename
+                        sanitized_filename = sanitize_filename(main_image.name)
+                        main_image.name = sanitized_filename
+
+                        # Delete old main image(s) safely
+                        old_main_images = ProductImage.objects.filter(
+                            product=product,
+                            image_type="Main"
+                        )
+                        for img in old_main_images:
+                            # Delete the file from storage
+                            if img.image:
+                                img.image.delete(save=False)
+                            img.delete()
+
+                        # Create new main image
+                        ProductImage.objects.create(
+                            product=product,
+                            image=main_image,
+                            image_type="Main"
+                        )
+
+                    # FIX #3 & #4: Handle gallery images with ID-based deletion
+                    try:
+                        images_to_delete_ids = json.loads(gallery_images_to_delete)
+                    except (json.JSONDecodeError, ValueError):
+                        images_to_delete_ids = []
+
+                    # Delete selected gallery images by ID
+                    if images_to_delete_ids:
+                        ProductImage.objects.filter(
+                            product=product,
+                            image_type="Gallery",
+                            id__in=images_to_delete_ids
+                        ).delete()
+
+                    # FIX #5: Add new gallery images with sanitized filenames
+                    for img in gallery_images:
+                        if img:  # Skip empty files
+                            sanitized_filename = sanitize_filename(img.name)
+                            img.name = sanitized_filename
+                            ProductImage.objects.create(
+                                product=product,
+                                image=img,
+                                image_type="Gallery"
+                            )
+
+                    # Save product with updated slug
+                    product.save()
+
+                    messages.success(request, f'Product "{name}" updated successfully!')
+                    # FIX #7: Correct redirect to product details
+                    return redirect("seller:product_details", slug=product.slug)
+
+                except IntegrityError as e:
+                    if "Duplicate entry" in str(e) and "name" in str(e):
+                        messages.error(request, "A product with this name already exists. Please choose a unique name.")
+                    else:
+                        messages.error(request, "An error occurred while updating the product. Please try again.")
+                except Exception as e:
+                    messages.error(request, f"An unexpected error occurred: {str(e)}")
+
+    # GET request - render update form
     subcategories = SubCategory.objects.all()
+    current_main_image = ProductImage.objects.filter(product=product, image_type="Main").first()
+    current_gallery_images = ProductImage.objects.filter(product=product, image_type="Gallery")
+
     return render(request, "seller/features.html", {
         "product": product,
-        "subcategories": subcategories
+        "subcategories": subcategories,
+        "current_main_image": current_main_image,
+        "current_gallery_images": current_gallery_images
     })
-
 
 
 @login_required()
@@ -345,7 +426,7 @@ def update_product(request, slug):
 def delete_product(request, slug):
     product = get_object_or_404(Product, slug=slug)
     product.delete()
-    return redirect("add")
+    return redirect("seller:add")
 
 
 def seller_registration(request):

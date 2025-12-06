@@ -1447,7 +1447,7 @@
                             Latest trending deal from {{ category.name }}
                         </p>
 
-                        <a href="{% url 'product_detail' product.slug %}">
+                        <a href="{% url 'user:product_detail' product.slug %}">
                             <button class="slide-button">
                                 {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' as button_text silent %}
                                 {{ button_text }}

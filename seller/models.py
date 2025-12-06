@@ -30,7 +30,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     color = models.CharField(max_length=50, blank=True, null=True)
     size = models.CharField(max_length=50, blank=True, null=True)
-    is_featured = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
