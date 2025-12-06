@@ -1099,20 +1099,32 @@
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
-        <div class="navbar-right">
-            <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
-                🔔
-                <div id="notification-badge" class="notification-badge" style="display:none;"></div>
-            </div>
-            <!-- Notification dropdown -->
-            <div id="notification-box"
-                 style="display:none; position:absolute; top:40px; right:0; width:320px;
-                        background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-                        z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-                <div id="notification-list" style="padding:8px;">
-                    <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
-                </div>
-            </div>
+     <div class="navbar-right">
+    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+        🔔
+
+        <div id="notification-badge" class="notification-badge" style="
+            position:absolute;
+            top:-5px;
+            right:-10px;
+            background:red;
+            color:white;
+            padding:2px 6px;
+            border-radius:50%;
+            font-size:12px;
+            display:none;">
+        </div>
+        <!-- Notification dropdown -->
+<div id="notification-box"
+     style="display:none; position:absolute; top:40px; right:0; width:320px;
+            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
+    <div id="notification-list" style="padding:8px;">
+        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+</div>
+
+    </div>
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu(event)">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>

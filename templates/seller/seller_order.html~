@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Seller Dashboard - ShopHub</title>
+    <title>Seller Orders - ShopHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -14,6 +15,8 @@
             --secondary-color: #E67A3A;
             --success-color: #4CAF50;
             --warning-color: #FFC107;
+            --info-color: #2196F3;
+            --purple-color: #AA66CC;
             --danger-color: #F44336;
             --text-color: #3A3A3A;
             --light-text: #666666;
@@ -349,95 +352,250 @@
             color: var(--light-text);
             font-size: 0.95rem;
         }
-        /* ======================== CONTACT FORM ======================== */
-        .contact-section {
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow-light);
-            padding: 24px;
+        /* ======================== SEARCH & FILTERS ======================== */
+        .search-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 24px;
-            animation: fadeIn 0.6s ease;
+            gap: 16px;
+            flex-wrap: wrap;
         }
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-        .contact-item {
+        .search-box {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: rgba(255, 127, 50, 0.05);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
-        }
-        .contact-icon {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-        .contact-details h3 {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-color);
-        }
-        .contact-details p {
-            color: var(--light-text);
-            font-size: 0.9rem;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.9rem;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--card-bg);
             border: 1.5px solid var(--border-color);
             border-radius: 8px;
-            font-family: var(--font-body);
-            font-size: 1rem;
             transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
         }
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
+        .search-box:focus-within {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(255, 127, 50, 0.1);
         }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            flex: 1;
+            outline: none;
         }
-        .btn-submit {
+        .search-box input::placeholder { color: var(--light-text); }
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 25px;
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.85rem;
+        }
+        .filter-tab:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border-color: var(--primary-color);
+        }
+        /* ======================== SECTION ======================== */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.6s ease;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .btn-primary {
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            font-size: 1rem;
-            width: 100%;
-            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
-        .btn-submit:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 127, 50, 0.3);
+        }
+        .btn-primary a {
+            color: white;
+        }
+        /* ======================== TABLE ======================== */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: -5px;
+            padding: 5px;
+        }
+        table {
+            width: auto;
+            min-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        thead { background-color: rgba(255, 127, 50, 0.05); }
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        tr:hover { background-color: rgba(255, 127, 50, 0.03); }
+        .order-id {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .customer-name {
+            font-weight: 600;
+        }
+        .product-name {
+            font-weight: 500;
+        }
+        .quantity {
+            text-align: center;
+            font-weight: 600;
+        }
+        .order-total {
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: right;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid;
+        }
+        .status-delivered {
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #FFC107;
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+        .status-processing {
+            background-color: rgba(33, 150, 243, 0.15);
+            color: #2196F3;
+            border-color: rgba(33, 150, 243, 0.3);
+        }
+        .status-shipped {
+            background-color: rgba(170, 102, 204, 0.15);
+            color: #AA66CC;
+            border-color: rgba(170, 102, 204, 0.3);
+        }
+        .status-cancelled {
+            background-color: rgba(244, 67, 54, 0.15);
+            color: #F44336;
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+        .action-btn {
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--light-text);
+        }
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        .empty-state-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        /* ======================== PAGINATION ======================== */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            text-align: center;
+        }
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        .pagination-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
         /* ======================== FOOTER ======================== */
         .footer {
@@ -538,7 +696,10 @@
             .sidebar { width: 220px; }
             .sidebar-menu a { padding: 10px 14px; font-size: 0.9rem; }
             .main-content { padding: 20px; }
-            .form-grid { grid-template-columns: 1fr; }
+            .search-filters { flex-direction: column; align-items: stretch; }
+            .search-box { min-width: auto; }
+            .filter-tabs { justify-content: center; }
+            table { min-width: 700px; }
         }
         @media (max-width: 768px) {
             .hamburger {
@@ -575,10 +736,14 @@
             }
             .header h1 { font-size: 1.5rem; }
             .header p { font-size: 0.9rem; }
-            .contact-info { grid-template-columns: 1fr; }
-            .contact-item { padding: 14px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .btn-submit { padding: 10px 16px; }
+            .search-box { padding: 8px 12px; }
+            .filter-tab { padding: 6px 12px; font-size: 0.8rem; }
+            table { min-width: 600px; font-size: 0.85rem; }
+            th { padding: 8px 6px; font-size: 0.8rem; }
+            td { padding: 8px 6px; }
+            .status-badge { padding: 4px 10px; font-size: 0.75rem; }
+            .action-btn { padding: 5px 10px; font-size: 0.75rem; }
+            .pagination-btn { padding: 6px 10px; font-size: 0.8rem; }
             .footer-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -599,12 +764,13 @@
             .header { margin-bottom: 16px; }
             .header h1 { font-size: 1.3rem; }
             .header p { font-size: 0.85rem; }
-            .contact-section { padding: 16px; }
-            .contact-item { padding: 12px; flex-direction: column; text-align: center; }
-            .contact-icon { font-size: 1.3rem; }
-            .form-group { margin-bottom: 16px; }
-            .form-group input, .form-group textarea { padding: 10px; font-size: 0.95rem; }
-            .btn-submit { padding: 10px; font-size: 0.9rem; }
+            .search-box { padding: 6px 10px; }
+            .filter-tab { padding: 5px 8px; font-size: 0.75rem; }
+            table { min-width: 500px; font-size: 0.8rem; }
+            th { padding: 6px 4px; font-size: 0.75rem; }
+            td { padding: 6px 4px; }
+            .order-total { text-align: left; }
+            .pagination-btn { padding: 5px 8px; font-size: 0.75rem; min-width: 32px; }
             .footer-grid {
                 grid-template-columns: 1fr;
             }
@@ -616,9 +782,56 @@
             .navbar-right { gap: 8px; }
             .header h1 { font-size: 1.1rem; }
             .main-content { padding: 10px; }
-            .contact-section { padding: 14px; }
-            .contact-item { padding: 10px; }
-            .form-group input, .form-group textarea { padding: 8px; }
+            .filter-tab { padding: 4px 6px; font-size: 0.7rem; }
+            table { min-width: 400px; font-size: 0.75rem; }
+            th, td { padding: 4px 2px; }
+            .status-badge { padding: 3px 6px; font-size: 0.7rem; }
+        }
+        /* ======================== RESPONSIVE TABLE ======================== */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px; /* desktop */
+        }
+        @media (max-width: 768px) {
+            table {
+                min-width: 600px;
+                font-size: 0.85rem;
+            }
+            th, td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+        }
+        @media (max-width: 480px) {
+            table {
+                min-width: 500px;
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 6px 4px;
+                font-size: 0.75rem;
+            }
+            .status-badge {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+                border-radius: 12px;
+            }
+        }
+        @media (max-width: 360px) {
+            table {
+                min-width: 400px;
+                font-size: 0.75rem;
+            }
+            th, td {
+                padding: 4px 3px;
+            }
         }
     </style>
 </head>
@@ -634,7 +847,7 @@
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
-       <div class="navbar-right">
+        <div class="navbar-right">
     <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
         🔔
 
@@ -705,7 +918,7 @@
 
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>
-                            <a href="{% url 'seller:help_support'  %}">
+                             <a href="{% url 'seller:help_support'  %}">
                                     <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Help & Support</div>
                                 <div class="dropdown-item-desc">FAQs & contact support</div>
@@ -720,7 +933,7 @@
                             <span class="dropdown-item-icon">🚪</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'admin_panel:logout' %}">Logout</a>
+                                 <a href="{% url 'admin_panel:logout' %}">Logout</a>
                                 </div>
                                 <div class="dropdown-item-desc">Sign out</div>
                             </div>
@@ -737,65 +950,118 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
-                                <li><a href="{% url 'seller:seller_dashboard' %}"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'seller:add' %}" ><span>📦</span> Products</a></li>
-                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:seller_dashboard' %}" class="{% if request.path == '/seller_dashboard/' %}active{% endif %}"><span>📊</span> Dashboard</a></li>
+                <li><a href="{% url 'seller:add' %}" class="{% if 'add' in request.path %}active{% endif %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}" class="{% if 'order' in request.path %}active{% endif %}"><span>🛒</span> Orders</a></li>
+
                 <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
+
             </ul>
         </div>
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
-                <h1>Contact Us 📞</h1>
-                <p>Get in touch with our support team for any assistance</p>
+                <h1>🛒 Orders</h1>
+                <p>Manage your customer orders efficiently</p>
             </div>
-            <div class="contact-section">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <div class="contact-icon">📍</div>
-                        <div class="contact-details">
-                            <h3>Our Address</h3>
-                            <p>123 Shopping Street<br>Mumbai, Maharashtra, India - 400001</p>
-                        </div>
+            <!-- SEARCH & FILTERS -->
+            <div class="search-filters">
+                <form method="GET" style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 300px;">
+                    <div class="search-box">
+                        <span style="font-size: 1rem; color: var(--light-text);">🔍</span>
+                        <input type="text" name="search" placeholder="Search orders…" value="{{ search_query }}" style="min-width: 200px;">
                     </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">📞</div>
-                        <div class="contact-details">
-                            <h3>Phone</h3>
-                            <p>+91 98765 43210<br>Mon - Fri: 9AM - 6PM</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">✉️</div>
-                        <div class="contact-details">
-                            <h3>Email</h3>
-                            <p>support@shophub.com<br>Response within 24 hours</p>
-                        </div>
-                    </div>
-                </div>
-                <form method="post" action="{% url 'seller:contact' %}">
-                    {% csrf_token %}
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" placeholder="Your full name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" placeholder="Issue or query" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" placeholder="Describe your issue..."></textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit">Send Message</button>
+                    <input type="hidden" name="status" value="{{ request.GET.status|default:'all' }}">
+                    <button type="submit" class="btn-primary" style="flex-shrink: 0; padding: 10px 16px;">Search</button>
+                </form>
+                <form id="filterForm" method="GET" style="display: flex; gap: 8px;">
+                    <button type="submit" name="status" value="all" class="filter-tab {% if request.GET.status|default:'all' == 'all' %}active{% endif %}">📋 All Orders</button>
+                    <button type="submit" name="status" value="pending" class="filter-tab {% if request.GET.status == 'pending' %}active{% endif %}">⏳ Pending</button>
+                    <button type="submit" name="status" value="processing" class="filter-tab {% if request.GET.status == 'processing' %}active{% endif %}">⚙️ Processing</button>
+                    <button type="submit" name="status" value="shipped" class="filter-tab {% if request.GET.status == 'shipped' %}active{% endif %}">📦 Shipped</button>
+                    <button type="submit" name="status" value="delivered" class="filter-tab {% if request.GET.status == 'delivered' %}active{% endif %}">✅ Delivered</button>
+                    <button type="submit" name="status" value="cancelled" class="filter-tab {% if request.GET.status == 'cancelled' %}active{% endif %}">❌ Cancelled</button>
+                    <input type="hidden" name="search" value="{{ search_query }}">
                 </form>
             </div>
+            <!-- ORDERS TABLE -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">All Orders</div>
+                    <button class="btn-primary"><a href="{% url 'seller:order' %}">Refresh</a></button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead><tbody>
+    {% if orders %}
+        {% for order in orders %}
+            <tr>
+                <td class="order-id">#{{ order.id }}</td>
+                <td class="customer-name">{{ order.user.username }}</td>
+
+                <td class="product-name">
+                    {% for item in order.items.all %}
+                        {{ item.product.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+
+                <td class="quantity">{{ order.total_qty }}</td>
+
+                <td class="order-total">₹{{ order.total_price|stringformat:".2f" }}</td>
+
+                <td>
+                    <span class="status-badge status-{{ order.status|lower }}">
+                        {% if order.status == 'Pending' %}⏳ Pending
+                        {% elif order.status == 'Processing' %}⚙️ Processing
+                        {% elif order.status == 'Shipped' %}📦 Shipped
+                        {% elif order.status == 'Delivered' %}✅ Delivered
+                        {% elif order.status == 'Cancelled' %}❌ Cancelled
+                        {% endif %}
+                    </span>
+                </td>
+
+                <td><a href="{% url 'seller:seller_order_view' order.id %}" class="action-btn">View</a></td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">No orders found</div>
+            </td>
+        </tr>
+    {% endif %}
+</tbody>
+
+                    </table>
+                </div>
+            </div>
+            <!-- PAGINATION -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination-container">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">« Previous</a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        <a href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn {% if page_obj.number == num %}active{% endif %}">{{ num }}</a>
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">Next »</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
     <!-- FOOTER -->
@@ -805,27 +1071,27 @@
                 <!-- Logo Section -->
                 <div>
                     <div class="footer-logo">
-                        <span>🛍️</span>
+                        <span>🛍</span>
                         <span>ShopHub</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
-                             <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
+                                 <a href="https://www.facebook.com" title="Facebook" target="_blank">f</a>
 <a href="https://twitter.com" title="Twitter" target="_blank">𝕏</a>
 <a href="https://www.instagram.com" title="Instagram" target="_blank">📷</a>
 <a href="https://www.linkedin.com" title="LinkedIn" target="_blank">💼</a>
                     </div>
                 </div>
                 <!-- Quick Links -->
-                  <div class="footer-section">
+                <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul>
 
-                <li><a href="#"><span></span> Dashboard</a></li>
+                  <li><a href="{% url 'seller:seller_dashboard' %}"><span></span> Dashboard</a></li>
                 <li><a href="{% url 'seller:add' %}"><span></span> Products</a></li>
                 <li><a href="{% url 'seller:order' %}"><span></span> Orders</a></li>
                 <li><a href="{% url 'seller:review' %}"><span></span> Reviews</a></li>
-
+                    </ul>
                 </div>
                 <!-- Customer Service -->
                 <div class="footer-section">
@@ -850,7 +1116,7 @@
                             +91 98765 43210
                         </li>
                         <li>
-                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
+                            <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
                             support@shophub.com
                         </li>
                     </ul>
@@ -859,194 +1125,51 @@
             <!-- Footer Bottom -->
             <div class="footer-bottom">
                 <p>&copy; 2024 ShopHub. All rights reserved.</p>
-                <p>Made with ❤️ for Sellers & Shoppers</p>
+                <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
     </footer>
     <script>
+        /* ==================== GLOBAL FUNCTIONS ==================== */
         function toggleProfileMenu() {
-            document.getElementById("dropdownMenu").classList.toggle("show");
+            const menu = document.getElementById("dropdownMenu");
+            menu.classList.toggle("show");
         }
+
         function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            const overlay = document.querySelector(".sidebar-overlay");
-            const menu = document.querySelector(".hamburger");
-            sidebar.classList.toggle("show");
-            overlay.classList.toggle("show");
-            menu.classList.toggle("active");
-            document.body.style.overflow = sidebar.classList.contains("show") ? "hidden" : "";
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.querySelector('.hamburger');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('show');
+
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
         }
+
         function closeSidebar() {
-            document.getElementById("sidebar").classList.remove("show");
-            document.querySelector(".sidebar-overlay").classList.remove("show");
-            document.querySelector(".hamburger").classList.remove("active");
-            document.body.style.overflow = "";
+            document.getElementById('sidebar').classList.remove('show');
+            document.querySelector('.hamburger').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('show');
+            document.body.style.overflow = '';
         }
-const IS_SELLER =
-    {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
 
-let notifSocket = new WebSocket(
-    (location.protocol === "https:" ? "wss://" : "ws://") +
-    window.location.host +
-    (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
-);
+        function showNotifications() {
+            alert('🔔 You have new pending orders!');
+        }
 
-// ✔ Connected
-notifSocket.onopen = () => console.log("WebSocket Connected!");
-
-// ❌ Error
-notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
-
-// 📩 Receive notification
-notifSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-
-    addNotificationToList(data);
-    updateUnreadCount();
-    showToast(`${data.title} - ${data.body}`);
-};
-
-// 🔄 Reconnect if closed
-notifSocket.onclose = () => {
-    console.warn("WebSocket closed… reconnecting in 2s");
-    setTimeout(() => connectWS(), 2000);
-};
-
-
-// 🔥 When real-time notification arrives
-notifSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    addNotificationToList(data);
-    updateUnreadCount();
-    showToast(data.title + " - " + data.body);
-};
-
-// 🚀 Get unread count on load
-function updateUnreadCount() {
-    fetch("/not/unread-count/")
-        .then(res => res.json())
-        .then(data => {
-            const badge = document.getElementById("notification-badge");
-            if (!badge) return;
-
-            if (data.unread_count > 0) {
-                badge.innerText = data.unread_count;
-                badge.style.display = "block";
-            } else {
-                badge.style.display = "none";
+        // Close dropdown on outside click
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profileDropdown');
+            const menu = document.getElementById('dropdownMenu');
+            if (dropdown && menu && !dropdown.contains(e.target)) {
+                menu.classList.remove('show');
             }
         });
-}
-updateUnreadCount();
 
-// 🎯 Show/hide notification dropdown
-function showNotifications() {
-    const box = document.getElementById("notification-box");
-
-    if (box.style.display === "block") {
-        box.style.display = "none";
-        return;
-    }
-
-    box.style.display = "block";
-
-    // Load list from backend
-    fetch("/not/list/")
-        .then(res => res.json())
-        .then(data => {
-            const list = document.getElementById("notification-list");
-            list.innerHTML = "";
-
-            if (data.notifications.length === 0) {
-                list.innerHTML = "<p style='text-align:center; color:#666;'>No notifications</p>";
-                return;
-            }
-
-            data.notifications.forEach(n => {
-                list.innerHTML += `
-                    <div style="
-                        padding:10px;
-                        border-bottom:1px solid #eee;
-                        background:${n.is_read ? '#fff' : '#f7f9ff'};
-                        cursor:pointer;
-                    " onclick="markRead(${n.id}, this)">
-                        <strong>${n.title}</strong><br>
-                        <small>${n.body}</small>
-                        <br>
-                        <small style='color:#999;'>${n.created_at}</small>
-                    </div>
-                `;
-            });
-        });
-
-    updateUnreadCount();
-}
-
-function markRead(id, item) {
-    fetch(`/not/mark-read/${id}/`)
-        .then(() => {
-            item.style.background = "#fff";
-            updateUnreadCount();
-        });
-}
-
-// 🔥 Toast popup
-function showToast(msg) {
-    const toast = document.createElement("div");
-    toast.innerText = msg;
-
-    toast.style.cssText = `
-        position:fixed;
-        bottom:20px;
-        right:20px;
-        background:#333;
-        color:#fff;
-        padding:12px 18px;
-        border-radius:4px;
-        z-index:99999;
-    `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-function addNotificationToList(data) {
-    const list = document.getElementById("notification-list");
-    const div = document.createElement("div");
-    div.style.cssText = "padding:10px; border-bottom:1px solid #eee; background:#f7f9ff; cursor:pointer;";
-    div.innerHTML = `<strong>${data.title}</strong><br><small>${data.body}</small><br><small style='color:#999;'>${new Date().toLocaleString()}</small>`;
-    div.onclick = () => markRead(data.id, div);
-    list.insertBefore(div, list.firstChild);
-}
-
-function connectWS() {
-    // Reinitialize WebSocket
-    notifSocket = new WebSocket(
-        (location.protocol === "https:" ? "wss://" : "ws://") +
-        window.location.host +
-        (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
-    );
-    // Re-attach event handlers
-    notifSocket.onopen = () => console.log("WebSocket Reconnected!");
-    notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
-    notifSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        addNotificationToList(data);
-        updateUnreadCount();
-        showToast(`${data.title} - ${data.body}`);
-    };
-    notifSocket.onclose = () => {
-        console.warn("WebSocket closed… reconnecting in 2s");
-        setTimeout(() => connectWS(), 2000);
-    };
-}
-
-function closeStoreModal() {
-    document.getElementById("storeModal").classList.remove("show");
-}
+        // Placeholder functions
+        function openStoreModal() { alert('Opening Store Settings'); }
     </script>
 </body>
 </html>

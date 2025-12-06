@@ -1460,11 +1460,32 @@
             <div class="logo">ShopHub</div>
             <div class="navbar-title">Dashboard</div>
         </div>
-        <div class="navbar-right">
-            <div class="notification-bell" onclick="showNotifications()">
-                🔔
-                <div class="notification-badge">3</div>
-            </div>
+       <div class="navbar-right">
+    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+        🔔
+
+        <div id="notification-badge" class="notification-badge" style="
+            position:absolute;
+            top:-5px;
+            right:-10px;
+            background:red;
+            color:white;
+            padding:2px 6px;
+            border-radius:50%;
+            font-size:12px;
+            display:none;">
+        </div>
+        <!-- Notification dropdown -->
+<div id="notification-box"
+     style="display:none; position:absolute; top:40px; right:0; width:320px;
+            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
+    <div id="notification-list" style="padding:8px;">
+        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+</div>
+
+    </div>
             <div class="profile-dropdown" id="profileDropdown">
                 <div class="profile-toggle" onclick="toggleProfileMenu()">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
@@ -2143,6 +2164,171 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+        const IS_SELLER =
+    {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
+
+let notifSocket = new WebSocket(
+    (location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+);
+
+// ✔ Connected
+notifSocket.onopen = () => console.log("WebSocket Connected!");
+
+// ❌ Error
+notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+
+// 📩 Receive notification
+notifSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+
+    addNotificationToList(data);
+    updateUnreadCount();
+    showToast(`${data.title} - ${data.body}`);
+};
+
+// 🔄 Reconnect if closed
+notifSocket.onclose = () => {
+    console.warn("WebSocket closed… reconnecting in 2s");
+    setTimeout(() => connectWS(), 2000);
+};
+
+
+// 🔥 When real-time notification arrives
+notifSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    addNotificationToList(data);
+    updateUnreadCount();
+    showToast(data.title + " - " + data.body);
+};
+
+// 🚀 Get unread count on load
+function updateUnreadCount() {
+    fetch("/not/unread-count/")
+        .then(res => res.json())
+        .then(data => {
+            const badge = document.getElementById("notification-badge");
+            if (!badge) return;
+
+            if (data.unread_count > 0) {
+                badge.innerText = data.unread_count;
+                badge.style.display = "block";
+            } else {
+                badge.style.display = "none";
+            }
+        });
+}
+updateUnreadCount();
+
+// 🎯 Show/hide notification dropdown
+function showNotifications() {
+    const box = document.getElementById("notification-box");
+
+    if (box.style.display === "block") {
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+
+    // Load list from backend
+    fetch("/not/list/")
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById("notification-list");
+            list.innerHTML = "";
+
+            if (data.notifications.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:#666;'>No notifications</p>";
+                return;
+            }
+
+            data.notifications.forEach(n => {
+                list.innerHTML += `
+                    <div style="
+                        padding:10px;
+                        border-bottom:1px solid #eee;
+                        background:${n.is_read ? '#fff' : '#f7f9ff'};
+                        cursor:pointer;
+                    " onclick="markRead(${n.id}, this)">
+                        <strong>${n.title}</strong><br>
+                        <small>${n.body}</small>
+                        <br>
+                        <small style='color:#999;'>${n.created_at}</small>
+                    </div>
+                `;
+            });
+        });
+
+    updateUnreadCount();
+}
+
+function markRead(id, item) {
+    fetch(`/not/mark-read/${id}/`)
+        .then(() => {
+            item.style.background = "#fff";
+            updateUnreadCount();
+        });
+}
+
+// 🔥 Toast popup
+function showToast(msg) {
+    const toast = document.createElement("div");
+    toast.innerText = msg;
+
+    toast.style.cssText = `
+        position:fixed;
+        bottom:20px;
+        right:20px;
+        background:#333;
+        color:#fff;
+        padding:12px 18px;
+        border-radius:4px;
+        z-index:99999;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+function addNotificationToList(data) {
+    const list = document.getElementById("notification-list");
+    const div = document.createElement("div");
+    div.style.cssText = "padding:10px; border-bottom:1px solid #eee; background:#f7f9ff; cursor:pointer;";
+    div.innerHTML = `<strong>${data.title}</strong><br><small>${data.body}</small><br><small style='color:#999;'>${new Date().toLocaleString()}</small>`;
+    div.onclick = () => markRead(data.id, div);
+    list.insertBefore(div, list.firstChild);
+}
+
+function connectWS() {
+    // Reinitialize WebSocket
+    notifSocket = new WebSocket(
+        (location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+    );
+    // Re-attach event handlers
+    notifSocket.onopen = () => console.log("WebSocket Reconnected!");
+    notifSocket.onerror = e => console.error("WebSocket ERROR:", e);
+    notifSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        addNotificationToList(data);
+        updateUnreadCount();
+        showToast(`${data.title} - ${data.body}`);
+    };
+    notifSocket.onclose = () => {
+        console.warn("WebSocket closed… reconnecting in 2s");
+        setTimeout(() => connectWS(), 2000);
+    };
+}
+
+function closeStoreModal() {
+    document.getElementById("storeModal").classList.remove("show");
+}
     </script>
 
 </body>
