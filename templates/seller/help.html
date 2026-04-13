@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Help & Support - ShopHub</title>
+    <title>Help & Support - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -747,7 +747,7 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Help & Support</div>
         </div>
             <div class="navbar-right">
@@ -768,10 +768,22 @@
         <!-- Notification dropdown -->
 <div id="notification-box"
      style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
+            background:#fff; border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:460px; overflow:hidden; border:1px solid rgba(0,0,0,0.08);">
+    <div style="padding:8px 10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:700; font-size:13px;">New only</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/mark-all-read/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Mark read</button>
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #f97316; background:#fff7ed; color:#c2410c; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();if(!confirm('Delete all notifications permanently?'))return;(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/clear-all/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Clear all</button>
+        </div>
+    </div>
+    <div id="notification-list" style="padding:8px; overflow-y:auto; max-height:320px;">
         <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+    <div style="padding:8px; border-top:1px solid #eee; text-align:center;">
+        <a href="/not/seller/" style="font-size:12px; color:#ea580c; font-weight:600;">View all notifications</a>
     </div>
 </div>
 
@@ -791,7 +803,7 @@
                             <div class="dropdown-header-avatar">S</div>
                             <div class="dropdown-header-info">
                                 <h3>Sarah Johnson</h3>
-                                <p>sarah@shophub.com</p>
+                                <p>sarah@multimart.com</p>
                             </div>
                         </div>
                     </div>
@@ -810,7 +822,9 @@
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'seller:seller_notifications' %}">Notifications</a>
+                                </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
@@ -859,7 +873,7 @@
         <div class="main-content">
             <div class="header">
                 <h1>Help & Support 🆘</h1>
-                <p>We're here to help you succeed on ShopHub</p>
+                <p>We're here to help you succeed on MultiMart</p>
             </div>
 
             <!-- QUICK HELP CARDS -->
@@ -867,7 +881,7 @@
                 <div class="help-card" onclick="scrollToSection('faq')">
                     <span class="help-card-icon">💡</span>
                     <h3>FAQs</h3>
-                    <p>Find quick answers to common questions about selling on ShopHub</p>
+                    <p>Find quick answers to common questions about selling on MultiMart</p>
                 </div>
 
                 <div class="help-card" onclick="scrollToSection('contact')">
@@ -881,7 +895,7 @@
                       <div class="help-card" onclick="alert('Opening seller guide...')">
                     <span class="help-card-icon">📚</span>
                     <h3>Seller Guide</h3>
-                    <p>Comprehensive guide to maximize your sales on ShopHub</p>
+                    <p>Comprehensive guide to maximize your sales on MultiMart</p>
                 </div>
                 </a>
             </div>
@@ -919,7 +933,7 @@
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            ShopHub supports all major payment methods including credit/debit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and bank transfers. Payouts to sellers are processed every 14 days.
+                            MultiMart supports all major payment methods including credit/debit cards (Visa, MasterCard, American Express), PayPal, Apple Pay, Google Pay, and bank transfers. Payouts to sellers are processed every 14 days.
                         </div>
                     </div>
 
@@ -959,7 +973,7 @@
 
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" value="sarah@shophub.com" readonly>
+                        <input type="email" id="email" value="sarah@multimart.com" readonly>
                     </div>
 
                     <div class="form-group">
@@ -996,7 +1010,7 @@
                         <span class="contact-info-icon">✉️</span>
                         <div class="contact-info-content">
                             <h4>Email Support</h4>
-                            <p>support@shophub.com<br>We typically respond within 24 hours</p>
+                            <p>support@multimart.com<br>We typically respond within 24 hours</p>
                         </div>
                     </div>
 
@@ -1020,19 +1034,19 @@
                     <div class="help-card" onclick="alert('Opening seller community...')">
                         <span class="help-card-icon">👥</span>
                         <h3>Seller Community</h3>
-                        <p>Connect with other sellers, share tips, and get advice from experienced ShopHub merchants</p>
+                        <p>Connect with other sellers, share tips, and get advice from experienced MultiMart merchants</p>
                     </div>
 
                     <div class="help-card" onclick="alert('Opening API documentation...')">
                         <span class="help-card-icon">🔧</span>
                         <h3>API Documentation</h3>
-                        <p>Technical documentation for developers looking to integrate with ShopHub's API</p>
+                        <p>Technical documentation for developers looking to integrate with MultiMart's API</p>
                     </div>
 
                     <div class="help-card" onclick="alert('Opening policy center...')">
                         <span class="help-card-icon">📋</span>
                         <h3>Policy Center</h3>
-                        <p>Review ShopHub's seller policies, terms of service, and community guidelines</p>
+                        <p>Review MultiMart's seller policies, terms of service, and community guidelines</p>
                     </div>
                 </div>
             </div>
@@ -1046,7 +1060,7 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <span>🛍️</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">
                         Empowering sellers to reach customers worldwide with our innovative e-commerce platform.
@@ -1236,7 +1250,7 @@ function showNotifications() {
     box.style.display = "block";
 
     // Load list from backend
-    fetch("/not/list/")
+    fetch("/not/list/?unread=1")
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById("notification-list");

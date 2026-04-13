@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Orders - ShopHub</title>
+    <title>Seller Orders - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -844,7 +844,7 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Dashboard</div>
         </div>
         <div class="navbar-right">
@@ -1072,7 +1072,7 @@
                 <div>
                     <div class="footer-logo">
                         <span>🛍</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
@@ -1117,14 +1117,14 @@
                         </li>
                         <li>
                             <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
-                            support@shophub.com
+                            support@multimart.com
                         </li>
                     </ul>
                 </div>
             </div>
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>&copy; 2024 MultiMart. All rights reserved.</p>
                 <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>

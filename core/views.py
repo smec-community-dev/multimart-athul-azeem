@@ -75,10 +75,10 @@ def registration_view(request):
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
         username = request.POST.get("username")
-        email = request.POST.get("email")
+        email = (request.POST.get("email") or "").strip().lower()
         password = request.POST.get("password")
         password_confirm = request.POST.get("password_confirm")
-        role = request.POST.get("role")  # 'user' / 'seller' / 'admin'
+        role = request.POST.get("role")  # only 'user' or 'seller' (admins use createsuperuser)
 
         phone = request.POST.get("phone")
 
@@ -92,18 +92,17 @@ def registration_view(request):
         if password != password_confirm:
             messages.error(request, "Passwords do not match.")
             return render(request, "auth/registration.html")
-            return render(request, "auth/registration.html")
 
         if User.objects.filter(username=username).exists():
             messages.error(request, f"Username '{username}' already exists.")
             return render(request, "auth/registration.html")
 
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(email__iexact=email).exists():
             messages.error(request, f"Email '{email}' is already registered.")
             return render(request, "auth/registration.html")
 
-        if role not in ["user", "seller", "admin"]:
-            messages.error(request, "Please select a valid account type.")
+        if role not in ["user", "seller"]:
+            messages.error(request, "Please select a valid account type (Customer or Seller).")
             return render(request, "auth/registration.html")
 
         # ---- create user ----
@@ -130,8 +129,6 @@ def registration_view(request):
                 gst_number=gst_number,
                 bank_account=bank_account
             )
-
-        # admin extra fields you can handle here if needed
 
         messages.success(request, "Registration successful! Please log in.")
         return redirect("admin_panel:login")
@@ -163,13 +160,12 @@ def normal_login_view(request):
                 messages.error(request, "Your account has been blocked. Please contact support.")
                 return redirect("admin_panel:login")
 
-            # Redirect based on role
+            # Superusers use the custom admin dashboard; everyone else by marketplace role
+            if user.is_superuser:
+                return redirect("admin_panel:admin_dashboard")
             if user.role == "seller":
                 return redirect("seller:seller_dashboard")
-            elif user.role == "admin":
-                return redirect("admin_panel:admin_dashboard")
-            else:  # user
-                return redirect("user:user_home")
+            return redirect("user:user_home")
         else:
             messages.error(request, "Invalid username or password.")
             return render(request, "auth/login.html")
@@ -187,13 +183,16 @@ def choose_role(request):
     They can select/change their role here.
     """
     # If user already has role and it's not default, skip
+    if request.user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
+
     if request.user.role and request.user.role != "user":
-        return redirect_role_dashboard(request.user.role)
+        return redirect_user_after_login(request.user)
 
     if request.method == "POST":
         selected_role = request.POST.get("role")
 
-        if selected_role not in ["user", "seller", "admin"]:
+        if selected_role not in ["user", "seller"]:
             messages.error(request, "Invalid role selected.")
             return redirect("admin_panel:choose_role")
 
@@ -210,9 +209,12 @@ def choose_role(request):
 @login_required(login_url="admin_panel:login")
 def complete_registration(request):
     """
-    This is mainly for Google users who selected seller/admin role
+    This is mainly for Google users who selected the seller role
     to fill missing fields depending on role.
     """
+    if request.user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
+
     role = request.user.role
 
     # If user role, no extra details needed
@@ -232,11 +234,7 @@ def complete_registration(request):
                     bank_account=request.POST.get("bank_account"),
                 )
 
-        elif role == "admin":
-            # admin: handle your extra fields if any
-            pass
-
-        return redirect_role_dashboard(role)
+        return redirect_user_after_login(request.user)
 
     # GET
     return render(request, "auth/complete_registration.html", {"role": role})
@@ -245,15 +243,16 @@ def complete_registration(request):
 # ========================================================================
 # HELPER FUNCTION
 # ========================================================================
-def redirect_role_dashboard(role):
-    from django.shortcuts import redirect
-
-    if role == "seller":
-        return redirect("seller:seller_dashboard")
-    elif role == "admin":
+def redirect_user_after_login(user):
+    """
+    After a successful login or role setup, send the user to the right home page.
+    Site administrators are identified by is_superuser (see createsuperuser).
+    """
+    if user.is_superuser:
         return redirect("admin_panel:admin_dashboard")
-    else:
-        return redirect("user:user_home")
+    if user.role == "seller":
+        return redirect("seller:seller_dashboard")
+    return redirect("user:user_home")
 
 
 # ========================================================================
@@ -451,6 +450,9 @@ def add_user(request):
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
+        role = request.POST.get('role', 'user').strip()
+        if role not in ('user', 'seller'):
+            role = 'user'
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
@@ -460,7 +462,9 @@ def add_user(request):
             messages.error(request, "Email already exists.")
             return render(request, 'admin/add_user.html')
 
-        User.objects.create_user(username=username, email=email, password=password)
+        User.objects.create_user(
+            username=username, email=email, password=password, role=role
+        )
         messages.success(request, "User created successfully!")
         return redirect('admin_panel:admin_users')
 
@@ -471,8 +475,6 @@ def block_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     if user.is_superuser:
         messages.error(request, "Superusers cannot be blocked!")
-    elif user.role == 'admin':
-        messages.error(request, "Admin accounts cannot be blocked!")
     else:
         user.is_blocked = True
         user.save()
@@ -494,10 +496,6 @@ def delete_user(request, user_id):
 
         if user.is_superuser:
             messages.error(request, "Superusers cannot be deleted!")
-            return redirect('admin_panel:admin_users')
-
-        if user.role == 'admin':
-            messages.error(request, "Admin accounts cannot be deleted!")
             return redirect('admin_panel:admin_users')
 
         user.delete()
@@ -552,9 +550,9 @@ def send_seller_email(request, seller_id):
     Send email to a seller
     """
     if request.method != 'POST':
-        return redirect('admin_panel:seller_detail', seller_id=seller_id)
+        return redirect('admin_panel:seller_detail', pk=seller_id)
 
-    seller = get_object_or_404(Seller, id=seller_id)
+    seller = get_object_or_404(SellerDetails, id=seller_id)
 
     subject = request.POST.get('subject')
     message = request.POST.get('message')
@@ -562,7 +560,7 @@ def send_seller_email(request, seller_id):
     # Validation
     if not subject or not message:
         django_messages.error(request, 'Subject and message are required!')
-        return redirect('admin_panel:seller_detail', seller_id=seller_id)
+        return redirect('admin_panel:seller_detail', pk=seller_id)
 
     try:
         # Send email to seller's user email
@@ -579,7 +577,7 @@ def send_seller_email(request, seller_id):
     except Exception as e:
         django_messages.error(request, f'Error sending email: {str(e)}')
 
-    return redirect('admin_panel:seller_detail', seller_id=seller_id)
+    return redirect('admin_panel:seller_detail', pk=seller_id)
 
 
 def add_seller(request):
@@ -878,11 +876,11 @@ def orders_list(request):
 
     # Status choices for dropdown
     status_choices = [
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-        ('cancelled', 'Cancelled'),
+        ('Pending', 'Pending'),
+        ('Processing', 'Processing'),
+        ('Shipped', 'Shipped'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
     ]
 
     # Pagination
@@ -892,8 +890,8 @@ def orders_list(request):
 
     # Calculate statistics
     total_orders = Order.objects.count()
-    delivered_count = Order.objects.filter(status='delivered').count()
-    pending_count = Order.objects.filter(status='pending').count()
+    delivered_count = Order.objects.filter(status='Delivered').count()
+    pending_count = Order.objects.filter(status='Pending').count()
     total_revenue = (
         Order.objects.filter(status__iexact='Delivered')
         .aggregate(total=Sum('total_amount'))['total']
@@ -940,11 +938,11 @@ def order_detail(request, order_id):
                 messages.error(request, f'Error updating order: {str(e)}')
 
     status_choices = [
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-        ('cancelled', 'Cancelled'),
+        ('Pending', 'Pending'),
+        ('Processing', 'Processing'),
+        ('Shipped', 'Shipped'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
     ]
 
     # Get query parameters to preserve search/filter when going back
@@ -1264,7 +1262,7 @@ def delete_review(request, review_id):
     return render(request, 'admin/delete_review_confirm.html', context)
 
 #Admin Profile#####################
-@login_required(login_url='login')
+@login_required(login_url='admin_panel:login')
 def admin_profile(request):
     user = request.user
     return render(request, 'admin/profile.html', {'user': user})
@@ -1362,7 +1360,7 @@ def contact_us(request):
 
         # Example: Send email (implement with Django's send_mail)
         # from django.core.mail import send_mail
-        # send_mail(subject, message, email, ['admin@shophub.com'])
+        # send_mail(subject, message, email, ['admin@multimart.com'])
 
         messages.success(request, 'Your message has been sent! We\'ll get back to you soon.')
         return redirect('admin_panel:contact_us')

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order #{{ order.id }} - ShopHub</title>
+    <title>Order #{{ order.id }} - MultiMart</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -1284,7 +1284,7 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Dashboard</div>
         </div>
         <div class="navbar-right">
@@ -1305,10 +1305,22 @@
         <!-- Notification dropdown -->
 <div id="notification-box"
      style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
+            background:#fff; border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:460px; overflow:hidden; border:1px solid rgba(0,0,0,0.08);">
+    <div style="padding:8px 10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:700; font-size:13px;">New only</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/mark-all-read/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Mark read</button>
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #f97316; background:#fff7ed; color:#c2410c; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();if(!confirm('Delete all notifications permanently?'))return;(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/clear-all/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Clear all</button>
+        </div>
+    </div>
+    <div id="notification-list" style="padding:8px; overflow-y:auto; max-height:320px;">
         <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+    <div style="padding:8px; border-top:1px solid #eee; text-align:center;">
+        <a href="/not/seller/" style="font-size:12px; color:#ea580c; font-weight:600;">View all notifications</a>
     </div>
 </div>
 
@@ -1350,7 +1362,9 @@
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'seller:seller_notifications' %}">Notifications</a>
+                                </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
@@ -1611,7 +1625,7 @@
                 <div>
                     <div class="footer-logo">
                         <span>🛍️</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
@@ -1647,13 +1661,13 @@
                     <ul>
                         <li>📍 123 Shopping Street, Mumbai, India</li>
                         <li>📞 +91 98765 43210</li>
-                        <li>✉️ support@shophub.com</li>
+                        <li>✉️ support@multimart.com</li>
                     </ul>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>&copy; 2024 MultiMart. All rights reserved.</p>
                 <p>Made with ❤️ for Sellers & Shoppers</p>
             </div>
         </div>
@@ -1777,7 +1791,7 @@ function showNotifications() {
     box.style.display = "block";
 
     // Load list from backend
-    fetch("/not/list/")
+    fetch("/not/list/?unread=1")
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById("notification-list");

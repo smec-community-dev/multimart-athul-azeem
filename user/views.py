@@ -18,12 +18,15 @@ from .models import Address
 from django.contrib.auth import update_session_auth_hash
 import razorpay
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from decimal import Decimal
 
 
 def products(request):
-    bestseller_products = Product.objects.filter(is_featured=True)[:4]
-    slider_products = Product.objects.filter(is_featured=True)
+    # Show featured products that actually have images to avoid blank slider cards.
+    featured_with_images = Product.objects.filter(is_featured=True, images__isnull=False).distinct()
+    bestseller_products = featured_with_images[:4]
+    slider_products = featured_with_images[:6]
     query = request.GET.get("q", "")
     all_products = Product.objects.all()
     results = all_products
@@ -125,7 +128,7 @@ def productslist(request):
         "page_obj": products_page,
     })
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def profile(request):
     address, created = Address.objects.get_or_create(user=request.user)
 
@@ -140,7 +143,7 @@ def profile(request):
     if request.method == "POST" and 'username' in request.POST:
         full_name = request.POST.get("full_name")
         username = request.POST.get("username")
-        email = request.POST.get("email")
+        email = (request.POST.get("email") or "").strip().lower()
         phone = request.POST.get("phone_number")
 
         # Split full name into first & last
@@ -186,7 +189,7 @@ def product_detail(request, slug):
 
     # Main & Gallery Images
     main_image = product.images.filter(image_type='Main').first()
-    gallery_images = product.images.all()
+    gallery_images = product.images.filter(image_type='Gallery')
 
     # Wishlist count
     wishlist_count = Wishlist.objects.filter(
@@ -232,7 +235,7 @@ def product_detail(request, slug):
         "user_review_exists": user_review_exists,   # ADD THIS
     })
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def add_to_cart(request, slug):
     try:
         product = Product.objects.get(slug=slug)
@@ -261,7 +264,7 @@ def add_to_cart(request, slug):
     return redirect("user:cart_page")
 
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def buy_now(request, slug):
     try:
         product = Product.objects.get(slug=slug)
@@ -284,7 +287,7 @@ def buy_now(request, slug):
     return redirect("user:checkout")
 
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def cart_page(request):
     search_query = request.GET.get("search", "")  # search text from input box
 
@@ -429,7 +432,7 @@ def category_products(request, slug):
         "search": search,
     })
 
-@login_required(login_url="login")
+@login_required(login_url="admin_panel:login")
 def add_to_wishlist(request, slug):
     product = Product.objects.filter(slug=slug).first()
     if product is None:
@@ -517,77 +520,192 @@ def checkout(request):
     })
 
 
+def _get_checkout_address_data(request):
+    """
+    Read shipping address from either selected saved address or checkout form fields.
+    Supports both current field names and fallback aliases.
+    """
+    selected_address_id = request.POST.get("selected_address")
+    if selected_address_id:
+        try:
+            address = Address.objects.get(id=selected_address_id, user=request.user)
+        except Address.DoesNotExist:
+            return None, "Invalid address selected."
+
+        data = {
+            "full_name": (address.full_name or "").strip(),
+            "phone": (address.phone or "").strip(),
+            "address_line1": (address.street or "").strip(),
+            "address_line2": (address.landmark or "").strip(),
+            "city": (address.city or "").strip(),
+            "state": (address.state or "").strip(),
+            "pincode": (address.pincode or "").strip(),
+            "country": "India",
+        }
+    else:
+        data = {
+            "full_name": (request.POST.get("full_name") or request.POST.get("name") or "").strip(),
+            "phone": (request.POST.get("phone") or "").strip(),
+            "address_line1": (request.POST.get("address_line1") or request.POST.get("address") or "").strip(),
+            "address_line2": (request.POST.get("address_line2") or "").strip(),
+            "city": (request.POST.get("city") or "").strip(),
+            "state": (request.POST.get("state") or "").strip(),
+            "pincode": (request.POST.get("pincode") or "").strip(),
+            "country": (request.POST.get("country") or "India").strip(),
+        }
+
+    required = ["full_name", "phone", "address_line1", "city", "pincode"]
+    missing = [field for field in required if not data.get(field)]
+    if missing:
+        return None, "Please fill all required address fields."
+
+    return data, None
+
+
+def _format_shipping_address(address_data):
+    parts = [
+        address_data.get("full_name", ""),
+        address_data.get("phone", ""),
+        address_data.get("address_line1", ""),
+        address_data.get("address_line2", ""),
+        address_data.get("city", ""),
+        address_data.get("state", ""),
+        address_data.get("pincode", ""),
+        address_data.get("country", "India"),
+    ]
+    return ", ".join([part for part in parts if part])
+
+
+def _persist_user_address(user, address_data):
+    # Keep user's latest checkout address available for reuse.
+    Address.objects.update_or_create(
+        user=user,
+        defaults={
+            "full_name": address_data.get("full_name", ""),
+            "phone": address_data.get("phone", ""),
+            "street": address_data.get("address_line1", ""),
+            "city": address_data.get("city", ""),
+            "state": address_data.get("state", ""),
+            "pincode": address_data.get("pincode", ""),
+            "landmark": address_data.get("address_line2", ""),
+        },
+    )
+
+
 @login_required(login_url="admin_panel:login")
 def create_order(request):
     if request.method == "POST":
         try:
-            # Handle saved address selection
-            selected_address_id = request.POST.get('selected_address')
-            if selected_address_id:
-                try:
-                    address = Address.objects.get(id=selected_address_id, user=request.user)
-                    request.session['checkout_full_name'] = address.full_name
-                    request.session['checkout_phone'] = address.phone
-                    request.session['checkout_address_line1'] = address.street
-                    request.session['checkout_address_line2'] = address.landmark or ""  # ADD THIS LINE
-                    request.session['checkout_city'] = address.city
-                    request.session['checkout_state'] = address.state
-                    request.session['checkout_pincode'] = address.pincode
-                    request.session['checkout_country'] = 'India'
+            address_data, address_error = _get_checkout_address_data(request)
+            if address_error:
+                return JsonResponse({"error": address_error}, status=400)
 
-                except Address.DoesNotExist:
-                    pass
-            else:
-                # Save new address data to session
-                if request.POST.get('full_name'):
-                    # Save new address data to session (required fields check later in JS)
-                    request.session['checkout_full_name'] = request.POST.get('full_name', '').strip()
-                    request.session['checkout_phone'] = request.POST.get('phone', '').strip()
-                    request.session['checkout_address_line1'] = request.POST.get('address_line1', '').strip()
-                    request.session['checkout_address_line2'] = request.POST.get('address_line2', '').strip()
-                    request.session['checkout_city'] = request.POST.get('city', '').strip()
-                    request.session['checkout_state'] = request.POST.get('state', '').strip()
-                    request.session['checkout_pincode'] = request.POST.get('pincode', '').strip()
-                    request.session['checkout_country'] = request.POST.get('country', 'India').strip()
+            request.session['checkout_full_name'] = address_data["full_name"]
+            request.session['checkout_phone'] = address_data["phone"]
+            request.session['checkout_address_line1'] = address_data["address_line1"]
+            request.session['checkout_address_line2'] = address_data["address_line2"]
+            request.session['checkout_city'] = address_data["city"]
+            request.session['checkout_state'] = address_data["state"]
+            request.session['checkout_pincode'] = address_data["pincode"]
+            request.session['checkout_country'] = address_data["country"]
+            shipping_address = _format_shipping_address(address_data)
+            _persist_user_address(request.user, address_data)
 
             # Save BUY NOW data in session if present
             if request.POST.get("buy_now_slug"):
                 request.session["buy_now_slug"] = request.POST.get("buy_now_slug")
                 request.session["buy_now_qty"] = request.POST.get("buy_now_qty")
 
+            if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+                return JsonResponse({"error": "Razorpay is not configured on server."}, status=500)
+
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-            # Get amount from form
-            amount = int(request.POST.get("amount", 0))
+            # Always compute amount on backend (paise) instead of trusting frontend.
+            buy_slug = request.POST.get("buy_now_slug")
+            buy_qty = request.POST.get("buy_now_qty")
+            if buy_slug:
+                try:
+                    product = Product.objects.get(slug=buy_slug)
+                    quantity = max(int(buy_qty or 1), 1)
+                except (Product.DoesNotExist, ValueError):
+                    return JsonResponse({"error": "Invalid buy-now product."}, status=400)
+                amount_paise = int((Decimal(product.price) * quantity) * 100)
+            else:
+                items = Cart.objects.filter(user=request.user).select_related("product")
+                if not items.exists():
+                    return JsonResponse({"error": "Your cart is empty."}, status=400)
+                total = sum((Decimal(item.product.price) * item.quantity for item in items), Decimal("0"))
+                amount_paise = int(total * 100)
 
-            # Ensure amount is at least Rs 1 (100 paise)
-            if amount < 100:
-                amount = 100
+            if amount_paise < 100:
+                amount_paise = 100
 
             # Store amount in session for potential refund
-            request.session['payment_amount'] = amount
+            request.session['payment_amount'] = amount_paise
 
             # Create Razorpay order
             order_data = {
-                "amount": amount,
+                "amount": amount_paise,
                 "currency": "INR",
                 "payment_capture": 1,
             }
 
             razorpay_order = client.order.create(order_data)
 
+            # Save order + address before payment, then attach payment after success.
+            previous_pending_id = request.session.get("pending_online_order_id")
+            if previous_pending_id:
+                Order.objects.filter(
+                    id=previous_pending_id,
+                    user=request.user,
+                    payment_method="Online",
+                    status="Pending",
+                    razorpay_payment_id__isnull=True
+                ).delete()
+
+            if buy_slug:
+                product = Product.objects.get(slug=buy_slug)
+                quantity = max(int(buy_qty or 1), 1)
+                total_amount = Decimal(product.price) * quantity
+                pending_order = Order.objects.create(
+                    user=request.user,
+                    seller=product.seller,
+                    total_amount=total_amount,
+                    shipping_address=shipping_address,
+                    payment_method="Online",
+                    status="Pending",
+                    razorpay_order_id=razorpay_order["id"],
+                )
+            else:
+                items = Cart.objects.filter(user=request.user).select_related("product")
+                first_item = items.first()
+                total_amount = sum((Decimal(item.product.price) * item.quantity for item in items), Decimal("0"))
+                pending_order = Order.objects.create(
+                    user=request.user,
+                    seller=first_item.product.seller,
+                    total_amount=total_amount,
+                    shipping_address=shipping_address,
+                    payment_method="Online",
+                    status="Pending",
+                    razorpay_order_id=razorpay_order["id"],
+                )
+
+            request.session["pending_online_order_id"] = pending_order.id
+
             return JsonResponse({
                 "id": razorpay_order["id"],
                 "amount": razorpay_order["amount"],
-                "currency": razorpay_order["currency"]
+                "currency": razorpay_order["currency"],
+                "pending_order_id": pending_order.id,
             })
 
         except Exception as e:
             print("Create Order Error:", e)
-            return JsonResponse({"error": "Failed to create order"}, status=500)
+            return JsonResponse({"error": f"Failed to create order: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-@csrf_exempt
+@login_required(login_url="admin_panel:login")
 def payment_verify(request):
     if request.method == "POST":
         razorpay_payment_id = request.POST.get("razorpay_payment_id")
@@ -597,6 +715,9 @@ def payment_verify(request):
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
         try:
+            if not all([razorpay_payment_id, razorpay_order_id, razorpay_signature]):
+                return JsonResponse({"success": False, "error": "Missing payment fields"})
+
             # Verify the payment signature
             params_dict = {
                 "razorpay_order_id": razorpay_order_id,
@@ -606,27 +727,20 @@ def payment_verify(request):
 
             client.utility.verify_payment_signature(params_dict)
 
-            # Read stored address session values
-            full_name = request.session.get('checkout_full_name', request.user.get_full_name())
-            phone = request.session.get('checkout_phone', '')
-            address_line1 = request.session.get('checkout_address_line1', '')
-            address_line2 = request.session.get('checkout_address_line2', '')
-            city = request.session.get('checkout_city', '')
-            state = request.session.get('checkout_state', '')
-            pincode = request.session.get('checkout_pincode', '')
-            country = request.session.get('checkout_country', 'India')
+            pending_order_id = request.session.get("pending_online_order_id")
+            if not pending_order_id:
+                return JsonResponse({"success": False, "error": "Address/order not saved before payment."})
 
-            # Build address skipping empties
-            parts = []
-            if full_name: parts.append(full_name)
-            if phone: parts.append(phone)
-            if address_line1: parts.append(address_line1)
-            if address_line2: parts.append(address_line2)
-            if city: parts.append(city)
-            if state: parts.append(state)
-            if pincode: parts.append(pincode)
-            if country: parts.append(country)
-            shipping_address = ', '.join(parts)
+            try:
+                order = Order.objects.get(id=pending_order_id, user=request.user)
+            except Order.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Pending order not found."})
+
+            order.razorpay_payment_id = razorpay_payment_id
+            order.razorpay_order_id = razorpay_order_id
+            order.razorpay_signature = razorpay_signature
+            order.status = "Processing"
+            order.save(update_fields=["razorpay_payment_id", "razorpay_order_id", "razorpay_signature", "status"])
 
             # ==========================
             # HANDLE BUY NOW MODE
@@ -637,26 +751,15 @@ def payment_verify(request):
             if buy_slug:
                 try:
                     product = Product.objects.get(slug=buy_slug)
-                    quantity = int(buy_qty)
-                    total = product.price * quantity
+                    quantity = max(int(buy_qty or 1), 1)
 
-                    order = Order.objects.create(
-                        user=request.user,
-                        seller=product.seller,
-                        total_amount=total,
-                        shipping_address=shipping_address,
-                        payment_method="Online",
-                        status="Processing",
-                        razorpay_payment_id=razorpay_payment_id,
-                        razorpay_order_id=razorpay_order_id,
-                    )
-
-                    OrderItem.objects.create(
-                        order=order,
-                        product=product,
-                        quantity=quantity,
-                        unit_price=product.price
-                    )
+                    if not OrderItem.objects.filter(order=order, product=product).exists():
+                        OrderItem.objects.create(
+                            order=order,
+                            product=product,
+                            quantity=quantity,
+                            unit_price=product.price
+                        )
 
                     # Delete buy now session data
                     if "buy_now_slug" in request.session:
@@ -668,9 +771,6 @@ def payment_verify(request):
                     return JsonResponse({"success": False, "error": "Product not found"})
 
             else:
-                # ==========================
-                # NORMAL CART CHECKOUT MODE
-                # ==========================
                 items = Cart.objects.filter(user=request.user)
 
                 if not items.exists():
@@ -685,28 +785,14 @@ def payment_verify(request):
                         "error": "No items in cart. Payment has been refunded."
                     })
 
-                total = sum(item.product.price * item.quantity for item in items)
-
-                # Get the first product's seller (you might want to handle multiple sellers differently)
-                first_item = items.first()
-                order = Order.objects.create(
-                    user=request.user,
-                    seller=first_item.product.seller,
-                    total_amount=total,
-                    shipping_address=shipping_address,
-                    payment_method="Online",
-                    status="Processing",
-                    razorpay_payment_id=razorpay_payment_id,
-                    razorpay_order_id=razorpay_order_id,
-                )
-
                 for item in items:
-                    OrderItem.objects.create(
-                        order=order,
-                        product=item.product,
-                        quantity=item.quantity,
-                        unit_price=item.product.price
-                    )
+                    if not OrderItem.objects.filter(order=order, product=item.product).exists():
+                        OrderItem.objects.create(
+                            order=order,
+                            product=item.product,
+                            quantity=item.quantity,
+                            unit_price=item.product.price
+                        )
 
                 # Clear cart only after successful order creation
                 items.delete()
@@ -717,6 +803,7 @@ def payment_verify(request):
                             'checkout_pincode', 'checkout_country']
             for key in address_keys:
                 request.session.pop(key, None)
+            request.session.pop("pending_online_order_id", None)
 
             return JsonResponse({
                 "success": True,
@@ -739,46 +826,19 @@ def clear_wishlist(request):
 @login_required(login_url="admin_panel:login")
 def place_order(request):
     if request.method == "POST":
-        # Handle saved address selection or new address
-        selected_address_id = request.POST.get('selected_address')
-        if selected_address_id:
-            try:
-                address = Address.objects.get(id=selected_address_id, user=request.user)
-                full_name = address.full_name.strip()
-                phone = address.phone.strip()
-                address_line1 = address.street.strip()
-                address_line2 = address.landmark.strip() if address.landmark else ""
-                city = address.city.strip()
-                state = address.state.strip()
-                pincode = address.pincode.strip()
-                country = 'India'
-            except Address.DoesNotExist:
-                messages.error(request, "Invalid address selected.")
-                return redirect('user:checkout')
-        else:
-            # New address: strip all to avoid whitespace issues
-            full_name = request.POST.get("full_name", "").strip()
-            phone = request.POST.get("phone", "").strip()
-            address_line1 = request.POST.get("address_line1", "").strip()
-            address_line2 = request.POST.get("address_line2", "").strip()
-            city = request.POST.get("city", "").strip()
-            state = request.POST.get("state", "").strip()
-            pincode = request.POST.get("pincode", "").strip()
-            country = request.POST.get("country", "India").strip()
+        address_data, address_error = _get_checkout_address_data(request)
+        if address_error:
+            messages.error(request, address_error)
+            return redirect('user:checkout')
 
-            # Validate new address fields
-            if not all([full_name, phone, address_line1, city, state, pincode]):
-                messages.error(request, "Please fill all required address fields.")
-                return redirect('user:checkout')
-
-        # Final formatted shipping address string
-        shipping_address = f"{full_name}, {phone}, {address_line1}"
-        if address_line2:
-            shipping_address += f", {address_line2}"
-        shipping_address += f", {city}, {state}, {pincode}, {country}"
+        shipping_address = _format_shipping_address(address_data)
+        _persist_user_address(request.user, address_data)
 
         # Determine payment method
         payment_method = request.POST.get("payment_method", "cod")
+        if payment_method != "cod":
+            messages.error(request, "For online payments, please use Razorpay checkout.")
+            return redirect("user:checkout")
 
         # BUY NOW MODE
         buy_now_slug = request.POST.get("buy_now_slug")
@@ -896,6 +956,74 @@ def my_orders(request):
     })
 
 
+@login_required(login_url="admin_panel:login")
+def order_detail(request, order_id):
+    """Buyer view: order summary, seller-style progress timeline, and line items."""
+    order = get_object_or_404(
+        Order.objects.select_related("seller__user", "user").prefetch_related(
+            "items__product__images"
+        ),
+        id=order_id,
+        user=request.user,
+    )
+
+    # Align timeline dates with seller dashboard (same fallbacks as seller order view).
+    update_fields = []
+    if not order.pending_date:
+        order.pending_date = order.order_date
+        update_fields.append("pending_date")
+    if not order.processing_date and order.status in (
+        "Processing",
+        "Shipped",
+        "Delivered",
+    ):
+        order.processing_date = order.order_date
+        update_fields.append("processing_date")
+    if not order.shipped_date and order.status in ("Shipped", "Delivered"):
+        order.shipped_date = order.order_date
+        update_fields.append("shipped_date")
+    if not order.delivered_date and order.status == "Delivered":
+        order.delivered_date = order.order_date
+        update_fields.append("delivered_date")
+    if update_fields:
+        order.save(update_fields=update_fields)
+
+    items = list(order.items.all())
+    for item in items:
+        item.line_total = item.unit_price * item.quantity
+    total_quantity = sum(item.quantity for item in items)
+    calculated_items_total = sum(
+        (item.unit_price * item.quantity for item in items), Decimal("0")
+    )
+    amount_difference = order.total_amount - calculated_items_total
+
+    # Horizontal progress lines between the four steps (avoid template logic duplication).
+    st = order.status
+    timeline_seg1 = st in ("Processing", "Shipped", "Delivered") or (
+        st == "Cancelled" and order.processing_date
+    )
+    timeline_seg2 = st in ("Shipped", "Delivered") or (
+        st == "Cancelled" and order.shipped_date
+    )
+    timeline_seg3 = st == "Delivered"
+
+    return render(
+        request,
+        "user/order_detail.html",
+        {
+            "order": order,
+            "items": items,
+            "total_quantity": total_quantity,
+            "calculated_items_total": calculated_items_total,
+            "amount_difference": amount_difference,
+            "has_discrepancy": abs(amount_difference) > Decimal("0.01"),
+            "timeline_seg1": timeline_seg1,
+            "timeline_seg2": timeline_seg2,
+            "timeline_seg3": timeline_seg3,
+        },
+    )
+
+
 # user/views.py
 @login_required(login_url="admin_panel:login")
 def cancel_order(request, order_id):
@@ -911,6 +1039,16 @@ def cancel_order(request, order_id):
     return redirect("user:my_orders")
 
 
+@login_required(login_url="admin_panel:login")
+@require_POST
+def delete_cancelled_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if order.status != "Cancelled":
+        messages.error(request, "Only cancelled orders can be removed from your list.")
+        return redirect("user:my_orders")
+    order.delete()
+    messages.success(request, "Cancelled order removed from your history.")
+    return redirect("user:my_orders")
 
 
 @login_required(login_url="admin_panel:login")

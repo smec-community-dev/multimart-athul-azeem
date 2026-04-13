@@ -1,17 +1,30 @@
 # admin_panel/urls.py
 from django.urls import path
+
+from . import password_reset
 from . import views
-
-from django.urls import path
-
-
-
 
 urlpatterns = [
     # ==================== COMMON AUTH (ROOT LEVEL) ====================
     path("login/", views.normal_login_view, name="login"),  # ✅ Normal login
     path("logout/", views.custom_logout_view, name="logout"),
     path("registration/", views.registration_view, name="registration"),  # ✅ Normal registration
+
+    path(
+        "forgot-password/",
+        password_reset.forgot_password_view,
+        name="forgot_password",
+    ),
+    path(
+        "verify-otp/",
+        password_reset.verify_otp_view,
+        name="verify_otp",
+    ),
+    path(
+        "reset-password/",
+        password_reset.reset_password_view,
+        name="reset_password",
+    ),
 
     # ==================== SOCIAL AUTH (Google Only) ====================
     path("choose-role/", views.choose_role, name="choose_role"),  # Only for Google users

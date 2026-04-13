@@ -1,20 +1,21 @@
-# main/urls.py (corrected)
+import sys
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
-from django.conf import settings
-from django.conf.urls.static import static
+
+from user import views as user_views
 
 def redirect_to_user_home(request):
-    # Implement your redirect logic here, e.g., to user dashboard
     if request.user.is_authenticated:
-        if hasattr(request.user, 'seller_details') and request.user.seller_details:
-            return redirect('seller:seller_dashboard')
-        else:
-            return redirect('user:user_home')
-    return redirect('admin_panel:login')  # Or registration
+        if request.user.is_superuser:
+            return redirect("admin_panel:admin_dashboard")
+        if hasattr(request.user, "seller_details") and request.user.seller_details:
+            return redirect("seller:seller_dashboard")
+        return redirect("user:user_home")
+    return redirect("admin_panel:login")
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Fixed: was 'hello/'
@@ -24,6 +25,11 @@ urlpatterns = [
 
     # USER app (user home)
     path("user/", include("user.urls")),
+    path(
+        "order/<int:order_id>/",
+        user_views.order_detail,
+        name="user_order_track",
+    ),
 
     # SELLER app
     path("seller/", include("seller.urls")),
@@ -37,5 +43,5 @@ urlpatterns = [
     path('not/', include('notifications.urls', namespace='not')),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG or "runserver" in sys.argv:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

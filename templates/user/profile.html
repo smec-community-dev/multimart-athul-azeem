@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - ShopHub</title>
+    <title>My Profile - MultiMart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -685,6 +685,26 @@
             transform: translateY(-2px);
         }
 
+        /* Track Order (profile → My Orders section) */
+        a.btn.order-track-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: #fff;
+            color: #c2410c;
+            border: 2px solid #ea580c;
+            text-decoration: none;
+        }
+        a.btn.order-track-link:hover {
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
         /* Profile layout responsive */
         .profile-layout {
             display: flex;
@@ -811,110 +831,9 @@
 </head>
 <body class="flex flex-col min-h-screen overflow-x-hidden bg-gray-50">
 
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars" id="mobileMenuIcon"></i>
-            </button>
+    {% include "user/header.html" %}
 
-            <div class="logo">
-                <i class="fas fa-shopping-bag"></i>
-                <span>ShopHub</span>
-            </div>
-
-            <nav class="nav-center">
-                <a href="{% url 'user:user_home' %}">Home</a>
-                <a href="{% url 'user:products_list' %}">Products</a>
-                <a href="{% url 'user:about' %}">About</a>
-                <a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
-                <a href="{% url 'user:contact' %}">Contact</a>
-            </nav>
-
-            <form method="GET" action="{% url 'user:user_home' %}" class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
-            </form>
-
-            <div class="header-right">
-                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
-                    <i class="fas fa-heart"></i>
-                    <span class="badge">{{ wishlist_count }}</span>
-                </a>
-
-                <a href="{% url 'user:cart_page' %}" class="icon-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">{{ cart_count }}</span>
-                </a>
-
-                {% if user.is_authenticated %}
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-toggle" onclick="toggleProfileMenu()">
-                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
-                        <span class="dropdown-arrow">▼</span>
-                    </div>
-
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="dropdown-header">
-                            <div class="dropdown-header-content">
-                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
-                                <div class="dropdown-header-info">
-                                    <h3>{{ user.username }}</h3>
-                                    <p>{{ user.email }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="dropdown-divider"></div>
-
-                        <a href="{% url 'user:profile' %}" class="dropdown-item">
-                            <span class="dropdown-item-icon">👤</span>
-                            <span class="dropdown-item-label">My Profile</span>
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-
-                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
-                            <span class="dropdown-item-icon">🚪</span>
-                            <span class="dropdown-item-label">Logout</span>
-                        </a>
-                    </div>
-                </div>
-                {% else %}
-                <div class="auth-buttons">
-                    <a href="{% url 'admin_panel:login' %}">
-                        <button class="login-btn">Login</button>
-                    </a>
-                    <a href="{% url 'admin_panel:register' %}">
-                        <button class="register-btn">Register</button>
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Mobile Navigation -->
-        <div class="mobile-nav" id="mobileNav">
-            <a href="{% url 'user:user_home' %}">Home</a>
-            <a href="{% url 'user:products_list' %}">Products</a>
-            <a href="{% url 'user:about' %}">About</a>
-            <a href="{% url 'user:deals_and_offers' %}">Deals & Offers</a>
-            <a href="{% url 'user:contact' %}">Contact</a>
-
-            <!-- Mobile search box -->
-            <form method="GET" action="{% url 'user:user_home' %}" class="pt-4">
-                <div class="flex">
-                    <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
-                           class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm">
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded-r-lg hover:bg-orange-600 transition text-sm">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </header>
-
-    <!-- Main Content -->
+<!-- Main Content -->
     <div class="container">
 
         <!-- USER SIDEBAR -->
@@ -1121,8 +1040,11 @@
                                     <p class="text-gray-700 font-semibold">Total Paid: <span class="text-2xl font-bold text-orange-500">₹{{ order.total_amount }}</span></p>
                                 </div>
 
-                                <!-- Order-level actions (Cancel Order) -->
-                                <div class="flex gap-2">
+                                <!-- Order-level actions -->
+                                <div class="flex gap-2 flex-wrap justify-end">
+                                    <a href="/order/{{ order.id }}/" class="btn order-track-link">
+                                        <i class="fas fa-route"></i> Track Order
+                                    </a>
                                     {% if order.status == "Pending" or order.status == "Processing" %}
                                     <a href="{% url 'user:cancel_order' order.id %}"
                                        class="btn bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-all flex items-center justify-center">
@@ -1177,7 +1099,7 @@
                         <div class="bg-white rounded-xl shadow-sm overflow-hidden wishlist-item">
                             <div class="relative">
                                 <div class="h-48 bg-gray-100 overflow-hidden">
-                                    <img src="{{ item.product.images.first.image.url }}"
+                                    <img src="{{ item.product.image.url }}"
                                          class="w-full h-full object-cover"
                                          alt="{{ item.product.name }}">
                                 </div>
@@ -1335,7 +1257,7 @@
                 <div class="animate-on-scroll">
                     <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
                         <i class="fas fa-shopping-bag text-orange-500 text-xl sm:text-2xl"></i>
-                        <span class="text-xl sm:text-2xl font-bold">ShopHub</span>
+                        <span class="text-xl sm:text-2xl font-bold">MultiMart</span>
                     </div>
                     <p class="text-gray-400 text-sm sm:text-base mb-4 sm:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="flex space-x-3 sm:space-x-4">
@@ -1379,14 +1301,14 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
-                            <span>info@shophub.com</span>
+                            <span>info@multimart.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
             <div class="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base animate-on-scroll">
-                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+                <p>&copy; 2023 MultiMart. All rights reserved.</p>
             </div>
         </div>
     </footer>

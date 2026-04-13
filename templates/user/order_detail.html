@@ -1,0 +1,689 @@
+{% extends "user/base.html" %}
+
+{% block extra_css %}
+<style>
+    /* Order detail page — uo- prefix avoids clashes with Tailwind CDN */
+    @keyframes uo-pulse {
+        0%, 100% { opacity: 1; box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.28); }
+        50% { opacity: 0.95; box-shadow: 0 0 0 10px rgba(255, 140, 0, 0.1); }
+    }
+    @keyframes uo-pulse-green {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.4); }
+        50% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0.12); }
+    }
+
+    .uo-page-bg {
+        background:
+            radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255, 140, 0, 0.12), transparent 55%),
+            linear-gradient(180deg, #f1f5f9 0%, #fffbeb 35%, #f8fafc 100%);
+        padding: 2rem 0 3.5rem;
+    }
+
+    .user-order-page {
+        --uo-primary: #ea580c;
+        --uo-primary-light: #fff7ed;
+        --uo-success: #16a34a;
+        --uo-success-soft: #dcfce7;
+        --uo-line-empty: #e2e8f0;
+        --uo-text: #0f172a;
+        --uo-muted: #64748b;
+        --uo-border: #fed7aa;
+        --uo-circle: 56px;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .user-order-page .uo-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #c2410c;
+        text-decoration: none;
+        padding: 0.35rem 0.75rem 0.35rem 0;
+        border-radius: 8px;
+        transition: color 0.2s, transform 0.2s;
+    }
+    .user-order-page .uo-back:hover {
+        color: #9a3412;
+        transform: translateX(-2px);
+    }
+
+    .user-order-page .uo-hero-title {
+        font-size: clamp(1.75rem, 4vw, 2.25rem);
+        font-weight: 800;
+        color: var(--uo-text);
+        letter-spacing: -0.02em;
+        margin: 0.75rem 0 0.35rem;
+        line-height: 1.15;
+    }
+
+    .user-order-page .uo-hero-sub {
+        color: var(--uo-muted);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .user-order-page .uo-cancel-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #fef2f2, #fff1f2);
+        border: 1px solid #fecaca;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.08);
+    }
+    .user-order-page .uo-cancel-banner i {
+        color: #dc2626;
+        font-size: 1.25rem;
+        margin-top: 0.1rem;
+    }
+    .user-order-page .uo-cancel-banner p {
+        margin: 0;
+        color: #991b1b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.45;
+    }
+
+    .user-order-page .uo-main-card {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid rgba(254, 215, 170, 0.6);
+        box-shadow:
+            0 4px 6px -1px rgba(15, 23, 42, 0.06),
+            0 20px 40px -12px rgba(234, 88, 12, 0.12);
+        padding: 1.75rem 1.5rem 2rem;
+        overflow: hidden;
+    }
+    @media (min-width: 640px) {
+        .user-order-page .uo-main-card {
+            padding: 2rem 2.25rem 2.25rem;
+        }
+    }
+
+    .user-order-page .order-top-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .user-order-page .top-info-card {
+        position: relative;
+        background: linear-gradient(145deg, #fffdfb 0%, var(--uo-primary-light) 100%);
+        border: 1px solid rgba(253, 186, 116, 0.55);
+        border-radius: 14px;
+        padding: 1.1rem 1.15rem 1.15rem 3rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .user-order-page .top-info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(234, 88, 12, 0.1);
+    }
+    .user-order-page .top-info-card .uo-card-icon {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2rem;
+        height: 2rem;
+        border-radius: 10px;
+        background: rgba(234, 88, 12, 0.12);
+        color: var(--uo-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    .user-order-page .top-info-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--uo-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .user-order-page .top-info-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--uo-text);
+        word-break: break-word;
+    }
+
+    .user-order-page .top-info-value.amount {
+        color: var(--uo-primary);
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+
+    .user-order-page .uo-items-warning {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #b45309;
+    }
+
+    .user-order-page .uo-progress-card {
+        margin-bottom: 2rem;
+        padding: 1.5rem 1.25rem 1.65rem;
+        background: linear-gradient(160deg, #fff 0%, #fffbeb 55%, #fff7ed 100%);
+        border-radius: 16px;
+        border: 1px solid rgba(251, 191, 36, 0.35);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 16px rgba(251, 146, 60, 0.08);
+    }
+
+    .user-order-page .uo-progress-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        color: var(--uo-text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .user-order-page .uo-progress-title::before {
+        content: "";
+        width: 4px;
+        height: 1.25rem;
+        border-radius: 4px;
+        background: linear-gradient(180deg, var(--uo-primary), #fb923c);
+    }
+
+    .user-order-page .uo-track {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+        overflow-x: auto;
+        padding: 0.35rem 0 0.25rem;
+        gap: 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .user-order-page .uo-step-col {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center;
+        text-align: center;
+        flex: 0 0 auto;
+        width: 92px;
+        min-width: 76px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .user-order-page .uo-seg {
+        flex: 1 1 auto;
+        min-width: 16px;
+        height: 5px;
+        border-radius: 6px;
+        background: var(--uo-line-empty);
+        margin-top: calc((var(--uo-circle) / 2) - 2.5px);
+        align-self: flex-start;
+        position: relative;
+        z-index: 1;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .user-order-page .uo-seg.uo-seg--done {
+        background: linear-gradient(90deg, #22c55e, #4ade80);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+    }
+
+    .user-order-page .uo-step-circle {
+        width: var(--uo-circle);
+        height: var(--uo-circle);
+        border-radius: 50%;
+        background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
+        border: 3px solid #cbd5e1;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.55rem;
+        transition: background 0.35s ease, border-color 0.35s ease, transform 0.2s ease;
+        color: #64748b;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .user-order-page .uo-step-circle i {
+        font-size: 1.1rem;
+    }
+
+    .user-order-page .uo-step-col.uo-is-active .uo-step-circle {
+        background: linear-gradient(145deg, #fb923c, var(--uo-primary));
+        border-color: #c2410c;
+        color: #fff;
+        animation: uo-pulse 2.2s ease-in-out infinite;
+    }
+
+    .user-order-page .uo-step-col.uo-is-done .uo-step-circle {
+        background: linear-gradient(145deg, #22c55e, var(--uo-success));
+        border-color: #15803d;
+        color: #fff;
+    }
+
+    .user-order-page .uo-step-col.uo-is-delivered.uo-is-active .uo-step-circle {
+        animation: uo-pulse-green 2.2s ease-in-out infinite;
+    }
+
+    .user-order-page .uo-step-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--uo-text);
+        line-height: 1.2;
+    }
+
+    .user-order-page .uo-step-col.uo-is-done .uo-step-label {
+        color: var(--uo-success);
+    }
+
+    .user-order-page .uo-step-col.uo-is-active .uo-step-label {
+        color: #c2410c;
+    }
+
+    .user-order-page .uo-step-date {
+        margin-top: 5px;
+        font-size: 0.72rem;
+        color: var(--uo-muted);
+        line-height: 1.3;
+        max-width: 104px;
+    }
+
+    .user-order-page .uo-step-date .uo-muted {
+        font-style: italic;
+        color: #94a3b8;
+        font-size: 0.68rem;
+    }
+
+    .user-order-page .uo-section-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--uo-text);
+        margin: 0 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .user-order-page .uo-section-title span {
+        width: 4px;
+        height: 1.35rem;
+        border-radius: 4px;
+        background: linear-gradient(180deg, var(--uo-primary), #fb923c);
+    }
+
+    .user-order-page .items-table-wrap {
+        overflow-x: auto;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+        margin-bottom: 1.5rem;
+    }
+
+    .user-order-page table.items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .user-order-page .items-table th {
+        background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+        text-align: left;
+        padding: 0.85rem 1.1rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.07em;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .user-order-page .items-table td {
+        padding: 1rem 1.1rem;
+        border-top: 1px solid #f1f5f9;
+        vertical-align: top;
+        color: #334155;
+    }
+
+    .user-order-page .items-table tbody tr {
+        transition: background 0.15s ease;
+    }
+    .user-order-page .items-table tbody tr:hover {
+        background: #fffbeb;
+    }
+
+    .user-order-page .items-table .uo-pname {
+        font-weight: 700;
+        color: var(--uo-text);
+    }
+
+    .user-order-page .product-sku {
+        font-size: 0.75rem;
+        color: var(--uo-muted);
+        margin-top: 0.25rem;
+    }
+
+    .user-order-page .items-table .uo-product-cell {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    .user-order-page .items-table .uo-product-thumb {
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        flex-shrink: 0;
+        background: #f8fafc;
+    }
+    .user-order-page .items-table .uo-product-thumb--empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e1;
+        font-size: 1.25rem;
+    }
+    .user-order-page .items-table .uo-product-thumb--empty::after {
+        content: "📦";
+    }
+
+    .user-order-page .items-table .uo-price {
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .user-order-page .items-table .uo-line-total {
+        font-weight: 800;
+        color: var(--uo-primary);
+    }
+
+    .user-order-page .items-table .uo-empty {
+        text-align: center;
+        color: var(--uo-muted);
+        padding: 2.5rem 1rem !important;
+        font-size: 0.9rem;
+    }
+
+    .user-order-page .uo-summary-panel {
+        max-width: 22rem;
+        margin-left: auto;
+        padding: 1.15rem 1.25rem;
+        background: linear-gradient(145deg, #f8fafc, #fff);
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+
+    .user-order-page .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.45rem 0;
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.9rem;
+    }
+
+    .user-order-page .summary-row.uo-grand {
+        margin-top: 0.35rem;
+        padding-top: 0.75rem;
+        border-top: 2px dashed #e2e8f0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--uo-text);
+    }
+
+    .user-order-page .summary-row.uo-grand .uo-amt {
+        color: var(--uo-primary);
+        font-size: 1.2rem;
+    }
+
+    .user-order-page .uo-note-discrepancy {
+        font-size: 0.75rem;
+        color: #92400e;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        padding: 0.65rem 0.75rem;
+        margin-top: 0.65rem;
+        line-height: 1.4;
+    }
+
+    .user-order-page .uo-ship-card {
+        margin-top: 1.75rem;
+        padding: 1.25rem 1.35rem;
+        background: #f8fafc;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+    }
+    .user-order-page .uo-ship-card p {
+        margin: 0 0 0.65rem;
+        font-size: 0.9rem;
+        color: #475569;
+        line-height: 1.55;
+    }
+    .user-order-page .uo-ship-card p:last-child {
+        margin-bottom: 0;
+    }
+    .user-order-page .uo-ship-card strong {
+        color: var(--uo-text);
+        font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+        .uo-page-bg {
+            padding: 1.25rem 0 2.5rem;
+        }
+        .user-order-page {
+            --uo-circle: 46px;
+        }
+        .user-order-page .uo-step-col {
+            width: 78px;
+            min-width: 68px;
+        }
+        .user-order-page .uo-step-circle i {
+            font-size: 0.95rem;
+        }
+        .user-order-page .uo-step-label {
+            font-size: 0.7rem;
+        }
+        .user-order-page .uo-step-date {
+            font-size: 0.65rem;
+        }
+        .user-order-page .uo-summary-panel {
+            max-width: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="uo-page-bg">
+<div class="user-order-page max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <a href="{% url 'user:my_orders' %}" class="uo-back">
+        <i class="fas fa-arrow-left"></i> Back to My Orders
+    </a>
+    <h1 class="uo-hero-title">Order #{{ order.id }}</h1>
+    <p class="uo-hero-sub">Full details and delivery progress</p>
+
+    {% if order.status == 'Cancelled' %}
+    <div class="uo-cancel-banner">
+        <i class="fas fa-circle-xmark" aria-hidden="true"></i>
+        <p>This order has been cancelled. The timeline shows how far it progressed before cancellation.</p>
+    </div>
+    {% endif %}
+
+    <div class="uo-main-card">
+        <div class="order-top-grid">
+            <div class="top-info-card">
+                <span class="uo-card-icon" aria-hidden="true"><i class="fas fa-store"></i></span>
+                <div class="top-info-label">Seller</div>
+                <div class="top-info-value">
+                    {% if order.seller %}
+                        {{ order.seller.shop_name|default:order.seller.user.username }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+            <div class="top-info-card">
+                <span class="uo-card-icon" aria-hidden="true"><i class="fas fa-indian-rupee-sign"></i></span>
+                <div class="top-info-label">Total amount</div>
+                <div class="top-info-value amount">₹{{ order.total_amount|floatformat:2 }}</div>
+            </div>
+            <div class="top-info-card">
+                <span class="uo-card-icon" aria-hidden="true"><i class="fas fa-cubes"></i></span>
+                <div class="top-info-label">Items</div>
+                <div class="top-info-value">
+                    {{ total_quantity }} unit{{ total_quantity|pluralize }} · {{ items|length }} product{{ items|length|pluralize }}
+                    {% if total_quantity == 0 and order.total_amount %}
+                    <span class="uo-items-warning">No line items stored for this order (data may be incomplete).</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="top-info-card">
+                <span class="uo-card-icon" aria-hidden="true"><i class="fas fa-calendar-day"></i></span>
+                <div class="top-info-label">Order date</div>
+                <div class="top-info-value">{{ order.order_date|date:"M d, Y" }}</div>
+            </div>
+            <div class="top-info-card">
+                <span class="uo-card-icon" aria-hidden="true"><i class="fas fa-truck"></i></span>
+                <div class="top-info-label">Order status</div>
+                <div class="top-info-value">{{ order.status }}</div>
+            </div>
+        </div>
+
+        <div class="uo-progress-card">
+            <div class="uo-progress-title">Order Progress</div>
+            <div class="uo-track" role="list" aria-label="Order status steps">
+                <div class="uo-step-col {% if order.status == 'Cancelled' %}uo-is-done{% elif order.status == 'Pending' %}uo-is-active{% else %}uo-is-done{% endif %}" role="listitem">
+                    <div class="uo-step-circle" aria-hidden="true"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="uo-step-label">Pending</div>
+                    <div class="uo-step-date">
+                        {% if order.pending_date %}
+                            {{ order.pending_date|date:"M d, Y" }}
+                        {% else %}
+                            <span class="uo-muted">Not set</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="uo-seg {% if timeline_seg1 %}uo-seg--done{% endif %}" aria-hidden="true"></div>
+
+                <div class="uo-step-col {% if order.status == 'Cancelled' %}{% if order.processing_date %}uo-is-done{% endif %}{% elif order.status == 'Processing' %}uo-is-active{% elif order.status == 'Shipped' or order.status == 'Delivered' %}uo-is-done{% endif %}" role="listitem">
+                    <div class="uo-step-circle" aria-hidden="true"><i class="fas fa-cog"></i></div>
+                    <div class="uo-step-label">Processing</div>
+                    <div class="uo-step-date">
+                        {% if order.processing_date %}
+                            {{ order.processing_date|date:"M d, Y" }}
+                        {% else %}
+                            <span class="uo-muted">Not set</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="uo-seg {% if timeline_seg2 %}uo-seg--done{% endif %}" aria-hidden="true"></div>
+
+                <div class="uo-step-col {% if order.status == 'Cancelled' %}{% if order.shipped_date %}uo-is-done{% endif %}{% elif order.status == 'Shipped' %}uo-is-active{% elif order.status == 'Delivered' %}uo-is-done{% endif %}" role="listitem">
+                    <div class="uo-step-circle" aria-hidden="true"><i class="fas fa-truck-fast"></i></div>
+                    <div class="uo-step-label">Shipped</div>
+                    <div class="uo-step-date">
+                        {% if order.shipped_date %}
+                            {{ order.shipped_date|date:"M d, Y" }}
+                        {% else %}
+                            <span class="uo-muted">Not set</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="uo-seg {% if timeline_seg3 %}uo-seg--done{% endif %}" aria-hidden="true"></div>
+
+                <div class="uo-step-col {% if order.status == 'Delivered' %}uo-is-done uo-is-active uo-is-delivered{% endif %}" role="listitem">
+                    <div class="uo-step-circle" aria-hidden="true"><i class="fas fa-check"></i></div>
+                    <div class="uo-step-label">Delivered</div>
+                    <div class="uo-step-date">
+                        {% if order.delivered_date %}
+                            {{ order.delivered_date|date:"M d, Y" }}
+                        {% else %}
+                            <span class="uo-muted">Not set</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="uo-section-title"><span></span> Order items</h2>
+
+        <div class="items-table-wrap">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Unit price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            <div class="uo-product-cell">
+                                {% if item.product.image %}
+                                <img class="uo-product-thumb" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                {% else %}
+                                <span class="uo-product-thumb uo-product-thumb--empty" role="img" aria-label="No image"></span>
+                                {% endif %}
+                                <div>
+                                    <div class="uo-pname">{{ item.product.name }}</div>
+                                    <div class="product-sku">
+                                        {% if item.product.slug %}
+                                            SKU: {{ item.product.slug|upper }}
+                                        {% else %}
+                                            #{{ item.product.id }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="uo-price">₹{{ item.unit_price|floatformat:2 }}</td>
+                        <td class="uo-price">{{ item.quantity }}</td>
+                        <td class="uo-line-total">₹{{ item.line_total|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="uo-empty">No line items found for this order.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="uo-summary-panel">
+            <div class="summary-row">
+                <span>Items total</span>
+                <span>₹{{ calculated_items_total|floatformat:2 }}</span>
+            </div>
+            <div class="summary-row uo-grand">
+                <span>Order total</span>
+                <span class="uo-amt">₹{{ order.total_amount|floatformat:2 }}</span>
+            </div>
+            {% if has_discrepancy %}
+            <p class="uo-note-discrepancy">Totals may differ if discounts or fees were applied at checkout.</p>
+            {% endif %}
+        </div>
+
+        <div class="uo-ship-card">
+            <p><strong>Payment</strong><br>{{ order.payment_method|default:"—" }}</p>
+            <p><strong>Shipping address</strong><br>{{ order.shipping_address|linebreaksbr }}</p>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

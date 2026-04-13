@@ -18,8 +18,18 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG") == "True"
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-secret-key-change-me")
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+# Default True for local development to avoid media/static 404 during runserver.
+DEBUG = env_bool("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -46,6 +56,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "rest_framework",
+
     ### SOCIAL AUTH  ######
     "notifications.apps.NotificationsConfig",
 ]
@@ -67,6 +78,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "core.middleware.SuperuserAdminDashboardMiddleware",
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -87,6 +99,7 @@ TEMPLATES = [
                     # Custom context processors
                     'user.context_processors.cart_wishlist_counts',
                     'project.settings.razorpay_keys',
+                    'notifications.context_processors.notification_unread_count',
                 ],
 
         },
@@ -101,10 +114,15 @@ RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 
+print("KEY ID:", RAZORPAY_KEY_ID)
+print("KEY SECRET:", RAZORPAY_KEY_SECRET)
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if DEBUG:
+USE_MYSQL = all(os.getenv(k) for k in ["DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT"])
+
+if DEBUG or not USE_MYSQL:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -179,26 +197,59 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Email (OTP password reset).
+# If SMTP credentials are configured, use real email sending.
+# Otherwise keep console backend for local development.
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER or "noreply@multimart.local",
+)
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
+
+smtp_ready = all([EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD])
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend"
+    if smtp_ready
+    else "django.core.mail.backends.console.EmailBackend",
+)
 # ----------------------------------------
 # LOGIN / LOGOUT REDIRECTS
 # ----------------------------------------
 LOGIN_REDIRECT_URL = "/choose-role/"
 ACCOUNT_SIGNUP_REDIRECT_URL = "/choose-role/"
 LOGOUT_REDIRECT_URL = "/login/"
-
+LOGIN_URL = "/login/"
 # ----------------------------------------
 # ACCOUNT CONFIG
 # ----------------------------------------
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_USERNAME_REQUIRED = True   # YOU NEED THIS
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"  # BEST CHOICE
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True  # since you use username also
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 
-SOCIALACCOUNT_STORE_TOKENS = False
+ACCOUNT_ADAPTER = "core.adapters.CustomAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "core.adapters.CustomSocialAccountAdapter"
+
+# Modern allauth settings (kept alongside old ones for compatibility)
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+
+SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 # Remove these (they break username-based login)
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None

@@ -4,7 +4,7 @@
     <!-- ... ALL YOUR EXISTING <head> CONTENT UNCHANGED ... -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Dashboard - ShopHub</title>
+    <title>Seller Dashboard - MultiMart</title>
     <!-- ... your fonts and styles ... -->
     <style>
        :root {
@@ -1110,7 +1110,7 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Dashboard</div>
         </div>
 
@@ -1150,7 +1150,7 @@
                             <span class="dropdown-item-icon">👤</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    <a href="{% url 'seller:profile' %}">My Profile</a>
                                 </div>
                                 <div class="dropdown-item-desc">View & edit profile</div>
                             </div>
@@ -1169,7 +1169,9 @@
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'seller:seller_notifications' %}">Notifications</a>
+                                </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
@@ -1213,8 +1215,8 @@
         <div class="sidebar" id="sidebar">
             <ul class="sidebar-menu">
                 <li><a href="#" class="active"><span>📊</span> Dashboard</a></li>
-                <li><a href="{% url 'add' %}"><span>📦</span> Products</a></li>
-                <li><a href="{% url 'order' %}"><span>🛒</span> Orders</a></li>
+                <li><a href="{% url 'seller:add' %}"><span>📦</span> Products</a></li>
+                <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="#"><span>💰</span> Earnings</a></li>
                 <li><a href="#"><span>⭐</span> Reviews</a></li>
                 <li><a href="#"><span>📈</span> Analytics</a></li>
@@ -1273,7 +1275,7 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Top Products</div>
-                    <button class="btn-primary"><a href="{% url 'add' %}">View All</a></button>
+                    <button class="btn-primary"><a href="{% url 'seller:add' %}">View All</a></button>
                 </div>
                 <div class="table-container">
                     <table>
@@ -1324,7 +1326,7 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Recent Orders</div>
-                    <button class="btn-primary"><a href="{% url 'order' %}">View All</a></button>
+                    <button class="btn-primary"><a href="{% url 'seller:order' %}">View All</a></button>
                 </div>
 
                 {% for order in recent_orders %}
@@ -1420,7 +1422,7 @@
                 <div>
                     <div class="footer-logo">
                         <span>🛍️</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
@@ -1469,7 +1471,7 @@
                         </li>
                         <li>
                             <span style="color: var(--primary-color); margin-right: 0.5rem;">✉️</span>
-                            support@shophub.com
+                            support@multimart.com
                         </li>
                     </ul>
                 </div>
@@ -1477,7 +1479,7 @@
 
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>&copy; 2024 MultiMart. All rights reserved.</p>
                 <p>Made with ❤️ for Sellers & Shoppers</p>
             </div>
         </div>

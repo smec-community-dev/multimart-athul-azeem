@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - ShopHub</title>
+    <title>Profile - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -794,7 +794,7 @@
     <div class="navbar">
         <div class="navbar-left">
             <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Seller Dashboard</div>
         </div>
         <div class="navbar-right">
@@ -868,13 +868,13 @@
                         </a>
 
 
-                        <div class="dropdown-item" onclick="alert('Opening Notifications')">
+                        <a href="{% url 'seller:seller_notifications' %}" class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">Notifications</div>
                                 <div class="dropdown-item-desc">Notification preferences</div>
                             </div>
-                        </div>
+                        </a>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-item" onclick="alert('Opening Help & Support')">
                             <span class="dropdown-item-icon">❓</span>

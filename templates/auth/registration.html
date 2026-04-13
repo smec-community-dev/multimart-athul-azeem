@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ShopHub</title>
+    <title>Register - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.1/sweetalert2.min.js"></script>
@@ -720,7 +720,7 @@
     <div class="container">
         <div class="welcome-section">
             <div class="welcome-content">
-                <div class="logo">ShopHub</div>
+                <div class="logo">MultiMart</div>
                 <h2>Join India's Favorite Shopping Destination</h2>
                 <p>Discover amazing deals and exclusive member benefits.</p>
 
@@ -736,7 +736,7 @@
         <div class="form-section">
             <div class="form-header">
                 <h1>Create Account</h1>
-                <p>Join ShopHub and start shopping today!</p>
+                <p>Join MultiMart and start shopping today!</p>
             </div>
 
             <form id="registration-form" method="POST" novalidate>
@@ -796,7 +796,6 @@
                             <option value="">Select your role</option>
                             <option value="user">Customer</option>
                             <option value="seller">Seller</option>
-                            <option value="admin">Admin</option>
                         </select>
                     </div>
                 </div>
@@ -866,56 +865,6 @@
                     </div>
                 </div>
 
-                <!-- ADMIN FIELDS -->
-                <div id="admin-fields" class="role-fields">
-                    <div class="role-badge">⚙️ Admin Registration</div>
-
-                    <div class="input-group">
-                        <label for="admin-id">Employee ID</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">🆔</span>
-                            <input type="text" id="admin-id" name="admin_id" placeholder="Employee ID">
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="admin-department">Department</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">🏢</span>
-                            <select id="admin-department" name="admin_department">
-                                <option value="">Select department</option>
-                                <option value="support">Customer Support</option>
-                                <option value="operations">Operations</option>
-                                <option value="finance">Finance</option>
-                                <option value="it">IT & Security</option>
-                                <option value="marketing">Marketing</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="admin-phone">Office Phone</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">☎️</span>
-                            <input type="tel" id="admin-phone" name="admin_phone" placeholder="Phone number">
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="admin-access">Access Level</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">🔐</span>
-                            <select id="admin-access" name="admin_access">
-                                <option value="">Select level</option>
-                                <option value="level1">Level 1 - Basic</option>
-                                <option value="level2">Level 2 - Standard</option>
-                                <option value="level3">Level 3 - Advanced</option>
-                                <option value="level4">Level 4 - Super Admin</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="row">
                     <div class="input-group">
                         <label for="password">Password</label>
@@ -967,26 +916,21 @@
         const roleSelect = document.getElementById('role');
         const customerFields = document.getElementById('customer-fields');
         const sellerFields = document.getElementById('seller-fields');
-        const adminFields = document.getElementById('admin-fields');
-
         roleSelect.addEventListener('change', function(e) {
             const selectedRole = e.target.value;
 
-            [customerFields, sellerFields, adminFields].forEach(field => {
+            [customerFields, sellerFields].forEach(field => {
                 field.classList.remove('active');
                 field.classList.add('hidden');
             });
 
             setTimeout(() => {
-                if (selectedRole === 'customer') {
+                if (selectedRole === 'user') {
                     customerFields.classList.remove('hidden');
                     customerFields.classList.add('active');
                 } else if (selectedRole === 'seller') {
                     sellerFields.classList.remove('hidden');
                     sellerFields.classList.add('active');
-                } else if (selectedRole === 'admin') {
-                    adminFields.classList.remove('hidden');
-                    adminFields.classList.add('active');
                 }
             }, 100);
         });

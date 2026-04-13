@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,7 @@ from django.utils.text import slugify
 from django.utils import timezone
 from django.utils.timezone import now
 from django.views.decorators.http import require_http_methods
+from django.db import IntegrityError
 from django.db.models import (
     Count, Sum, F, ExpressionWrapper, DecimalField, Q, Avg, Value, IntegerField
 )
@@ -23,7 +25,7 @@ from django.db.models.functions import Coalesce
 
 # Project Models & Utils
 from core.models import User, SubCategory, Category
-from core.views import redirect_role_dashboard
+from core.views import redirect_user_after_login
 from seller.decorators import seller_required
 from seller.models import Product, SellerDetails, ProductImage
 from user.models import Order, Review, OrderItem
@@ -477,7 +479,7 @@ def seller_registration(request):
         )
 
         messages.success(request, "Registration successful! Please log in.")
-        return redirect('login')
+        return redirect('admin_panel:login')
 
     return render(request, "seller/registration.html")
 
@@ -618,6 +620,49 @@ def order_detail(request, id):
 
 @seller_required
 @login_required
+@require_http_methods(["GET"])
+def order_buyer_snapshot(request, order_id):
+    """JSON for notification UI: buyer info for this order, scoped to the logged-in seller."""
+    seller = request.user.seller_details
+    order = get_object_or_404(
+        Order.objects.select_related("user"),
+        id=order_id,
+        seller=seller,
+    )
+    buyer = order.user
+    prior_orders = Order.objects.filter(user=buyer, seller=seller).exclude(pk=order.pk)
+    prior_orders_count = prior_orders.count()
+    prior_product_units = (
+        OrderItem.objects.filter(order__in=prior_orders).aggregate(
+            total=Sum("quantity")
+        )["total"]
+        or 0
+    )
+
+    display_name = (buyer.get_full_name() or "").strip() or buyer.username
+    localized = (
+        timezone.localtime(order.order_date) if order.order_date else None
+    )
+    order_dt = localized.strftime("%Y-%m-%d %H:%M") if localized else ""
+
+    return JsonResponse(
+        {
+            "order_id": order.id,
+            "buyer_display_name": display_name,
+            "buyer_username": buyer.username,
+            "shipping_address": order.shipping_address,
+            "order_datetime": order_dt,
+            "prior_orders_count": prior_orders_count,
+            "prior_product_units": int(prior_product_units),
+            "order_detail_url": reverse(
+                "seller:seller_order_view", kwargs={"id": order.id}
+            ),
+        }
+    )
+
+
+@seller_required
+@login_required
 def update_order_status(request, id):
     if request.method == "POST":
         order = get_object_or_404(Order, id=id, seller=request.user.seller_details)
@@ -656,20 +701,24 @@ def login_seller(request):
         if user is not None:
             login(request, user)
 
-            is_seller = SellerDetails.objects.filter(user=user).exists()
-            if is_seller:
-                print(".............")
-                return redirect('seller_dashboard')
+            if hasattr(user, "is_blocked") and user.is_blocked:
+                logout(request)
+                messages.error(
+                    request,
+                    "Your account has been blocked. Please contact support.",
+                )
+                return render(
+                    request, "seller/login.html", {"error": "Account blocked"}
+                )
 
-            else:
-                return redirect('home')
+            return redirect_user_after_login(user)
         return render(request, "seller/login.html", {"error": "invalid username or password"})
     return render(request, "seller/login.html")
 
 
 def logout_seller(request):
     logout(request)
-    return redirect('home')
+    return redirect('user:user_home')
 
 
 def home(request):
@@ -813,7 +862,7 @@ def review_dashboard(request):
     try:
         seller = SellerDetails.objects.get(user=request.user)
     except SellerDetails.DoesNotExist:
-        return redirect('seller_login')
+        return redirect('admin_panel:login')
 
     seller_products = Product.objects.filter(seller=seller)
 
@@ -1156,26 +1205,32 @@ def review_analytics(request):
 @login_required
 def choose_role(request):
     # If user already has a role, skip selection
+    if request.user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
+
     if request.user.role and request.user.role != "user":
-        return redirect_role_dashboard(request.user.role)
+        return redirect_user_after_login(request.user)
 
     if request.method == "POST":
         selected_role = request.POST.get("role")
 
-        if selected_role not in ["user", "seller", "admin"]:
+        if selected_role not in ["user", "seller"]:
             messages.error(request, "Invalid role selected.")
             return redirect("seller:choose_role")
 
         request.user.role = selected_role
         request.user.save()
 
-        return redirect("complete_registration")
+        return redirect("admin_panel:complete_registration")
 
     return render(request, "auth/choose_role.html")
 
 
 @login_required
 def complete_registration(request):
+    if request.user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
+
     role = request.user.role
 
     if request.method == "POST":
@@ -1194,12 +1249,7 @@ def complete_registration(request):
             request.user.address = request.POST.get("address")
             request.user.save()
 
-        elif role == "admin":
-            # admin-specific fields
-            request.user.employee_id = request.POST.get("employee_id")
-            request.user.save()
-
-        return redirect_role_dashboard(role)
+        return redirect_user_after_login(request.user)
 
     return render(request, "auth/complete_registration.html", {"role": role})
 
@@ -1209,10 +1259,12 @@ def complete_customer(request):
     """
     Complete customer profile after Google signup.
 
-    Sets user role to customer and redirects to home page.
+    Sets user role to user and redirects to home page.
     """
     user = request.user
-    user.role = "customer"
+    if user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
+    user.role = "user"
     user.save()
 
     # Later you can create a Customer profile here if needed
@@ -1227,6 +1279,8 @@ def complete_seller(request):
     Collects business information and creates SellerDetails profile.
     """
     user = request.user
+    if user.is_superuser:
+        return redirect("admin_panel:admin_dashboard")
 
     # Already a seller - just set role and redirect
     if hasattr(user, "seller_details"):

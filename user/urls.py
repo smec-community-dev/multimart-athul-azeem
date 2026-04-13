@@ -1,10 +1,9 @@
 
 from django.urls import path
-from rest_framework.urls import app_name
 
 from user import views
 
-app_name='user'
+app_name = 'user'
 urlpatterns = [
     path("home/",views.products,name="user_home"),
     path("profile/", views.profile, name="profile"),
@@ -28,7 +27,9 @@ urlpatterns = [
     path('place-order/', views.place_order, name='place_order'),
     path("order-success/<int:order_id>/", views.order_success, name="order_success"),
     path("my-orders/", views.my_orders, name="my_orders"),
+    path("my-orders/<int:order_id>/", views.order_detail, name="order_detail"),
     path("cancel-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+    path("my-orders/delete/<int:order_id>/", views.delete_cancelled_order, name="delete_cancelled_order"),
     path("category/<slug:slug>/",views.category_products,name="category_products"),
 
 

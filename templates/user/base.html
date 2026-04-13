@@ -589,53 +589,7 @@
         justify-content: center;
     }
 
-    /* =========================
-       DROPDOWN BOX
-       ========================= */
-    #notification-box {
-        position: absolute;
-        right: 0;
-        top: 45px;
-        width: 330px;
-        max-height: 430px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(0,0,0,0.05);
-        overflow-y: auto;
-        display: none;
-        z-index: 9999;
-        animation: slideDown 0.25s ease-out;
-    }
-
-    /* Smooth dropdown animation */
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* =========================
-       RESPONSIVE FIXES
-       ========================= */
-
-    /* Mobile */
-    @media (max-width: 480px) {
-        #notification-box {
-            right: -20px !important;
-            width: 85vw;
-            max-height: 65vh;
-        }
-        .notification-bell { font-size: 1.6rem; }
-    }
-
-    /* Large tablets */
-    @media (max-width: 768px) {
-        #notification-box {
-            width: 300px;
-            max-height: 380px;
-        }
-    }
-
+    /* Notification dropdown: styled in user/header.html (#notification-box.user-header-notification-panel) */
 
             /* Mobile menu styles */
             .mobile-menu-btn {
@@ -791,6 +745,7 @@
                 }
             }
         </style>
+        {% block extra_css %}{% endblock %}
     </head>
 
     <body class="flex flex-col min-h-screen overflow-x-hidden">
@@ -810,40 +765,23 @@
     <!--        </div>-->
     <!--    {% endif %}-->
 
-      <main class="flex-1">
+      <main class="flex-1 flex flex-col min-h-0">
         {% block content %}
         {% endblock %}
     </main>
 
-          <footer class="mt-auto">
+          <footer class="mt-auto flex-shrink-0 w-full">
             {% include "user/footer.html" %}
         </footer>
 
     {% block scripts %}
     <script>
-    // ================= PROFILE DROPDOWN =================
-    function toggleProfileMenu() {
-        const menu = document.getElementById("dropdownMenu");
-        const parent = document.getElementById("profileDropdown");
-
-        if (menu && parent) {
-            parent.classList.toggle("active");
-            menu.classList.toggle("show");
-        }
-    }
-
-    // Close dropdown when clicking outside
-    window.addEventListener("click", function(e) {
-        const menu = document.getElementById("dropdownMenu");
-        const parent = document.getElementById("profileDropdown");
-
-        if (menu && parent && !parent.contains(e.target)) {
-            menu.classList.remove("show");
-            parent.classList.remove("active");
-        }
+    /* Footer links/columns use .animate-on-scroll with opacity:0 until .animated is added; many pages never run the scroll script, so the footer looked like an empty dark bar. */
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("footer .animate-on-scroll").forEach(function (el) {
+            el.classList.add("animated");
+        });
     });
-
-    // ================= SEARCH ENTER SUBMIT =================
     document.querySelector('.search-box input')?.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.stopPropagation();
@@ -851,7 +789,6 @@
         }
     });
 
-    // Clear search field on load if no query
     document.addEventListener("DOMContentLoaded", function () {
         const input = document.querySelector('.search-box input');
         if (input && !window.location.search.includes("q=")) {
@@ -859,15 +796,6 @@
         }
     });
 
-    // ================= MOBILE MENU =================
-    function toggleMobileMenu() {
-        const mobileMenu = document.getElementById("mobileMenu");
-        if (mobileMenu) {
-            mobileMenu.classList.toggle("hidden");
-        }
-    }
-
-    // ===================== SLIDER SAFE CODE =====================
     document.addEventListener("DOMContentLoaded", function () {
         const slides = document.querySelectorAll(".slide");
         const dots = document.querySelectorAll(".dot");
@@ -891,28 +819,6 @@
             }, 5000);
         }
     });
-        <div id="user-toast" style="position: fixed; top: 20px; right: 20px; display:none; padding:12px; border-radius:6px; background:#0b79ff; color:#fff; z-index:9999;"></div>
-
-
-    const userSocket = new WebSocket(
-      (location.protocol === "https:" ? "wss://" : "ws://") + window.location.host + "/ws/user/notifications/"
-    );
-
-    userSocket.onmessage = function(e) {
-      const data = JSON.parse(e.data);
-      const title = data.title || "Notification";
-      const body = data.body || "";
-      showToast(title + " — " + body);
-    };
-
-    function showToast(text) {
-      const el = document.getElementById("user-toast");
-      el.innerText = text;
-      el.style.display = "block";
-      setTimeout(() => el.style.display = "none", 4000);
-    }
-
-
     </script>
     {% endblock %}
 

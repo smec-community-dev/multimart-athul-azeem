@@ -3,33 +3,36 @@
         <!-- Hero Section with Slider -->
         <section id="home" class="bg-white py-6 lg:py-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="slider rounded-2xl overflow-hidden h-64 sm:h-72 md:h-80 lg:h-96 relative">
+                <div class="slider rounded-2xl overflow-hidden h-48 sm:h-72 md:h-80 lg:h-96 relative">
+                    {% if slider_products %}
                     {% for product in slider_products %}
                     <div class="slide {% if forloop.first %}active{% endif %} w-full h-full absolute top-0 left-0">
-                        <div class="w-full h-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 lg:px-16 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
-                            <div class="flex-1 fade-in text-center sm:text-left py-6 sm:py-0">
+                        <div class="w-full h-full flex flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 lg:px-16 py-3 sm:py-4 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
+                            <div class="flex-1 min-w-0 fade-in text-left py-0">
                                 <!-- Product Title -->
-                                <h1 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+                                <h1 class="text-lg sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-2 sm:mb-4 leading-tight line-clamp-2 sm:line-clamp-none">
                                     {{ product.name }}
                                 </h1>
 
                                 <!-- Short line under title -->
-                                <p class="text-sm sm:text-base lg:text-lg text-purple-100 mb-6 sm:mb-8 font-medium">
+                                <p class="text-xs sm:text-base lg:text-lg text-purple-100 mb-3 sm:mb-8 font-medium truncate sm:whitespace-normal">
                                     Latest trending deal from {{ product.subcategory.category.name }}
                                 </p>
 
                                 <!-- Button -->
                                 <a href="{% url 'user:product_detail' product.slug %}">
-                                    <button class="px-6 py-2 sm:px-8 sm:py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate text-sm sm:text-base">
+                                    <button class="px-4 py-1.5 sm:px-8 sm:py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition transform hover:scale-105 btn-animate text-xs sm:text-base">
                                         {% cycle 'Explore Now' 'View Product' 'Shop Now' 'Check Details' %}
                                     </button>
                                 </a>
                             </div>
 
                             <!-- Product Main Image -->
-                            <div class="flex-1 text-center hidden sm:block">
-                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
-                                     class="w-40 h-40 sm:w-48 sm:h-48 lg:w-64 lg:h-64 object-cover rounded-lg shadow-lg mx-auto">
+                            <div class="flex-1 w-[48%] sm:w-auto text-center">
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=900&h=900&fit=crop{% endif %}"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=900&h=900&fit=crop';"
+                                     alt="{{ product.name }}"
+                                     class="w-full h-28 sm:h-48 lg:h-64 object-cover rounded-lg shadow-lg mx-auto">
                             </div>
                         </div>
                     </div>
@@ -45,6 +48,15 @@
                         <span class="dot {% if forloop.first %}active{% endif %}" onclick="currentSlide({{ forloop.counter0 }})"></span>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600">
+                        <div class="text-center text-white px-6">
+                            <h2 class="text-2xl sm:text-3xl font-bold mb-3">Fresh Deals Added Daily</h2>
+                            <p class="text-purple-100 mb-5">Run `python manage.py seed_real_catalog` to load realistic products with images.</p>
+                            <a href="{% url 'user:products_list' %}" class="px-6 py-2 bg-white text-purple-600 font-bold rounded-lg">Browse Products</a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -61,7 +73,8 @@
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
                         <a href="{% url 'user:product_detail' product.slug %}">
                             <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
-                                <img src="{{ product.images.first.image.url }}"
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=900&h=900&fit=crop{% endif %}"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=900&h=900&fit=crop';"
                                      alt="{{ product.name }}"
                                      class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
                             </div>
@@ -87,7 +100,7 @@
         <!-- Features / Highlights Section -->
         <section class="bg-gray-50 py-12 lg:py-20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Why Choose ShopHub?</h2>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Why Choose MultiMart?</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
                     <div class="bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-lg transition text-center animate-on-scroll">
                         <div class="text-4xl sm:text-5xl mb-4 text-orange-500">🚚</div>
@@ -117,7 +130,7 @@
         <section class="bg-white border-b border-gray-200 py-10 lg:py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-gray-900 animate-on-scroll">Shop by Category</h2>
-                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 lg:grid-cols-7 gap-4 sm:gap-6">
                     <a href="{% url 'user:category_products' 'electronics' %}">
                         <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                             <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-purple-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
@@ -159,6 +172,14 @@
                             <p class="font-semibold text-xs sm:text-sm lg:text-base">Books</p>
                         </div>
                     </a>
+                    <a href="{% url 'user:category_products' 'home' %}">
+                        <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-amber-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
+                                🏠
+                            </div>
+                            <p class="font-semibold text-xs sm:text-sm lg:text-base">Home</p>
+                        </div>
+                    </a>
                     <a href="{% url 'user:category_products' 'wearables' %}">
                         <div class="flex flex-col items-center text-center cursor-pointer group hover:text-orange-500 transition animate-on-scroll">
                             <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-red-50 rounded-full flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 group-hover:shadow-lg transition category-icon">
@@ -191,8 +212,8 @@
                     <a href="{% url 'user:product_detail' product.slug %}" class="block">
                         <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition group product-card">
                             <div class="relative h-48 sm:h-56 lg:h-64 bg-gray-200 overflow-hidden">
-                                {% if product.images.first %}
-                                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}"
                                      class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
                                 {% endif %}
                             </div>
@@ -221,11 +242,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                     <div class="animate-on-scroll order-2 lg:order-1">
                         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
-                            alt="About ShopHub" class="rounded-xl shadow-lg w-full">
+                            alt="About MultiMart" class="rounded-xl shadow-lg w-full">
                     </div>
                     <div class="animate-on-scroll order-1 lg:order-2">
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">About ShopHub</h2>
-                        <p class="text-gray-600 text-base sm:text-lg mb-4">ShopHub is your ultimate e-commerce destination, bringing
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">About MultiMart</h2>
+                        <p class="text-gray-600 text-base sm:text-lg mb-4">MultiMart is your ultimate e-commerce destination, bringing
                             together the best products from trusted brands and sellers worldwide.</p>
                         <p class="text-gray-600 text-base sm:text-lg mb-6">We believe in providing exceptional shopping experiences with
                             quality products, competitive prices, and outstanding customer service.</p>
@@ -360,7 +381,7 @@
 
             // Show current slide and activate corresponding dot
             slides[currentSlideIndex].classList.add('active');
-            slides[currentSlideIndex].style.display = 'flex';
+            slides[currentSlideIndex].style.display = 'block';
             dots[currentSlideIndex].classList.add('active');
         }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - ShopHub</title>
+    <title>Checkout - MultiMart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -631,99 +631,9 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <!-- Mobile menu button -->
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
+    {% include "user/header.html" %}
 
-            <div class="logo">
-                <i class="fas fa-shopping-bag"></i>
-                <span>ShopHub</span>
-            </div>
-
-            <nav class="nav-center">
-                <a href="{% url 'user:user_home' %}">Home</a>
-                <a href="{% url 'user:products_list' %}">Products</a>
-                <a href="{% url 'user:about' %}">About</a>
-                <a href="{% url 'user:deals_and_offers' %}">Deals&Offers</a>
-                <a href="{% url 'user:contact' %}">Contact</a>
-            </nav>
-
-            <div class="header-right">
-                <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
-                    <i class="fas fa-heart"></i>
-                    <span class="badge">{{ wishlist_count }}</span>
-                </a>
-
-                <a href="{% url 'user:cart_page' %}" class="icon-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">{{ cart_count }}</span>
-                </a>
-
-                {% if user.is_authenticated %}
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-toggle" onclick="toggleProfileMenu()">
-                        <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
-                        <span class="dropdown-arrow">▼</span>
-                    </div>
-
-                    <div class="dropdown-menu" id="dropdownMenu">
-                        <div class="dropdown-header">
-                            <div class="dropdown-header-content">
-                                <div class="dropdown-header-avatar">{{ user.username|slice:":1"|upper }}</div>
-                                <div class="dropdown-header-info">
-                                    <h3>{{ user.username }}</h3>
-                                    <p>{{ user.email }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="dropdown-divider"></div>
-
-                        <a href="{% url 'user:profile' %}" class="dropdown-item">
-                            <span class="dropdown-item-icon">👤</span>
-                            <span class="dropdown-item-label">My Profile</span>
-                        </a>
-
-                        <div class="dropdown-divider"></div>
-
-                        <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
-                            <span class="dropdown-item-icon">🚪</span>
-                            <span class="dropdown-item-label">Logout</span>
-                        </a>
-                    </div>
-                </div>
-                {% else %}
-                <div class="auth-buttons">
-                    <a href="{% url 'admin_panel:login' %}">
-                        <button class="login-btn">Login</button>
-                    </a>
-                    <a href="{% url 'admin_panel:register' %}">
-                        <button class="register-btn">Register</button>
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Mobile menu - hidden by default -->
-        <div id="mobileMenu" class="hidden bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4 py-4">
-                <nav class="flex flex-col space-y-4">
-                    <a href="{% url 'user:user_home' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Home</a>
-                    <a href="{% url 'user:products_list' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Products</a>
-                    <a href="{% url 'user:about' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">About</a>
-                    <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100">Deals & Offers</a>
-                    <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2">Contact</a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Checkout Section -->
+<!-- Checkout Section -->
     <section class="container mx-auto px-4 py-6 animate-fade-in flex-1">
         <div class="flex items-center mb-6">
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Checkout</h1>
@@ -756,8 +666,9 @@
                                     <td class="py-3 md:py-4 px-4 md:px-6">
                                         <div class="flex items-center">
                                             <div class="w-12 h-12 md:w-16 md:h-16 bg-gray-100 rounded-lg flex items-center justify-center mr-3 md:mr-4 overflow-hidden">
-                                                {% if item.product.images.first %}
-                                                <img src="{{ item.product.images.first.image.url }}"
+                                                {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}"
+                                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=400&h=400&fit=crop';"
                                                      alt="{{ item.product.name }}"
                                                      class="max-w-full max-h-full object-cover rounded-lg">
                                                 {% else %}
@@ -789,8 +700,9 @@
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center">
                                     <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-3 overflow-hidden">
-                                        {% if item.product.images.first %}
-                                        <img src="{{ item.product.images.first.image.url }}"
+                                        {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}"
+                                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=400&h=400&fit=crop';"
                                              alt="{{ item.product.name }}"
                                              class="max-w-full max-h-full object-cover rounded-lg">
                                         {% else %}
@@ -1004,7 +916,7 @@
                 <div class="animate-on-scroll">
                     <div class="flex items-center space-x-2 sm:space-x-3 mb-3 xs:mb-4 sm:mb-5 lg:mb-6">
                         <i class="fas fa-shopping-bag text-orange-500 text-lg xs:text-xl sm:text-2xl"></i>
-                        <span class="text-lg xs:text-xl sm:text-2xl font-bold">ShopHub</span>
+                        <span class="text-lg xs:text-xl sm:text-2xl font-bold">MultiMart</span>
                     </div>
                     <p class="text-gray-400 text-xs xs:text-sm sm:text-base mb-3 xs:mb-4 sm:mb-5 lg:mb-6">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="flex space-x-2 xs:space-x-3 sm:space-x-4">
@@ -1048,14 +960,14 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope mr-2 sm:mr-3 text-orange-500 text-xs sm:text-sm"></i>
-                            <span>info@shophub.com</span>
+                            <span>info@multimart.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
             <div class="border-t border-gray-800 mt-6 sm:mt-8 lg:mt-10 xl:mt-12 pt-4 xs:pt-5 sm:pt-6 lg:pt-8 text-center text-gray-400 text-xs xs:text-sm sm:text-base animate-on-scroll">
-                <p>&copy; 2023 ShopHub. All rights reserved.</p>
+                <p>&copy; 2023 MultiMart. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -1192,12 +1104,19 @@
                     },
                     body: formData
                 })
-                .then(response => {
+                .then(async response => {
                     console.log("Address save response status:", response.status);
-                    if (!response.ok) {
-                        throw new Error('Failed to save address data: ' + response.status);
+                    let data = {};
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        data = {};
                     }
-                    return response.json();
+                    if (!response.ok) {
+                        const msg = data.error || ('Failed to save address data: ' + response.status);
+                        throw new Error(msg);
+                    }
+                    return data;
                 })
                 .then(data => {
                     console.log("Address save response:", data);
@@ -1212,7 +1131,7 @@
                 })
                 .catch(err => {
                     console.error("Address Save Failed:", err);
-                    alert("Error saving address information. Please try again.");
+                    alert(err.message || "Error saving address information. Please try again.");
                 });
             }
             function calculateTotalAmount() {
@@ -1220,7 +1139,7 @@
                 let totalAmount = 0;
                 if (totalElement) {
                     const totalText = totalElement.textContent.replace('₹', '').trim();
-                    totalAmount = parseFloat(totalText) * 100; // Convert to paise
+                    totalAmount = Math.round(parseFloat(totalText) * 100); // Convert to paise
                     console.log("Total amount in paise:", totalAmount);
                 }
                 return totalAmount;
@@ -1243,9 +1162,31 @@
                     "key": "{{ RAZORPAY_KEY_ID }}",
                     "amount": orderData.amount,
                     "currency": "INR",
-                    "name": "ShopHub",
+                    "name": "MultiMart",
                     "description": "Order Payment",
                     "order_id": orderData.id,
+                    "method": {
+                        "upi": true,
+                        "card": true,
+                        "netbanking": true,
+                        "wallet": true
+                    },
+                    "config": {
+                        "display": {
+                            "blocks": {
+                                "upi": {
+                                    "name": "Pay using UPI",
+                                    "instruments": [
+                                        { "method": "upi" }
+                                    ]
+                                }
+                            },
+                            "sequence": ["block.upi", "block.card", "block.netbanking", "block.wallet"],
+                            "preferences": {
+                                "show_default_blocks": true
+                            }
+                        }
+                    },
                     "handler": function (response) {
                         console.log("Payment Success Response:", response);
                         verifyPaymentAndCreateOrder(response);
@@ -1266,6 +1207,12 @@
                 };
 
                 var rzp1 = new Razorpay(options);
+                rzp1.on("payment.failed", function (resp) {
+                    const reason = resp?.error?.description || "Payment failed. Please try again.";
+                    alert(reason);
+                    placeBtn.disabled = false;
+                    placeBtn.innerHTML = '<i class="fas fa-lock mr-2"></i> Place Order';
+                });
                 rzp1.open();
             }
 
@@ -1338,7 +1285,6 @@
 
             // Address toggling logic
             const savedAddressRadios = document.querySelectorAll("input[name='selected_address']");
-            const newAddressRadio = document.getElementById("newAddressRadio");
             const newAddressFields = document.querySelectorAll(".new-address-field");
 
             function enableNewAddress() {

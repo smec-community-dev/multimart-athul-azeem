@@ -202,15 +202,19 @@
 
     <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
         {% if notifications %}
-            <div class="flex justify-between items-center mb-4 sm:mb-6">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4 sm:mb-6">
                 <div class="text-sm text-gray-600">
                     Showing <strong>{{ notifications.start_index }}</strong> to <strong>{{ notifications.end_index }}</strong> of <strong>{{ notifications.paginator.count }}</strong> notifications
                 </div>
-                <button id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}">Mark all as read</button>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}">Mark all as read</button>
+                    <button type="button" id="clearAllNotifBtn" class="mark-all-read-btn btn-animate" style="background:#b91c1c;" data-url="{% url 'not:clear_all' %}">Clear all</button>
+                </div>
             </div>
         {% else %}
-            <div class="flex justify-end mb-4 sm:mb-6">
-                <button id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}" disabled>Mark all as read</button>
+            <div class="flex flex-wrap justify-end gap-2 mb-4 sm:mb-6">
+                <button type="button" id="markAllReadBtn" class="mark-all-read-btn btn-animate" data-url="{% url 'not:mark_all_read' %}" disabled>Mark all as read</button>
+                <button type="button" id="clearAllNotifBtn" class="mark-all-read-btn btn-animate" style="background:#b91c1c;" data-url="{% url 'not:clear_all' %}">Clear all</button>
             </div>
         {% endif %}
 
@@ -219,9 +223,14 @@
         {% if notifications %}
             <div class="space-y-3 sm:space-y-4 animate-on-scroll">
                 {% for notification in notifications %}
+                    {% with extra=notification.extra %}
                     <div class="p-4 sm:p-5 rounded-lg bg-white border border-gray-200 notification-item {% if not notification.is_read %}bg-blue-50 border-blue-200{% endif %}" data-notification-id="{{ notification.id }}">
                         <div class="flex justify-between items-start gap-4">
+                            {% if extra and extra.order_id %}
+                            <a href="{% url 'user:order_detail' extra.order_id %}" class="flex-1 min-w-0 text-left hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-400 rounded-lg -m-1 p-1">
+                            {% else %}
                             <div class="flex-1 min-w-0">
+                            {% endif %}
                                 <div class="flex items-center gap-2 mb-1">
                                     <h3 class="font-bold text-gray-900 text-base sm:text-lg">{{ notification.title }}</h3>
                                     {% if not notification.is_read %}
@@ -230,14 +239,22 @@
                                 </div>
                                 <p class="text-gray-700 mb-2 text-sm sm:text-base line-clamp-3">{{ notification.body }}</p>
                                 <span class="text-xs sm:text-sm text-gray-500 font-medium">{{ notification.created_at|date:"M d, Y H:i" }}</span>
+                                {% if extra and extra.order_id %}
+                                <p class="text-xs text-orange-600 font-semibold mt-2">View order tracking →</p>
+                                {% endif %}
+                            {% if extra and extra.order_id %}
+                            </a>
+                            {% else %}
                             </div>
+                            {% endif %}
                             {% if not notification.is_read %}
-                                <button class="mark-read-btn flex-shrink-0 whitespace-nowrap" data-notification-id="{{ notification.id }}" data-url="{% url 'not:mark_read' notification.id %}" title="Mark as read">
+                                <button type="button" class="mark-read-btn flex-shrink-0 whitespace-nowrap z-10" data-notification-id="{{ notification.id }}" data-url="{% url 'not:mark_read' notification.id %}" title="Mark as read">
                                     ✓
                                 </button>
                             {% endif %}
                         </div>
                     </div>
+                    {% endwith %}
                 {% endfor %}
             </div>
 
@@ -299,10 +316,20 @@
 {% block scripts %}
 {{ block.super }}
 <script>
-    // Get CSRF token
     function getCSRFToken() {
         const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-        return tokenElement ? tokenElement.value : '';
+        if (tokenElement && tokenElement.value) return tokenElement.value;
+        const name = "csrftoken";
+        if (document.cookie && document.cookie !== "") {
+            const parts = document.cookie.split(";");
+            for (let i = 0; i < parts.length; i++) {
+                const c = parts[i].trim();
+                if (c.startsWith(name + "=")) {
+                    return decodeURIComponent(c.substring(name.length + 1));
+                }
+            }
+        }
+        return "";
     }
 
     // Update notification badge
@@ -327,7 +354,8 @@
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'same-origin'
         })
         .then(response => {
             if (!response.ok) {
@@ -386,6 +414,7 @@
         markReadButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 const notificationId = this.dataset.notificationId;
                 const notificationUrl = this.dataset.url;
                 const notificationItem = this.closest('.notification-item');
@@ -396,7 +425,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCSRFToken()
-                    }
+                    },
+                    credentials: 'same-origin'
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -439,7 +469,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCSRFToken()
-                    }
+                    },
+                    credentials: 'same-origin'
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -475,187 +506,41 @@
                 });
             });
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const clearBtn = document.getElementById('clearAllNotifBtn');
+        if (!clearBtn) return;
+        const clearUrl = clearBtn.dataset.url;
+        clearBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!confirm('Delete every notification permanently? This cannot be undone.')) return;
+            const original = this.textContent;
+            this.disabled = true;
+            this.textContent = 'Clearing…';
+            fetch(clearUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                credentials: 'same-origin'
+            })
+            .then(r => {
+                if (!r.ok) throw new Error('clear failed');
+                return r.json();
+            })
+            .then(() => {
+                showToast('All notifications removed');
+                fetchAndUpdateBadge();
+                window.location.reload();
+            })
+            .catch(() => {
+                showToast('Could not clear notifications');
+                this.disabled = false;
+                this.textContent = original;
+            });
+        });
     });
 </script>
 {% endblock %}
-
-
-<script>
-    // Get CSRF token
-    function getCSRFToken() {
-        const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-        return tokenElement ? tokenElement.value : '';
-    }
-
-    // Update notification badge
-    function updateBadge(count) {
-        const badge = document.querySelector('.notification-badge');
-        const bell = document.querySelector('.notification-bell');
-        if (badge) {
-            if (count > 0) {
-                badge.textContent = count;
-                badge.style.display = 'flex';
-                if (bell) bell.classList.add('has-unread');
-            } else {
-                badge.style.display = 'none';
-                if (bell) bell.classList.remove('has-unread');
-            }
-        }
-    }
-
-    // Fetch and update badge count
-    function fetchAndUpdateBadge() {
-        fetch(window.NOTIFICATION_URLS.unreadCount, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            updateBadge(data.unread_count);
-        })
-        .catch(error => {
-            console.error('Error fetching unread count:', error);
-        });
-    }
-
-    // Show toast
-    function showToast(message) {
-        const toast = document.getElementById('successToast');
-        if (toast) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    }
-
-    // Scroll animations
-    document.addEventListener('DOMContentLoaded', function () {
-        const animatedElements = document.querySelectorAll('.animate-on-scroll');
-
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8 &&
-                rect.bottom >= 0
-            );
-        }
-
-        function handleScroll() {
-            animatedElements.forEach(element => {
-                if (isInViewport(element)) {
-                    element.classList.add('animated');
-                }
-            });
-        }
-
-        handleScroll();
-        window.addEventListener('scroll', handleScroll);
-        fetchAndUpdateBadge();
-    });
-
-    // Mark single notification as read
-    document.addEventListener('DOMContentLoaded', function() {
-        const markReadButtons = document.querySelectorAll('.mark-read-btn');
-        markReadButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const notificationId = this.dataset.notificationId;
-                const notificationUrl = this.dataset.url;
-                const notificationItem = this.closest('.notification-item');
-                const btn = this;
-
-                fetch(notificationUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        notificationItem.classList.remove('bg-blue-50', 'border-blue-200');
-                        btn.remove();
-                        showToast('Notification marked as read');
-                        fetchAndUpdateBadge();
-                    } else {
-                        throw new Error(data.error || 'Failed to mark as read');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error marking notification as read');
-                });
-            });
-        });
-    });
-
-    // Mark all as read
-    document.addEventListener('DOMContentLoaded', function() {
-        const markAllBtn = document.getElementById('markAllReadBtn');
-        if (markAllBtn) {
-            const markAllUrl = markAllBtn.dataset.url;
-            markAllBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const originalText = this.textContent;
-                this.disabled = true;
-                this.textContent = 'Marking...';
-
-                fetch(markAllUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        document.querySelectorAll('.notification-item').forEach(item => {
-                            item.classList.remove('bg-blue-50', 'border-blue-200');
-                        });
-                        document.querySelectorAll('.mark-read-btn').forEach(btn => btn.remove());
-
-                        const count = data.updated_count || 0;
-                        showToast(`All ${count} notifications marked as read`);
-                        fetchAndUpdateBadge();
-
-                        this.textContent = 'All marked as read';
-                        setTimeout(() => {
-                            this.disabled = false;
-                            this.textContent = originalText;
-                        }, 2000);
-                    } else {
-                        throw new Error(data.error || 'Failed to mark all as read');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Error marking notifications as read');
-                    this.disabled = false;
-                    this.textContent = originalText;
-                });
-            });
-        }
-    });
-</script>

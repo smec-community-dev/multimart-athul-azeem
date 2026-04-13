@@ -6,6 +6,13 @@ from .utils import notify_seller, notify_user
 from user.models import Order        # <-- change if your app name is different
 from user.models import Review     # <-- change if Review lives in another app
 
+
+def _order_buyer_label(order_user):
+    if not order_user:
+        return "Unknown customer"
+    full = (order_user.get_full_name() or "").strip()
+    return full if full else order_user.username
+
 @receiver(pre_save, sender=Order)
 def capture_order_old_status(sender, instance, **kwargs):
     if not instance.pk:
@@ -23,9 +30,21 @@ def order_created_or_updated(sender, instance, created, **kwargs):
         seller = instance.seller
         if seller:
             seller_user_id = seller.user.id if hasattr(seller, "user") else seller.id
+            buyer = instance.user
+            buyer_label = _order_buyer_label(buyer)
             title = "New Order Received"
-            body = f"Order #{instance.id} placed. ₹{instance.total_amount}"
-            extra = {"order_id": instance.id}
+            if buyer_label == buyer.username:
+                who = buyer.username
+            else:
+                who = f"{buyer_label} (@{buyer.username})"
+            body = f"Order #{instance.id} from {who}. ₹{instance.total_amount}"
+            extra = {
+                "order_id": instance.id,
+                "buyer_id": buyer.id,
+                "buyer_username": buyer.username,
+                "buyer_display_name": buyer_label,
+                "total_amount": str(instance.total_amount),
+            }
             notify_seller(seller_user_id, title, body, extra)
         return
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications - ShopHub</title>
+    <title>Notifications - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -693,6 +693,52 @@
             background: var(--border-color);
             color: var(--text-color);
         }
+        .modal-actions a.btn-save {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .buyer-name-link {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .buyer-name-link:hover { color: var(--secondary-color); }
+        .order-quick-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .order-quick-link:hover { text-decoration: underline; }
+        .buyer-snapshot-dl {
+            display: grid;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .buyer-snapshot-dl dt {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--light-text);
+            margin-bottom: 2px;
+        }
+        .buyer-snapshot-dl dd {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
         /* ======================== FOOTER ======================== */
         .footer {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -1096,11 +1142,11 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Dashboard</div>
         </div>
      <div class="navbar-right">
-    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+    <div class="notification-bell" id="seller-navbar-notification-bell" onclick="showNotifications(event)" style="position:relative; cursor:pointer;" role="button" tabindex="0" aria-expanded="false">
         🔔
 
         <div id="notification-badge" class="notification-badge" style="
@@ -1117,16 +1163,26 @@
         <!-- Notification dropdown -->
 <div id="notification-box"
      style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
-        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+            background:#fff; border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:460px; overflow:hidden; border:1px solid rgba(0,0,0,0.08);">
+    <div style="padding:8px 10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:700; font-size:13px;">New only</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation(); sellerBellMarkAllRead();">Mark read</button>
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #f97316; background:#fff7ed; color:#c2410c; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation(); sellerBellClearAll();">Clear all</button>
+        </div>
+    </div>
+    <div id="notification-list" style="padding:8px; overflow-y:auto; max-height:320px;"></div>
+    <div style="padding:8px; border-top:1px solid #eee; text-align:center;">
+        <a href="{% url 'seller:seller_notifications' %}" style="font-size:12px; color:#ea580c; font-weight:600;">View all notifications</a>
     </div>
 </div>
 
     </div>
             <div class="profile-dropdown" id="profileDropdown">
-                <div class="profile-toggle" onclick="toggleProfileMenu(event)">
+                <div class="profile-toggle" id="seller-navbar-profile-toggle" onclick="toggleProfileMenu(event)" role="button" tabindex="0" aria-expanded="false">
                     <div class="profile-avatar">{{ user.username|first|upper}}</div>
                     <div class="profile-info-text">
                         <div class="profile-name">{{ user.username|default:"Mobile Store" }}</div>
@@ -1163,7 +1219,7 @@
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
                                 <div class="dropdown-item-label">
-                                    <a href="{% url 'not:seller_notifications_page' %}">Notifications</a>
+                                    <a href="{% url 'seller:seller_notifications' %}">Notifications</a>
                                 </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
@@ -1206,7 +1262,7 @@
                 <li><a href="{% url 'seller:add' %}"><span>📦</span> Products</a></li>
                 <li><a href="{% url 'seller:order' %}"><span>🛒</span> Orders</a></li>
                 <li><a href="{% url 'seller:review' %}"><span>⭐</span> Reviews</a></li>
-                <li><a href="{% url 'not:seller_notifications_page' %}" class="active"><span>🔔</span> Notifications</a></li>
+                <li><a href="{% url 'seller:seller_notifications' %}" class="active"><span>🔔</span> Notifications</a></li>
             </ul>
         </div>
         <!-- MAIN CONTENT -->
@@ -1244,8 +1300,9 @@
             <div class="section">
                 <div class="section-header">
                     <div class="section-title">Notifications List</div>
-                    <div style="margin-bottom: 24px; text-align: right;">
-                        <button id="mark-all-read-btn" class="btn-primary" onclick="markAllRead()">Mark All Read</button>
+                    <div style="margin-bottom: 24px; text-align: right; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+                        <button id="mark-all-read-btn" type="button" class="btn-primary" onclick="markAllRead()">Mark All Read</button>
+                        <button id="clear-all-notif-btn" type="button" class="btn-cancel" style="background:#c62828;color:#fff;border-color:#c62828;" onclick="openClearAllModal()">Clear All</button>
                     </div>
                 </div>
                 <div class="table-container">
@@ -1266,9 +1323,19 @@
                                     <div class="notification-title">{{ notification.title }}</div>
                                 </td>
                                 <td>
-                                    <div class="notification-body">{{ notification.body }}</div>
-                                    {% if notification.extra %}
-                                    <div style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Extra: {{ notification.extra }}</div>
+                                    {% if notification.extra and notification.extra.order_id %}
+                                        <div class="notification-body">
+                                            Order #{{ notification.extra.order_id }} from
+                                            <button type="button" class="buyer-name-link" onclick="openBuyerSnapshot({{ notification.extra.order_id }})">
+                                                {% firstof notification.extra.buyer_display_name notification.extra.buyer_username "Customer" %}
+                                            </button>{% if notification.extra.total_amount %}. ₹{{ notification.extra.total_amount }}{% endif %}
+                                        </div>
+                                        <a href="{% url 'seller:seller_order_view' notification.extra.order_id %}" class="order-quick-link">View full order →</a>
+                                    {% else %}
+                                        <div class="notification-body">{{ notification.body }}</div>
+                                        {% if notification.extra %}
+                                        <div style="font-size: 0.8rem; color: var(--light-text); margin-top: 4px;">Extra: {{ notification.extra }}</div>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                                 <td>
@@ -1305,6 +1372,21 @@
             {% endif %}
         </div>
     </div>
+    <!-- Clear All Notifications Modal -->
+    <div id="clear-all-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete all notifications?</h2>
+                <button type="button" class="close-btn" onclick="closeClearAllModal()">✕</button>
+            </div>
+            <p>This permanently removes every notification from your account. You cannot undo this.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeClearAllModal()">Cancel</button>
+                <button type="button" class="btn-save" style="background:#c62828;" onclick="confirmClearAllNotifications()">Delete all</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Mark All Read Confirmation Modal -->
     <div id="mark-all-modal" class="modal">
         <div class="modal-content">
@@ -1319,6 +1401,22 @@
             </div>
         </div>
     </div>
+    <!-- Buyer snapshot (order notifications) -->
+    <div id="buyer-snapshot-modal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Customer</h2>
+                <button type="button" class="close-btn" onclick="closeBuyerSnapshotModal()" aria-label="Close">✕</button>
+            </div>
+            <div id="buyer-snapshot-body">
+                <p style="color: var(--light-text);">Loading…</p>
+            </div>
+            <div class="modal-actions">
+                <a id="buyer-snapshot-order-link" href="#" class="btn-save" style="display: none;">Open order page</a>
+                <button type="button" class="btn-cancel" onclick="closeBuyerSnapshotModal()">Close</button>
+            </div>
+        </div>
+    </div>
     <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-content">
@@ -1327,7 +1425,7 @@
                 <div>
                     <div class="footer-logo">
                         <span>🛍</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
@@ -1371,14 +1469,14 @@
                         </li>
                         <li>
                             <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
-                            support@shophub.com
+                            support@multimart.com
                         </li>
                     </ul>
                 </div>
             </div>
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>&copy; 2024 MultiMart. All rights reserved.</p>
                 <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
@@ -1387,9 +1485,59 @@
 try {
     const IS_SELLER = {% if request.user.is_authenticated and request.user.seller_details %}true{% else %}false{% endif %};
 
-    // 🔌 Dynamic WebSocket Path
+    function escapeHtml(text) {
+        if (text == null || text === "") return "";
+        const d = document.createElement("div");
+        d.textContent = text;
+        return d.innerHTML;
+    }
+
+    function closeBuyerSnapshotModal() {
+        const m = document.getElementById("buyer-snapshot-modal");
+        if (m) m.classList.remove("show");
+    }
+
+    function openBuyerSnapshot(orderId) {
+        const modal = document.getElementById("buyer-snapshot-modal");
+        const bodyEl = document.getElementById("buyer-snapshot-body");
+        const linkEl = document.getElementById("buyer-snapshot-order-link");
+        if (!modal || !bodyEl) return;
+        modal.classList.add("show");
+        bodyEl.innerHTML = "<p style=\"color:var(--light-text)\">Loading…</p>";
+        if (linkEl) {
+            linkEl.style.display = "none";
+            linkEl.href = "#";
+        }
+        const url = "{% url 'seller:order_buyer_snapshot' order_id=9021009021 %}".replace(/9021009021/g, String(orderId));
+        fetch(url)
+            .then(function (r) {
+                if (!r.ok) throw new Error("Request failed");
+                return r.json();
+            })
+            .then(function (data) {
+                if (linkEl) {
+                    linkEl.href = data.order_detail_url;
+                    linkEl.style.display = "inline-flex";
+                }
+                bodyEl.innerHTML =
+                    '<dl class="buyer-snapshot-dl">' +
+                    "<div><dt>Name</dt><dd>" + escapeHtml(data.buyer_display_name) +
+                    ' <span style="color:var(--light-text); font-size:0.85rem;">(@' +
+                    escapeHtml(data.buyer_username) + ")</span></dd></div>" +
+                    "<div><dt>Shipping address</dt><dd>" + escapeHtml(data.shipping_address) + "</dd></div>" +
+                    "<div><dt>Ordered at</dt><dd>" + escapeHtml(data.order_datetime) + "</dd></div>" +
+                    "<div><dt>Prior orders from this customer</dt><dd>" + data.prior_orders_count + "</dd></div>" +
+                    "<div><dt>Your product units in those prior orders</dt><dd>" + data.prior_product_units + "</dd></div>" +
+                    "</dl>";
+            })
+            .catch(function () {
+                bodyEl.innerHTML = "<p style=\"color:var(--danger-color)\">Could not load customer details.</p>";
+            });
+    }
+
+    // WebSocket client
     const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
-    const wsPath = IS_SELLER ? "/ws/seller/notifications/" : "/ws/user/notifications/";
+    const wsPath = IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/";
     let notifSocket = new WebSocket(wsProtocol + window.location.host + wsPath);
 
     // WebSocket connection handlers
@@ -1458,8 +1606,52 @@ try {
     }
 
     // ------------------------------------------- Load notification dropdown (latest 5) -------------------------------------------
+    function sellerBellMarkAllRead() {
+        fetch("/not/mark-all-read/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+            credentials: "same-origin"
+        })
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+            .then(() => { updateUnreadBadge(); loadDropdownNotifications(); showToast("All marked as read"); })
+            .catch(() => showToast("Failed to mark all as read"));
+    }
+
+    function sellerBellClearAll() {
+        if (!confirm("Delete all notifications permanently?")) return;
+        fetch("/not/clear-all/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+            credentials: "same-origin"
+        })
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+            .then(() => { updateUnreadBadge(); showToast("Notifications cleared"); location.reload(); })
+            .catch(() => showToast("Failed to clear notifications"));
+    }
+
+    function openClearAllModal() {
+        const m = document.getElementById("clear-all-modal");
+        if (m) m.classList.add("show");
+    }
+
+    function closeClearAllModal() {
+        const m = document.getElementById("clear-all-modal");
+        if (m) m.classList.remove("show");
+    }
+
+    function confirmClearAllNotifications() {
+        fetch("/not/clear-all/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+            credentials: "same-origin"
+        })
+            .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+            .then(() => { closeClearAllModal(); showToast("All notifications removed"); location.reload(); })
+            .catch(() => showToast("Failed to clear notifications"));
+    }
+
     function loadDropdownNotifications() {
-        fetch("/not/list/")
+        fetch("/not/list/?unread=1")
             .then(res => res.json())
             .then(data => {
                 const box = document.getElementById("notification-list");
@@ -1467,7 +1659,7 @@ try {
                 box.innerHTML = "";
 
                 if (!data.notifications || !data.notifications.length) {
-                    box.innerHTML = `<p style="text-align:center; color:#777;">No notifications</p>`;
+                    box.innerHTML = `<p style="text-align:center; color:#777; padding:8px;">No new notifications.<br><small style="color:#aaa;">Open “View all” for history.</small></p>`;
                     return;
                 }
 
@@ -1478,13 +1670,30 @@ try {
                     div.style.cursor = "pointer";
                     div.style.background = n.is_read ? "#fff" : "#f1f5ff";
 
-                    div.setAttribute("onclick", `markRead(${n.id})`);
-
-                    div.innerHTML = `
-                        <strong>${n.title}</strong><br>
-                        <span style="color:#666; font-size:0.85rem;">${n.body}</span><br>
-                        <small style="color:#aaa;">${n.created_at}</small>
-                    `;
+                    const extra = n.extra || {};
+                    if (extra.order_id) {
+                        const label = extra.buyer_display_name || extra.buyer_username || "Customer";
+                        div.innerHTML =
+                            "<strong>" + escapeHtml(n.title) + "</strong><br>" +
+                            '<span style="color:#666; font-size:0.85rem;">Order #' + extra.order_id + " from </span>" +
+                            '<button type="button" class="buyer-name-link" style="font-size:0.85rem;" ' +
+                            'onclick="event.stopPropagation(); openBuyerSnapshot(' + extra.order_id + ')">' +
+                            escapeHtml(String(label)) + "</button>" +
+                            (extra.total_amount
+                                ? '<span style="color:#666; font-size:0.85rem;"> · ₹' + escapeHtml(String(extra.total_amount)) + "</span>"
+                                : "") +
+                            "<br><small style=\"color:#aaa;\">" + escapeHtml(n.created_at) + "</small>";
+                        div.addEventListener("click", function (e) {
+                            if (e.target.closest("button.buyer-name-link")) return;
+                            markRead(n.id);
+                        });
+                    } else {
+                        div.setAttribute("onclick", `markRead(${n.id})`);
+                        div.innerHTML =
+                            "<strong>" + escapeHtml(n.title) + "</strong><br>" +
+                            '<span style="color:#666; font-size:0.85rem;">' + escapeHtml(n.body) + "</span><br>" +
+                            '<small style="color:#aaa;">' + escapeHtml(n.created_at) + "</small>";
+                    }
 
                     box.appendChild(div);
                 });
@@ -1578,12 +1787,19 @@ try {
     }
 
     // ------------------------------------------- Toggle notifications dropdown -------------------------------------------
-    function showNotifications() {
+    function showNotifications(ev) {
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
         const box = document.getElementById("notification-box");
+        const bell = document.getElementById("seller-navbar-notification-bell");
         if (!box) return;
-        box.style.display = box.style.display === "block" ? "none" : "block";
+        const open = box.style.display !== "block";
+        box.style.display = open ? "block" : "none";
+        if (bell) bell.setAttribute("aria-expanded", open ? "true" : "false");
 
-        if (box.style.display === "block") {
+        if (open) {
             loadDropdownNotifications();
         }
     }
@@ -1629,59 +1845,82 @@ try {
 
     // ------------------------------------------- Profile dropdown -------------------------------------------
     function toggleProfileMenu(event) {
-        if (event) event.stopPropagation();
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
         const menu = document.getElementById('dropdownMenu');
         const dropdown = document.getElementById('profileDropdown');
+        const toggle = document.getElementById('seller-navbar-profile-toggle');
         if (!menu || !dropdown) return;
         const isOpen = menu.classList.contains('show');
 
         // Close notification box if open
         const notifBox = document.getElementById("notification-box");
+        const bellEl = document.getElementById("seller-navbar-notification-bell");
         if (notifBox) notifBox.style.display = "none";
+        if (bellEl) bellEl.setAttribute("aria-expanded", "false");
 
         if (isOpen) {
             menu.classList.remove('show');
             dropdown.classList.remove('active');
+            if (toggle) toggle.setAttribute("aria-expanded", "false");
         } else {
             menu.classList.add('show');
             dropdown.classList.add('active');
+            if (toggle) toggle.setAttribute("aria-expanded", "true");
         }
     }
 
-    // Unified click handler (profile, notifications, modals)
+    // Unified click handler (profile, notifications, modals) — defer closes so toggle handlers run first
     document.addEventListener('click', function(e) {
-        const profileDropdown = document.getElementById('profileDropdown');
-        const profileMenu = document.getElementById('dropdownMenu');
+        window.setTimeout(function () {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileMenu = document.getElementById('dropdownMenu');
+            const toggle = document.getElementById('seller-navbar-profile-toggle');
 
-        // Close profile on link click inside dropdown
-        if (profileDropdown && profileDropdown.contains(e.target)) {
-            const link = e.target.closest('a');
-            if (link) {
-                setTimeout(() => {
+            // Close profile on link click inside dropdown
+            if (profileDropdown && profileDropdown.contains(e.target)) {
+                const link = e.target.closest('a');
+                if (link) {
                     if (profileMenu) profileMenu.classList.remove('show');
                     if (profileDropdown) profileDropdown.classList.remove('active');
-                }, 100);
+                    if (toggle) toggle.setAttribute("aria-expanded", "false");
+                    return;
+                }
             }
-        }
 
-        // Close profile if outside
-        if (profileDropdown && !profileDropdown.contains(e.target)) {
-            if (profileMenu) profileMenu.classList.remove('show');
-            if (profileDropdown) profileDropdown.classList.remove('active');
-        }
+            // Close profile if outside
+            if (profileDropdown && !profileDropdown.contains(e.target)) {
+                if (profileMenu) profileMenu.classList.remove('show');
+                if (profileDropdown) profileDropdown.classList.remove('active');
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+            }
 
-        // Close notifications if outside
-        const bell = document.querySelector(".notification-bell");
-        const box = document.getElementById("notification-box");
-        if (bell && !bell.contains(e.target) && box && !box.contains(e.target)) {
-            box.style.display = "none";
-        }
+            // Close notifications if outside
+            const bell = document.getElementById("seller-navbar-notification-bell");
+            const box = document.getElementById("notification-box");
+            if (bell && box && !bell.contains(e.target)) {
+                box.style.display = "none";
+                bell.setAttribute("aria-expanded", "false");
+            }
 
-        // Close modal if outside
-        const modal = document.getElementById('mark-all-modal');
-        if (modal && e.target === modal) {
-            closeMarkAllModal();
-        }
+            // Close modal if outside
+            const modal = document.getElementById('mark-all-modal');
+            if (modal && e.target === modal) {
+                closeMarkAllModal();
+            }
+
+            const clearModal = document.getElementById('clear-all-modal');
+            if (clearModal && e.target === clearModal) {
+                closeClearAllModal();
+            }
+
+            const buyerModal = document.getElementById('buyer-snapshot-modal');
+            if (buyerModal && e.target === buyerModal) {
+                closeBuyerSnapshotModal();
+            }
+        }, 0);
     });
 
     // DOM ready fixes

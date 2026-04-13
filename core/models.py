@@ -4,10 +4,10 @@ from django.utils.text import slugify
 
 
 class User(AbstractUser):
+    # Site admins are Django superusers (createsuperuser), not a signup "role".
     ROLE_CHOICES = [
-        ('user', 'User'),
-        ('seller', 'Seller'),
-        ('admin', 'Admin'),
+        ("user", "User"),
+        ("seller", "Seller"),
     ]
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
@@ -19,6 +19,22 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+
+
+class PasswordResetOTP(models.Model):
+    """Single-use email OTP for password reset (see core.password_reset)."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="password_reset_otps"
+    )
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"OTP for {self.user_id} at {self.created_at}"
 
 
 # ------------------ CATEGORY ------------------

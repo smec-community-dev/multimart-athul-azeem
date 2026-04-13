@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required  # Add if missing
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 from .models import Notification  # ← Add this import
@@ -15,6 +15,8 @@ def seller_notifications_page(request):  # ← Generic name
     """Render the full notification page with search + filters (shared for sellers/users)."""
 
     user = request.user
+    if not (hasattr(user, "seller_details") and user.seller_details):
+        return redirect("not:user_notifications")
 
     notifications = Notification.objects.filter(user=user).order_by("-created_at")
 
@@ -51,6 +53,7 @@ def seller_notifications_page(request):  # ← Generic name
     )
 
 
+@login_required
 @require_http_methods(["POST"])
 def mark_notification_read(request, notification_id):  # ← Renamed param for clarity
     """Mark a single notification as read via AJAX (generic)."""
@@ -66,6 +69,7 @@ def mark_notification_read(request, notification_id):  # ← Renamed param for c
         return JsonResponse({"success": False, "error": "Notification not found"}, status=404)
 
 
+@login_required
 @require_http_methods(["POST"])
 def mark_all_notifications_read(request):
     """Mark all unread notifications as read via AJAX (generic)."""
@@ -95,13 +99,15 @@ def unread_notifications_count(request):  # ← Renamed for consistency
 
 
 def notifications_dropdown_list(request):  # ← Renamed for consistency
-    """Get the latest 5 notifications for the dropdown (generic)."""
+    """Latest notifications for the header bell. Use ?unread=1 to show only unread (default for dropdown)."""
     if not request.user.is_authenticated:
         return JsonResponse({"notifications": []})
 
-    notifications = Notification.objects.filter(
-        user=request.user
-    ).order_by("-created_at")[:5]
+    qs = Notification.objects.filter(user=request.user).order_by("-created_at")
+    if request.GET.get("unread") in ("1", "true", "yes"):
+        qs = qs.filter(is_read=False)
+    limit = 20
+    notifications = qs[:limit]
 
     data = [
         {
@@ -110,14 +116,34 @@ def notifications_dropdown_list(request):  # ← Renamed for consistency
             "body": n.body,
             "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "is_read": n.is_read,
+            "extra": n.extra,
         }
         for n in notifications
     ]
     return JsonResponse({"notifications": data})
 
+
+@login_required
+@require_http_methods(["POST"])
+def clear_all_notifications(request):
+    """Permanently delete all notifications for the current user."""
+    deleted, _ = Notification.objects.filter(user=request.user).delete()
+    return JsonResponse({"success": True, "deleted_count": deleted})
+
+@login_required
+def legacy_seller_notifications_redirect(request):
+    """Old /not/seller/ URL → canonical /seller/notifications/ for sellers."""
+    user = request.user
+    if hasattr(user, "seller_details") and user.seller_details:
+        return redirect("seller:seller_notifications")
+    return redirect("not:user_notifications")
+
+
 @login_required
 def user_notifications_page(request):
     user = request.user
+    if hasattr(user, "seller_details") and user.seller_details:
+        return redirect("seller:seller_notifications")
 
     notifications = Notification.objects.filter(user=user).order_by("-created_at")
 

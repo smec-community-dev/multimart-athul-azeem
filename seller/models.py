@@ -50,6 +50,23 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def image(self):
+        """
+        Compatibility accessor for templates that expect `product.image.url`.
+        Returns the `ImageFieldFile` from the Main image, or falls back to
+        the first available image for this product.
+        """
+        main_image = self.images.filter(image_type="Main").first()
+        if main_image and main_image.image:
+            return main_image.image
+
+        fallback = self.images.first()
+        if fallback and fallback.image:
+            return fallback.image
+
+        return None
+
 
 # ------------------ PRODUCT IMAGE ------------------
 class ProductImage(models.Model):

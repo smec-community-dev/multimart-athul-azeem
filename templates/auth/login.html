@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ShopHub</title>
+    <title>Login - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -404,6 +404,29 @@
         .forgot-link:hover {
             color: var(--hover-color);
             text-decoration: underline;
+        }
+
+        .django-messages {
+            margin-bottom: 18px;
+        }
+
+        .django-messages .msg {
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .django-messages .msg.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .django-messages .msg.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .submit-btn {
@@ -924,7 +947,15 @@
         <!-- Right Side - Form -->
         <div class="form-section">
             <h1>Welcome Back</h1>
-            <p>Sign in to your ShopHub account</p>
+            <p>Sign in to your MultiMart account</p>
+
+            {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                <p class="msg {{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <form method="POST">
                 {% csrf_token %}
@@ -956,7 +987,7 @@
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">Remember me</label>
                     </div>
-                    <a href="#" class="forgot-link">Forgot password?</a>
+                    <a href="{% url 'admin_panel:forgot_password' %}" class="forgot-link">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="submit-btn">Login</button>
@@ -970,7 +1001,7 @@
 
             <div class="social-login">
                 <!-- GOOGLE LOGIN -->
-                <a href="{% provider_login_url 'google' %}" class="social-btn google">
+                <a href="{% provider_login_url 'google' process='login' %}" class="social-btn google">
                     <svg class="social-icon" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

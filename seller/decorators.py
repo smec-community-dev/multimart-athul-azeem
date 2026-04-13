@@ -6,7 +6,7 @@ def seller_required(view_func):
     def wrapper(request, *args, **kwargs):
 
         if not request.user.is_authenticated:
-            return redirect('login')  # or your login URL
+            return redirect('admin_panel:login')
 
         # Check if user has seller_details
         if not hasattr(request.user, "seller_details"):

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Orders - ShopHub</title>
+    <title>Seller Orders - MultiMart</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
@@ -844,11 +844,11 @@
                 <span></span>
                 <span></span>
             </div>
-            <div class="logo">ShopHub</div>
+            <div class="logo">MultiMart</div>
             <div class="navbar-title">Dashboard</div>
         </div>
         <div class="navbar-right">
-    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
+    <div class="notification-bell" onclick="showNotifications(event)" style="position:relative; cursor:pointer;">
         🔔
 
         <div id="notification-badge" class="notification-badge" style="
@@ -865,10 +865,22 @@
         <!-- Notification dropdown -->
 <div id="notification-box"
      style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
+            background:#fff; border-radius:12px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
+            z-index:9999; max-height:460px; overflow:hidden; border:1px solid rgba(0,0,0,0.08);">
+    <div style="padding:8px 10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span style="font-weight:700; font-size:13px;">New only</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/mark-all-read/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Mark read</button>
+            <button type="button" style="font-size:11px; padding:4px 8px; border-radius:6px; border:1px solid #f97316; background:#fff7ed; color:#c2410c; cursor:pointer; font-weight:600;"
+                    onclick="event.stopPropagation();if(!confirm('Delete all notifications permanently?'))return;(function(){var m=document.cookie.match(/csrftoken=([^;]+)/);var c=m?decodeURIComponent(m[1].trim()):'';fetch('/not/clear-all/',{method:'POST',headers:{'X-CSRFToken':c,'Content-Type':'application/json'},credentials:'same-origin'}).then(function(){location.reload();});})();">Clear all</button>
+        </div>
+    </div>
+    <div id="notification-list" style="padding:8px; overflow-y:auto; max-height:320px;">
         <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
+    </div>
+    <div style="padding:8px; border-top:1px solid #eee; text-align:center;">
+        <a href="/not/seller/" style="font-size:12px; color:#ea580c; font-weight:600;">View all notifications</a>
     </div>
 </div>
 
@@ -910,7 +922,9 @@
                         <div class="dropdown-item">
                             <span class="dropdown-item-icon">🔔</span>
                             <div class="dropdown-item-text">
-                                <div class="dropdown-item-label">Notifications</div>
+                                <div class="dropdown-item-label">
+                                    <a href="{% url 'seller:seller_notifications' %}">Notifications</a>
+                                </div>
                                 <div class="dropdown-item-desc">Preferences</div>
                             </div>
                         </div>
@@ -1072,7 +1086,7 @@
                 <div>
                     <div class="footer-logo">
                         <span>🛍</span>
-                        <span>ShopHub</span>
+                        <span>MultiMart</span>
                     </div>
                     <p class="footer-description">Your ultimate e-commerce destination for electronics, fashion, and more.</p>
                     <div class="social-links">
@@ -1117,14 +1131,14 @@
                         </li>
                         <li>
                             <span style="color: var(--primary-color); margin-right: 0.5rem;">✉</span>
-                            support@shophub.com
+                            support@multimart.com
                         </li>
                     </ul>
                 </div>
             </div>
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; 2024 ShopHub. All rights reserved.</p>
+                <p>&copy; 2024 MultiMart. All rights reserved.</p>
                 <p>Made with ❤ for Sellers & Shoppers</p>
             </div>
         </div>
@@ -1155,16 +1169,17 @@
             document.body.style.overflow = '';
         }
 
-        function showNotifications() {
-            alert('🔔 You have new pending orders!');
-        }
-
         // Close dropdown on outside click
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('profileDropdown');
             const menu = document.getElementById('dropdownMenu');
             if (dropdown && menu && !dropdown.contains(e.target)) {
                 menu.classList.remove('show');
+            }
+            const bell = document.querySelector('.notification-bell');
+            const nbox = document.getElementById('notification-box');
+            if (nbox && bell && !bell.contains(e.target)) {
+                nbox.style.display = 'none';
             }
         });
 
@@ -1210,6 +1225,19 @@ notifSocket.onmessage = function(e) {
     showToast(data.title + " - " + data.body);
 };
 
+function getCookie(name) {
+    let v = null;
+    if (document.cookie && document.cookie !== "") {
+        document.cookie.split(";").forEach(function (part) {
+            const c = part.trim();
+            if (c.startsWith(name + "=")) {
+                v = decodeURIComponent(c.substring(name.length + 1));
+            }
+        });
+    }
+    return v;
+}
+
 // 🚀 Get unread count on load
 function updateUnreadCount() {
     fetch("/not/unread-count/")
@@ -1224,13 +1252,20 @@ function updateUnreadCount() {
             } else {
                 badge.style.display = "none";
             }
-        });
+        })
+        .catch(() => {});
 }
 updateUnreadCount();
+setInterval(updateUnreadCount, 45000);
 
 // 🎯 Show/hide notification dropdown
-function showNotifications() {
+function showNotifications(ev) {
+    if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
     const box = document.getElementById("notification-box");
+    if (!box) return;
 
     if (box.style.display === "block") {
         box.style.display = "none";
@@ -1240,13 +1275,13 @@ function showNotifications() {
     box.style.display = "block";
 
     // Load list from backend
-    fetch("/not/list/")
+    fetch("/not/list/?unread=1")
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById("notification-list");
             list.innerHTML = "";
 
-            if (data.notifications.length === 0) {
+            if (!data.notifications || data.notifications.length === 0) {
                 list.innerHTML = "<p style='text-align:center; color:#666;'>No notifications</p>";
                 return;
             }
@@ -1272,11 +1307,19 @@ function showNotifications() {
 }
 
 function markRead(id, item) {
-    fetch(`/not/mark-read/${id}/`)
+    fetch(`/not/mark-read/${id}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken") || "",
+        },
+        credentials: "same-origin",
+    })
         .then(() => {
-            item.style.background = "#fff";
+            if (item) item.style.background = "#fff";
             updateUnreadCount();
-        });
+        })
+        .catch(() => {});
 }
 
 // 🔥 Toast popup
@@ -1304,10 +1347,14 @@ function showToast(msg) {
 
 function addNotificationToList(data) {
     const list = document.getElementById("notification-list");
+    if (!list) return;
     const div = document.createElement("div");
     div.style.cssText = "padding:10px; border-bottom:1px solid #eee; background:#f7f9ff; cursor:pointer;";
     div.innerHTML = `<strong>${data.title}</strong><br><small>${data.body}</small><br><small style='color:#999;'>${new Date().toLocaleString()}</small>`;
-    div.onclick = () => markRead(data.id, div);
+    const nid = data.notification_id || data.id;
+    if (nid) {
+        div.onclick = () => markRead(nid, div);
+    }
     list.insertBefore(div, list.firstChild);
 }
 

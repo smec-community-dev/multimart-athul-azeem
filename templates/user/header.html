@@ -1,15 +1,200 @@
+<style id="multimart-user-header-toolbar">
+    /* Shared user site header toolbar (included from base, product_detail, cart, checkout, …) */
+    .header-container {
+        min-width: 0;
+        gap: 6px;
+    }
+    .logo {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .header-right {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+        gap: 10px;
+        min-width: 0;
+    }
+    .header-toolbar-btn {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-sizing: border-box;
+    }
+    a.icon-btn.header-toolbar-btn {
+        width: 40px;
+        height: 40px;
+    }
+    .header-toolbar-btn .badge {
+        top: 4px !important;
+        right: 4px !important;
+        left: auto !important;
+        width: 16px;
+        height: 16px;
+        font-size: 8px;
+    }
+    .notification-bell.header-toolbar-btn {
+        font-size: 1.05rem;
+        line-height: 1;
+        animation: none;
+        overflow: visible;
+    }
+    .notification-bell.header-toolbar-btn.header-bell--unread {
+        animation: mmHeaderUnreadPulse 2s ease-in-out infinite;
+    }
+    @keyframes mmHeaderUnreadPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.07); }
+    }
+    .header-notif-badge {
+        position: absolute !important;
+        top: 4px !important;
+        right: 4px !important;
+        left: auto !important;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        font-size: 9px;
+        line-height: 1;
+        border-radius: 999px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        background: #f44336;
+        color: #fff;
+        box-sizing: border-box;
+    }
+    .header-notif-badge.is-visible {
+        display: flex !important;
+    }
+    .profile-dropdown.header-toolbar-profile {
+        position: relative;
+        flex: 0 0 auto;
+    }
+    #userHeaderProfileToggle {
+        height: 40px;
+        min-height: 40px;
+        padding: 4px 8px;
+        box-sizing: border-box;
+    }
+    /* Dropdown: must not participate in the toolbar flex row (only the inner hit-target is flex-centered). */
+    .notification-bell-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        pointer-events: none;
+    }
+    .notification-bell-inner i {
+        pointer-events: none;
+    }
+    #notification-box.user-header-notification-panel {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        left: auto;
+        width: min(320px, calc(100vw - 24px));
+        max-width: 100vw;
+        box-sizing: border-box;
+        margin: 0;
+        transform: none;
+        z-index: 10050;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        max-height: min(460px, 70vh);
+        overflow: hidden;
+        display: none;
+    }
+    #notification-box.user-header-notification-panel .user-notif-panel-scroll {
+        overflow-y: auto;
+        max-height: min(320px, 45vh);
+        -webkit-overflow-scrolling: touch;
+    }
+    @media (max-width: 768px) {
+        .header-right { gap: 6px; }
+        .header-toolbar-btn,
+        a.icon-btn.header-toolbar-btn {
+            width: 38px;
+            height: 38px;
+        }
+        #userHeaderProfileToggle {
+            height: 38px;
+            min-height: 38px;
+            padding: 3px 6px;
+        }
+    }
+    @media (max-width: 520px) {
+        .header-right { gap: 4px; }
+        .header-toolbar-btn,
+        a.icon-btn.header-toolbar-btn {
+            width: 36px;
+            height: 36px;
+        }
+        .notification-bell.header-toolbar-btn { font-size: 1rem; }
+        #userHeaderProfileToggle {
+            height: 36px;
+            min-height: 36px;
+            padding: 2px 5px;
+        }
+        #userHeaderProfileToggle .dropdown-arrow { display: none; }
+    }
+    @media (max-width: 400px) {
+        .header-wishlist-inline { display: none !important; }
+        .header-toolbar-btn,
+        a.icon-btn.header-toolbar-btn {
+            width: 34px;
+            height: 34px;
+        }
+        .header-notif-badge {
+            top: 2px !important;
+            right: 2px !important;
+            min-width: 14px;
+            height: 14px;
+            font-size: 8px;
+        }
+    }
+    /* Phones / narrow viewports: full-width sheet under header (beats base.html #notification-box). */
+    @media (max-width: 640px) {
+        #notification-box.user-header-notification-panel {
+            position: fixed !important;
+            left: 8px !important;
+            right: 8px !important;
+            top: 56px !important;
+            width: calc(100vw - 16px) !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            transform: none !important;
+            animation: none !important;
+            max-height: min(420px, 72vh) !important;
+        }
+        #notification-box.user-header-notification-panel .user-notif-panel-scroll {
+            max-height: min(280px, 50vh);
+        }
+    }
+</style>
 <header>
     <div class="header-container">
         <!-- Mobile menu button - visible only on small screens -->
-        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        <button type="button" class="mobile-menu-btn" onclick="toggleMobileMenu()">
             <i class="fas fa-bars"></i>
         </button>
         <div id="user-toast" style="position: fixed; top: 20px; right: 20px; display:none; padding:12px; border-radius:6px; background:#0b79ff; color:#fff; z-index:9999;"></div>
 
-
         <div class="logo">
             <i class="fas fa-shopping-bag"></i>
-            <span>ShopHub</span>
+            <span>MultiMart</span>
         </div>
 
         <!-- Navigation for medium screens and up -->
@@ -21,62 +206,48 @@
             <a href="{% url 'user:contact' %}">Contact</a>
         </nav>
 
-
-             <div class="navbar-right">
-    <div class="notification-bell" onclick="showNotifications()" style="position:relative; cursor:pointer;">
-        🔔
-
-        <div id="notification-badge" class="notification-badge" style="
-            position:absolute;
-            top:-5px;
-            right:-10px;
-            background:red;
-            color:white;
-            padding:2px 6px;
-            border-radius:50%;
-            font-size:12px;
-            display:none;">
-        </div>
-        <!-- Notification dropdown -->
-<div id="notification-box"
-     style="display:none; position:absolute; top:40px; right:0; width:320px;
-            background:#fff; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.12);
-            z-index:9999; max-height:420px; overflow-y:auto; border:1px solid rgba(0,0,0,0.05);">
-    <div id="notification-list" style="padding:8px;">
-        <p style="text-align:center; color:#666; margin:12px 0;">Loading...</p>
-    </div>
-</div>
-
-    </div>
-
         <!-- Search box -->
         <form method="GET"
-      action="{% if request.resolver_match.url_name == 'products_list' %}
-                  {% url 'user:products_list' %}
-              {% else %}
-                  {% url 'user:user_home' %}
-              {% endif %}"
+              action="{% if request.resolver_match.url_name == 'products_list' %}{% url 'user:products_list' %}{% else %}{% url 'user:user_home' %}{% endif %}"
               class="search-box">
-
             <i class="fas fa-search"></i>
             <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}">
         </form>
 
         <div class="header-right">
+            <div class="notification-bell header-toolbar-btn{% if notification_unread_count %} header-bell--unread{% endif %}" id="user-notification-bell" style="cursor:pointer;" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true">
+                <span class="notification-bell-inner" aria-hidden="true">
+                    <i class="fas fa-bell"></i>
+                    <div id="notification-badge" class="notification-badge header-notif-badge{% if notification_unread_count %} is-visible{% endif %}" aria-hidden="true"></div>
+                </span>
+                <div id="notification-box" class="user-header-notification-panel" style="display:none;">
+                    <div style="padding:10px 12px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0;">
+                        <span style="font-weight:700; font-size:13px; color:#111;">New only</span>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+                            <button type="button" id="user-notif-mark-all" style="font-size:11px; padding:5px 9px; border-radius:8px; border:1px solid #e5e7eb; background:#fff; cursor:pointer; font-weight:600; color:#374151;">Mark all read</button>
+                            <button type="button" id="user-notif-clear-all" style="font-size:11px; padding:5px 9px; border-radius:8px; border:1px solid #fdba74; background:#fff7ed; cursor:pointer; font-weight:600; color:#c2410c;">Clear all</button>
+                        </div>
+                    </div>
+                    <div id="notification-list" class="user-notif-panel-scroll" style="padding:8px;"></div>
+                    <div style="padding:8px; border-top:1px solid #eee; text-align:center;">
+                        <a href="{% if user.is_authenticated and user.seller_details %}{% url 'seller:seller_notifications' %}{% else %}{% url 'not:user_notifications' %}{% endif %}" style="font-size:12px; color:#ea580c; font-weight:600;">View all notifications</a>
+                    </div>
+                </div>
+            </div>
 
-            <a href="{% url 'user:wishlist_page' %}" class="icon-btn">
+            <a href="{% url 'user:wishlist_page' %}" class="icon-btn header-toolbar-btn header-wishlist-inline" aria-label="Wishlist">
                 <i class="fas fa-heart"></i>
-                <span class="badge">{{ wishlist_count }}</span>
+                <span class="badge">{{ wishlist_count|default:0 }}</span>
             </a>
 
-            <a href="{% url 'user:cart_page' %}" class="icon-btn">
+            <a href="{% url 'user:cart_page' %}" class="icon-btn header-toolbar-btn" aria-label="Cart">
                 <i class="fas fa-shopping-cart"></i>
-                <span class="badge">{{ cart_count }}</span>
+                <span class="badge">{{ cart_count|default:0 }}</span>
             </a>
 
             {% if user.is_authenticated %}
-            <div class="profile-dropdown" id="profileDropdown">
-                <div class="profile-toggle" onclick="toggleProfileMenu()">
+            <div class="profile-dropdown header-toolbar-profile" id="profileDropdown">
+                <div class="profile-toggle" id="userHeaderProfileToggle" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true">
                     <div class="profile-avatar">{{ user.username|slice:":1"|upper }}</div>
                     <span class="dropdown-arrow">▼</span>
                 </div>
@@ -94,15 +265,22 @@
 
                     <div class="dropdown-divider"></div>
 
+                    <a href="{% if user.is_authenticated and user.seller_details %}{% url 'seller:seller_notifications' %}{% else %}{% url 'not:user_notifications' %}{% endif %}" class="dropdown-item">
+                        <span class="dropdown-item-icon">&#128276;</span>
+                        <span class="dropdown-item-label">Notifications</span>
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+
                     <a href="{% url 'user:profile' %}" class="dropdown-item">
-                        <span class="dropdown-item-icon">👤</span>
+                        <span class="dropdown-item-icon">&#128100;</span>
                         <span class="dropdown-item-label">My Profile</span>
                     </a>
 
                     <div class="dropdown-divider"></div>
 
                     <a href="{% url 'admin_panel:logout' %}" class="dropdown-item logout">
-                        <span class="dropdown-item-icon">🚪</span>
+                        <span class="dropdown-item-icon">&#128682;</span>
                         <span class="dropdown-item-label">Logout</span>
                     </a>
                 </div>
@@ -110,10 +288,10 @@
             {% else %}
             <div class="auth-buttons">
                 <a href="{% url 'admin_panel:login' %}">
-                    <button class="login-btn">Login</button>
+                    <button type="button" class="login-btn">Login</button>
                 </a>
-                 <a href="{% url 'admin_panel:registration' %}">
-                    <button class="register-btn">Register</button>
+                <a href="{% url 'admin_panel:registration' %}">
+                    <button type="button" class="register-btn">Register</button>
                 </a>
             </div>
             {% endif %}
@@ -131,14 +309,14 @@
                 <a href="{% url 'user:deals_and_offers' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base">Deals & Offers</a>
                 <a href="{% url 'user:contact' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 text-sm xs:text-base">Contact</a>
 
+                {% if user.is_authenticated %}
+                <a href="{% url 'user:wishlist_page' %}" class="text-gray-600 hover:text-orange-500 font-medium py-2 border-b border-gray-100 text-sm xs:text-base md:hidden header-wishlist-mobile-only">Wishlist</a>
+                {% endif %}
+
                 <!-- Mobile search box -->
                 <form method="GET"
-                  action="{% if request.resolver_match.url_name == 'products_list' %}
-                              {% url 'user:products_list' %}
-                          {% else %}
-                              {% url 'user:user_home' %}
-                          {% endif %}"
-                  class="pt-3 xs:pt-4">
+                      action="{% if request.resolver_match.url_name == 'products_list' %}{% url 'user:products_list' %}{% else %}{% url 'user:user_home' %}{% endif %}"
+                      class="pt-3 xs:pt-4">
 
                     <div class="flex">
                         <input type="text" name="q" placeholder="Search products..." value="{{ request.GET.q }}"
@@ -155,208 +333,356 @@
 
 
 <script>
-// ===============================
-//  USER OR SELLER DETECTION
-// ===============================
-const IS_SELLER =
-    {% if request.user.is_authenticated and request.user.seller_details %}
-        true
-    {% else %}
-        false
-    {% endif %};
+function getCookie(name) {
+    let v = null;
+    if (document.cookie && document.cookie !== "") {
+        const parts = document.cookie.split(";");
+        for (let i = 0; i < parts.length; i++) {
+            const c = parts[i].trim();
+            if (c.startsWith(name + "=")) {
+                v = decodeURIComponent(c.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return v;
+}
 
-// ===============================
-//  WEBSOCKET INITIALIZE
-// ===============================
+const IS_SELLER = {% if user.is_authenticated and user.seller_details %}true{% else %}false{% endif %};
+
 let notifSocket = null;
+let notifWsAttempts = 0;
+const NOTIF_WS_MAX_RETRIES = 10;
 
 function connectWS() {
-    notifSocket = new WebSocket(
-        (location.protocol === "https:" ? "wss://" : "ws://") +
-        window.location.host +
-        (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
-    );
+    try {
+        notifSocket = new WebSocket(
+            (location.protocol === "https:" ? "wss://" : "ws://") +
+            window.location.host +
+            (IS_SELLER ? "/ws/seller/not/" : "/ws/user/not/")
+        );
+    } catch (e) {
+        console.warn("WebSocket unavailable:", e);
+        return;
+    }
 
-    notifSocket.onopen = () => console.log("WS Connected!");
+    notifSocket.onopen = () => {
+        notifWsAttempts = 0;
+        console.log("WS Connected!");
+    };
 
-    notifSocket.onerror = err => console.error("WS Error:", err);
+    notifSocket.onerror = () => {
+        /* Browser also logs failed connection; avoid duplicate stack noise. */
+    };
 
     notifSocket.onmessage = e => {
         const data = JSON.parse(e.data);
-
         addNotificationToList(data);
         updateUnreadCount();
-        showToast(`${data.title} - ${data.body}`);
+        showToast((data.title || "Notification") + " — " + (data.body || ""));
     };
 
     notifSocket.onclose = () => {
-        console.warn("WS closed… reconnecting in 2s");
-        setTimeout(connectWS, 2000);
+        notifWsAttempts += 1;
+        if (notifWsAttempts > NOTIF_WS_MAX_RETRIES) {
+            console.warn("Notification WebSocket stopped retrying (use ASGI server, e.g. py -m daphne project.asgi:application).");
+            return;
+        }
+        const delay = Math.min(30000, 2000 * notifWsAttempts);
+        setTimeout(connectWS, delay);
     };
 }
 
+{% if user.is_authenticated %}
 connectWS();
+{% endif %}
 
-
-// ===============================
-//  UNREAD COUNT
-// ===============================
 function updateUnreadCount() {
+    {% if not user.is_authenticated %}
+    return;
+    {% endif %}
     fetch("/not/unread-count/")
         .then(res => res.json())
         .then(data => {
             const badge = document.getElementById("notification-badge");
             if (!badge) return;
 
+            const bell = document.getElementById("user-notification-bell");
             if (data.unread_count > 0) {
                 badge.innerText = data.unread_count;
-                badge.style.display = "block";
+                badge.classList.add("is-visible");
+                if (bell) bell.classList.add("header-bell--unread");
             } else {
-                badge.style.display = "none";
+                badge.innerText = "";
+                badge.classList.remove("is-visible");
+                if (bell) bell.classList.remove("header-bell--unread");
             }
-        });
+        })
+        .catch(() => {});
 }
 
 updateUnreadCount();
+setInterval(updateUnreadCount, 45000);
 
+function loadUserNotificationDropdown() {
+    {% if not user.is_authenticated %}
+    return;
+    {% endif %}
+    const list = document.getElementById("notification-list");
+    if (!list) return;
+    list.innerHTML = "<p style='text-align:center; color:#666; margin:12px 0;'>Loading…</p>";
 
-// ===============================
-//  NOTIFICATION DROPDOWN
-// ===============================
-function showNotifications() {
-    const box = document.getElementById("notification-box");
-
-    box.style.display = (box.style.display === "block" ? "none" : "block");
-
-    if (box.style.display !== "block") return;
-
-    fetch("/not/list/")
+    fetch("/not/list/?unread=1", { credentials: "same-origin" })
         .then(res => res.json())
         .then(data => {
-            const list = document.getElementById("notification-list");
+            if (!list) return;
             list.innerHTML = "";
 
-            if (data.notifications.length === 0) {
-                list.innerHTML = "<p style='text-align:center; color:#777;'>No notifications</p>";
+            if (!data.notifications || data.notifications.length === 0) {
+                list.innerHTML =
+                    "<p style='text-align:center; color:#777; padding:12px;'>No new notifications.<br><small style='color:#999;'>Open “View all” for history.</small></p>";
                 return;
             }
 
             data.notifications.forEach(n => {
-                list.innerHTML += `
-                    <div
-                        onclick="markRead(${n.id}, this)"
-                        style="
-                            padding:10px;
-                            border-bottom:1px solid #eee;
-                            background:${n.is_read ? '#fff' : '#f0f4ff'};
-                            cursor:pointer;
-                        ">
-                        <strong>${n.title}</strong><br>
-                        <small>${n.body}</small><br>
-                        <small style="color:#888">${n.created_at}</small>
-                    </div>
-                `;
+                const row = document.createElement("div");
+                const oid = n.extra && n.extra.order_id;
+                row.style.cssText =
+                    "padding:10px; border-bottom:1px solid #eee; background:#f0f4ff; cursor:pointer; border-radius:8px; margin-bottom:6px;";
+                row.innerHTML =
+                    "<strong>" +
+                    (n.title || "") +
+                    "</strong><br><small>" +
+                    (n.body || "") +
+                    "</small><br><small style='color:#888'>" +
+                    (n.created_at || "") +
+                    "</small>";
+                if (oid) {
+                    row.innerHTML +=
+                        "<br><small style='color:#ea580c;font-weight:600;'>View tracking →</small>";
+                }
+                row.onclick = () => {
+                    markRead(n.id, row);
+                    if (oid) {
+                        window.location.href = IS_SELLER
+                            ? "/seller/seller_dashboard/order/view/" + oid + "/"
+                            : "/order/" + oid + "/";
+                    } else {
+                        loadUserNotificationDropdown();
+                    }
+                };
+                list.appendChild(row);
             });
+        })
+        .catch(() => {
+            if (list) list.innerHTML = "<p style='text-align:center; color:#c00;'>Could not load notifications</p>";
         });
 }
 
+function showNotifications(ev) {
+    if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
+    const box = document.getElementById("notification-box");
+    const bell = document.getElementById("user-notification-bell");
+    if (!box) return;
 
-// ===============================
-//  MARK READ
-// ===============================
+    const next = box.style.display === "block" ? "none" : "block";
+    box.style.display = next;
+    if (bell) bell.setAttribute("aria-expanded", next === "block" ? "true" : "false");
+
+    if (next !== "block") return;
+
+    {% if not user.is_authenticated %}
+    const list = document.getElementById("notification-list");
+    if (list) {
+        list.innerHTML = "<p style='text-align:center; color:#777;'>Log in to see notifications</p>";
+    }
+    return;
+    {% endif %}
+
+    loadUserNotificationDropdown();
+}
+
 function markRead(id, element) {
-    fetch(`/not/mark-read/${id}/`)
+    const csrftoken = getCookie("csrftoken");
+    fetch(`/not/mark-read/${id}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken || "",
+        },
+        credentials: "same-origin",
+    })
         .then(() => {
-            element.style.background = "#fff";
+            if (element && element.parentNode) element.remove();
             updateUnreadCount();
-        });
+            loadUserNotificationDropdown();
+        })
+        .catch(() => {});
 }
 
+function userNotifMarkAllRead(ev) {
+    if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+    const csrftoken = getCookie("csrftoken");
+    fetch("/not/mark-all-read/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken || "",
+        },
+        credentials: "same-origin",
+    })
+        .then(r => r.json())
+        .then(() => {
+            updateUnreadCount();
+            loadUserNotificationDropdown();
+            showToast("All marked as read");
+        })
+        .catch(() => showToast("Could not mark all as read"));
+}
 
-// ===============================
-//  ADD NEW REAL-TIME NOTIFICATION
-// ===============================
+function userNotifClearAll(ev) {
+    if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+    if (!confirm("Delete all notifications permanently? This cannot be undone.")) return;
+    const csrftoken = getCookie("csrftoken");
+    fetch("/not/clear-all/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken || "",
+        },
+        credentials: "same-origin",
+    })
+        .then(r => r.json())
+        .then(() => {
+            updateUnreadCount();
+            loadUserNotificationDropdown();
+            showToast("Notifications cleared");
+        })
+        .catch(() => showToast("Could not clear notifications"));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("user-notif-mark-all")?.addEventListener("click", userNotifMarkAllRead);
+    document.getElementById("user-notif-clear-all")?.addEventListener("click", userNotifClearAll);
+});
+
 function addNotificationToList(data) {
     const list = document.getElementById("notification-list");
     if (!list) return;
 
     const div = document.createElement("div");
-    div.style.cssText = `
-        padding:10px;
-        border-bottom:1px solid #eee;
-        background:#f0f4ff;
-        cursor:pointer;
-    `;
+    div.style.cssText =
+        "padding:10px; border-bottom:1px solid #eee; background:#f0f4ff; cursor:pointer;";
     div.innerHTML = `
-        <strong>${data.title}</strong><br>
-        <small>${data.body}</small><br>
+        <strong>${data.title || ""}</strong><br>
+        <small>${data.body || ""}</small><br>
         <small style='color:#888;'>${new Date().toLocaleString()}</small>
     `;
 
-    div.onclick = () => markRead(data.notification_id, div);
+    const nid = data.notification_id;
+    const extra = data.extra || {};
+    const oid = extra.order_id;
+    div.onclick = () => {
+        if (nid) markRead(nid, div);
+        if (oid) {
+            window.location.href = IS_SELLER
+                ? "/seller/seller_dashboard/order/view/" + oid + "/"
+                : "/order/" + oid + "/";
+        }
+    };
 
     list.prepend(div);
 }
 
-
-// ===============================
-//  TOAST MESSAGE
-// ===============================
 function showToast(msg) {
+    const el = document.getElementById("user-toast");
+    if (el) {
+        el.innerText = msg;
+        el.style.display = "block";
+        setTimeout(() => { el.style.display = "none"; }, 4000);
+        return;
+    }
     const toast = document.createElement("div");
-
-    toast.style.cssText = `
-        position:fixed;
-        bottom:20px;
-        right:20px;
-        background:#222;
-        color:#fff;
-        padding:12px 16px;
-        border-radius:5px;
-        z-index:99999;
-        font-size:14px;
-        opacity:0.95;
-        box-shadow:0 2px 10px rgba(0,0,0,0.25);
-    `;
-
+    toast.style.cssText =
+        "position:fixed; bottom:20px; right:20px; background:#222; color:#fff; padding:12px 16px; border-radius:5px; z-index:99999; font-size:14px;";
     toast.innerText = msg;
-
     document.body.appendChild(toast);
-
     setTimeout(() => toast.remove(), 3000);
 }
 
-
-// Toast popup
-function showToast(text) {
-  const el = document.getElementById("user-toast");
-  el.innerText = text;
-  el.style.display = "block";
-  setTimeout(() => el.style.display = "none", 4000);
-}
-function toggleProfileMenu() {
+function toggleProfileMenu(ev) {
+    if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
     const menu = document.getElementById("dropdownMenu");
     const parent = document.getElementById("profileDropdown");
-
+    const toggle = document.getElementById("userHeaderProfileToggle");
+    if (!menu || !parent) return;
     parent.classList.toggle("active");
     menu.classList.toggle("show");
+    const open = menu.classList.contains("show");
+    if (toggle) toggle.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
-// Close dropdown when clicking outside profile menu
-window.addEventListener("click", function(event) {
-    const menu = document.getElementById("dropdownMenu");
-    const parent = document.getElementById("profileDropdown");
-
-    if (menu && parent && !parent.contains(event.target)) {
-        menu.classList.remove("show");
-        parent.classList.remove("active");
+(function initUserHeaderControls() {
+    function bind() {
+        const bell = document.getElementById("user-notification-bell");
+        if (bell && !bell.dataset.bound) {
+            bell.dataset.bound = "1";
+            bell.addEventListener("click", showNotifications);
+            bell.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    showNotifications(e);
+                }
+            });
+        }
+        const ptoggle = document.getElementById("userHeaderProfileToggle");
+        if (ptoggle && !ptoggle.dataset.bound) {
+            ptoggle.dataset.bound = "1";
+            ptoggle.addEventListener("click", toggleProfileMenu);
+            ptoggle.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleProfileMenu(e);
+                }
+            });
+        }
     }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bind);
+    } else {
+        bind();
+    }
+})();
+
+document.addEventListener("click", function (event) {
+    window.setTimeout(function () {
+        const menu = document.getElementById("dropdownMenu");
+        const parent = document.getElementById("profileDropdown");
+        const bell = document.getElementById("user-notification-bell");
+        const nbox = document.getElementById("notification-box");
+
+        if (menu && parent && !parent.contains(event.target)) {
+            menu.classList.remove("show");
+            parent.classList.remove("active");
+            const toggle = document.getElementById("userHeaderProfileToggle");
+            if (toggle) toggle.setAttribute("aria-expanded", "false");
+        }
+        if (nbox && bell && !bell.contains(event.target)) {
+            nbox.style.display = "none";
+            bell.setAttribute("aria-expanded", "false");
+        }
+    }, 0);
 });
 
-// Mobile menu toggle
 function toggleMobileMenu() {
     const mobileMenu = document.getElementById("mobileMenu");
+    if (!mobileMenu) return;
     mobileMenu.classList.toggle("hidden");
 }
-
 </script>
