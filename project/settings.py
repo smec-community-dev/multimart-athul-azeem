@@ -31,7 +31,14 @@ def env_bool(name: str, default: bool = False) -> bool:
 # Default True for local development to avoid media/static 404 during runserver.
 DEBUG = env_bool("DEBUG", True)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "51.20.69.157",
+    "multimart.duckdns.org",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://multimart.duckdns.org",
+]
+
 
 INSTALLED_APPS = [
     "django.contrib.sites",
@@ -56,10 +63,12 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "rest_framework",
+     "storages",
 
     ### SOCIAL AUTH  ######
     "notifications.apps.NotificationsConfig",
 ]
+
 
 AUTH_USER_MODEL = "core.User"
 SITE_ID = int(os.getenv("SITE_ID", 1))
@@ -110,37 +119,30 @@ TEMPLATES = [
 ASGI_APPLICATION = "project.asgi.application"
 WSGI_APPLICATION = 'project.wsgi.application'
 
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+
+
+
+
+
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 
-print("KEY ID:", RAZORPAY_KEY_ID)
-print("KEY SECRET:", RAZORPAY_KEY_SECRET)
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-USE_MYSQL = all(os.getenv(k) for k in ["DB_NAME", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT"])
-
-if DEBUG or not USE_MYSQL:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
+DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
@@ -151,15 +153,13 @@ def razorpay_keys(request):
         'RAZORPAY_KEY_ID': settings.RAZORPAY_KEY_ID
     }
 
-# ← UPDATED: Channel Layers (InMemory for dev; add Redis for prod)
+# ← UPDATED: Channel Layers (InMemory for dev; add Redis for prod
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # Dev-only; for prod: use Redis
-        # Example Redis config (uncomment & install channels-redis):
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "CONFIG": {
-        #     "hosts": [{"host": "127.0.0.1", "port": 6379}],
-        # },
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
     },
 }
 
@@ -192,6 +192,16 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -267,3 +277,4 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 ###### SOCIAL AUTH COMPLETED ###########33
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
